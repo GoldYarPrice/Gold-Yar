@@ -60,10 +60,7 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
-            -webkit-touch-callout: none;
         }
 
         html {
@@ -71,23 +68,12 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, -apple-system, BlinkMacSystemFont;
+            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: var(--transition);
             font-size: 16px;
-            line-height: 1.5;
             overflow-x: hidden;
-        }
-
-        body::selection,
-        body *::selection {
-            background-color: transparent;
-        }
-
-        body::-moz-selection,
-        body *::-moz-selection {
-            background-color: transparent;
         }
 
         /* Navigation */
@@ -98,28 +84,23 @@
             right: 0;
             display: flex;
             justify-content: space-around;
-            align-items: center;
             background-color: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
             padding: 8px 0;
             z-index: 100;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .nav-tab {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 8px 12px;
             background: none;
             border: none;
-            -webkit-tap-highlight-color: transparent;
             cursor: pointer;
             color: var(--text-secondary);
             transition: var(--transition);
             font-size: 12px;
-            font-weight: 500;
             min-width: 60px;
         }
 
@@ -140,7 +121,6 @@
         .main-container {
             padding-bottom: 80px;
             min-height: 100vh;
-            background-color: var(--bg-color);
         }
 
         .container {
@@ -157,7 +137,6 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 12px;
-            color: var(--text-color);
         }
 
         /* Header */
@@ -166,18 +145,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            padding: 16px 0;
         }
 
-        .header h1,
-        .header h2 {
-            margin: 0;
+        .header h1 {
             font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin: 0;
         }
 
         .theme-btn {
@@ -186,17 +158,11 @@
             border-radius: 50%;
             border: 2px solid var(--border-color);
             background-color: var(--bg-secondary);
-            color: var(--text-color);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            transition: var(--transition);
-        }
-
-        .theme-btn:active {
-            transform: scale(0.9);
         }
 
         /* Price Cards */
@@ -204,7 +170,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 12px;
-            margin-bottom: 16px;
         }
 
         .price-card {
@@ -213,14 +178,12 @@
             border-radius: var(--radius-lg);
             padding: 16px;
             text-align: center;
-            transition: var(--transition);
         }
 
         .price-card-title {
             font-size: 14px;
             color: var(--text-secondary);
             margin-bottom: 8px;
-            font-weight: 500;
         }
 
         .price-card-value {
@@ -228,7 +191,6 @@
             font-weight: 700;
             color: var(--primary-color);
             margin-bottom: 8px;
-            font-family: 'Courier New', monospace;
         }
 
         .price-card-change {
@@ -236,7 +198,6 @@
             padding: 4px 8px;
             border-radius: 6px;
             display: inline-block;
-            font-weight: 600;
         }
 
         .price-card-change.positive {
@@ -262,7 +223,6 @@
             border-radius: var(--radius-md);
             padding: 16px;
             text-align: center;
-            transition: var(--transition);
         }
 
         .stat-icon {
@@ -274,14 +234,11 @@
             font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: 8px;
-            font-weight: 500;
         }
 
         .stat-value {
             font-size: 18px;
             font-weight: 700;
-            color: var(--text-color);
-            font-family: 'Courier New', monospace;
         }
 
         /* Buttons */
@@ -290,14 +247,12 @@
             border: none;
             border-radius: var(--radius-md);
             font-weight: 600;
-            font-size: 14px;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-family: inherit;
         }
 
         .btn:active {
@@ -321,7 +276,6 @@
 
         .btn-block {
             width: 100%;
-            display: flex;
         }
 
         .quick-actions {
@@ -332,8 +286,6 @@
 
         .quick-actions .btn {
             width: 100%;
-            justify-content: center;
-            padding: 14px 20px;
         }
 
         /* Lists */
@@ -342,7 +294,6 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 16px;
         }
 
         .portfolio-item,
@@ -364,7 +315,6 @@
         .portfolio-item-title,
         .alert-item-title {
             font-weight: 600;
-            color: var(--text-color);
             margin-bottom: 4px;
         }
 
@@ -374,25 +324,17 @@
             color: var(--text-secondary);
         }
 
-        .portfolio-item-actions,
-        .alert-item-actions {
-            display: flex;
-            gap: 8px;
-        }
-
         .icon-btn {
             width: 36px;
             height: 36px;
             border: none;
             background-color: var(--bg-tertiary);
-            color: var(--text-color);
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            transition: var(--transition);
         }
 
         /* Empty State */
@@ -426,7 +368,6 @@
             bottom: 0;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 200;
-            overflow-y: auto;
         }
 
         .modal.active {
@@ -440,7 +381,6 @@
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             max-width: 600px;
             width: 100%;
-            max-height: 90vh;
             overflow-y: auto;
         }
 
@@ -455,7 +395,6 @@
         .modal-header h3 {
             margin: 0;
             font-size: 18px;
-            color: var(--text-color);
         }
 
         .modal-close {
@@ -463,7 +402,6 @@
             height: 36px;
             border: none;
             background-color: var(--bg-secondary);
-            color: var(--text-color);
             border-radius: 50%;
             cursor: pointer;
             font-size: 24px;
@@ -485,35 +423,24 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: var(--text-color);
             font-size: 14px;
         }
 
         .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group select {
             width: 100%;
             padding: 12px;
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             background-color: var(--bg-secondary);
             color: var(--text-color);
-            font-family: inherit;
             font-size: 14px;
         }
 
         .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-group select:focus {
             outline: none;
-            -webkit-user-select: text;
-            user-select: text;
             border-color: var(--primary-color);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
         }
 
         .form-actions {
@@ -534,11 +461,9 @@
             color: var(--text-color);
             padding: 16px 20px;
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
             display: none;
             z-index: 300;
             max-width: 90%;
-            word-wrap: break-word;
         }
 
         .toast.show {
@@ -547,7 +472,6 @@
 
         /* Skeleton */
         .skeleton-loading {
-            pointer-events: none;
             background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--border-color) 50%, var(--bg-tertiary) 100%);
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
@@ -578,7 +502,6 @@
         .profile-avatar {
             width: 80px;
             height: 80px;
-            min-width: 80px;
             border-radius: 50%;
             background-color: var(--primary-color);
             display: flex;
@@ -589,14 +512,10 @@
 
         .profile-info {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
 
         .profile-info h2 {
             margin: 0;
-            color: var(--text-color);
             font-size: 20px;
         }
 
@@ -615,17 +534,9 @@
         .profile-detail-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 12px;
             background-color: var(--bg-secondary);
             border-radius: var(--radius-md);
-        }
-
-        /* Settings */
-        .settings-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
         }
 
         .setting-item {
@@ -680,33 +591,13 @@
             transform: translateX(20px);
         }
 
-        #notification-time {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            background-color: var(--bg-tertiary);
-            color: var(--text-color);
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        /* Responsive */
         @media (max-width: 480px) {
-            .container {
-                padding: 12px;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
 
             .stat-card:nth-child(3) {
                 grid-column: 1 / -1;
-            }
-
-            .header h1,
-            .header h2 {
-                font-size: 24px;
             }
         }
     </style>
@@ -715,25 +606,20 @@
 <body>
     <!-- Navigation Tab Bar -->
     <nav class="nav-tabs">
-        <button class="nav-tab active" data-tab="home" title="خانه">
-            <span class="icon">🏠</span>
-            <span class="label">خانه</span>
+        <button class="nav-tab active" data-tab="home">
+            <span class="icon">🏠</span><span class="label">خانه</span>
         </button>
-        <button class="nav-tab" data-tab="portfolio" title="دارایی‌ها">
-            <span class="icon">💎</span>
-            <span class="label">دارایی</span>
+        <button class="nav-tab" data-tab="portfolio">
+            <span class="icon">💎</span><span class="label">دارایی</span>
         </button>
-        <button class="nav-tab" data-tab="prices" title="قیمت‌ها">
-            <span class="icon">📊</span>
-            <span class="label">قیمت</span>
+        <button class="nav-tab" data-tab="prices">
+            <span class="icon">📊</span><span class="label">قیمت</span>
         </button>
-        <button class="nav-tab" data-tab="alerts" title="هشدارها">
-            <span class="icon">🔔</span>
-            <span class="label">هشدار</span>
+        <button class="nav-tab" data-tab="alerts">
+            <span class="icon">🔔</span><span class="label">هشدار</span>
         </button>
-        <button class="nav-tab" data-tab="profile" title="پروفایل">
-            <span class="icon">👤</span>
-            <span class="label">پروفایل</span>
+        <button class="nav-tab" data-tab="profile">
+            <span class="icon">👤</span><span class="label">پروفایل</span>
         </button>
     </nav>
 
@@ -744,11 +630,8 @@
             <div class="container">
                 <div class="header">
                     <h1>💰 طلا یار</h1>
-                    <button id="theme-toggle" class="theme-btn" title="تغییر تم">
-                        <span class="theme-icon">🌙</span>
-                    </button>
+                    <button id="theme-toggle" class="theme-btn"><span class="theme-icon">🌙</span></button>
                 </div>
-
                 <div class="section">
                     <h2 class="section-title">قیمت فعلی</h2>
                     <div id="prices-container" class="prices-grid">
@@ -756,25 +639,11 @@
                         <div class="skeleton-loading"></div>
                     </div>
                 </div>
-
-                <div class="section">
-                    <h2 class="section-title">خلاصه دارایی</h2>
-                    <div id="stats-container" class="stats-grid">
-                        <div class="stat-card skeleton-loading"></div>
-                        <div class="stat-card skeleton-loading"></div>
-                        <div class="stat-card skeleton-loading"></div>
-                    </div>
-                </div>
-
                 <div class="section">
                     <h2 class="section-title">اقدامات سریع</h2>
                     <div class="quick-actions">
-                        <button id="add-portfolio-btn" class="btn btn-primary btn-block">
-                            <span>➕</span> اضافه کردن دارایی
-                        </button>
-                        <button id="add-alert-btn" class="btn btn-secondary btn-block">
-                            <span>🔔</span> تنظیم هشدار
-                        </button>
+                        <button id="add-portfolio-btn" class="btn btn-primary btn-block">➕ اضافه کردن دارایی</button>
+                        <button id="add-alert-btn" class="btn btn-secondary btn-block">🔔 تنظیم هشدار</button>
                     </div>
                 </div>
             </div>
@@ -783,13 +652,11 @@
         <!-- Portfolio Tab -->
         <section id="portfolio-tab" class="tab-content">
             <div class="container">
-                <div class="header">
-                    <h2>💎 دارایی‌های من</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="margin: 0;">💎 دارایی‌های من</h2>
                     <button id="add-portfolio-btn-2" class="btn btn-primary">➕</button>
                 </div>
-                <div id="portfolio-list" class="portfolio-list">
-                    <div class="skeleton-loading"></div>
-                </div>
+                <div id="portfolio-list" class="portfolio-list"></div>
                 <div id="empty-portfolio" class="empty-state" style="display: none;">
                     <div class="empty-icon">📭</div>
                     <p>هنوز دارایی ثبت نشده</p>
@@ -809,13 +676,11 @@
         <!-- Alerts Tab -->
         <section id="alerts-tab" class="tab-content">
             <div class="container">
-                <div class="header">
-                    <h2>🔔 هشدارهای قیمتی</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="margin: 0;">🔔 هشدارهای قیمتی</h2>
                     <button id="add-alert-btn-2" class="btn btn-primary">➕</button>
                 </div>
-                <div id="alerts-list" class="alerts-list">
-                    <div class="skeleton-loading"></div>
-                </div>
+                <div id="alerts-list" class="alerts-list"></div>
                 <div id="empty-alerts" class="empty-state" style="display: none;">
                     <div class="empty-icon">🔕</div>
                     <p>هشداری تنظیم نشده</p>
@@ -833,33 +698,9 @@
                         <p id="profile-username">بدون نام کاربری</p>
                     </div>
                 </div>
-
                 <div class="section">
                     <h3>اطلاعات شخصی</h3>
-                    <div id="profile-details" class="profile-details">
-                        <div class="skeleton-loading"></div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h3>⚙️ تنظیمات</h3>
-                    <div class="settings-list">
-                        <div class="setting-item">
-                            <span>📬 نوتیفیکیشن</span>
-                            <label class="toggle-switch">
-                                <input id="notification-toggle" type="checkbox">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <span>🕐 زمان نوتیفیکیشن</span>
-                            <input id="notification-time" type="time">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <button id="logout-btn" class="btn btn-danger btn-block">🚪 خروج</button>
+                    <div id="profile-details" class="profile-details"></div>
                 </div>
             </div>
         </section>
@@ -939,81 +780,20 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // ═══════════════════════════════════════════════════════════════
-        // 🔒 Security & Protection
-        // ═══════════════════════════════════════════════════════════════
-
         document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('copy', e => e.preventDefault());
-        document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-        document.addEventListener('keydown', e => {
-            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) e.preventDefault();
-        });
 
         // ═══════════════════════════════════════════════════════════════
-        // 🔧 Configuration
+        // 🔧 Configuration & State
         // ═══════════════════════════════════════════════════════════════
 
         const CONFIG = {
             API_BASE: 'https://page-teleg.goldyarprice.workers.dev',
-            POLLING_INTERVAL: 60000, // 60 ثانیه
+            POLLING_INTERVAL: 60000,
         };
 
         const tg = window.Telegram?.WebApp;
         let TELEGRAM_INIT_DATA = null;
         let USER_ID = null;
-
-        function extractUserIdFromInitData(initData) {
-            try {
-                if (!initData) return null;
-                const params = new URLSearchParams(initData);
-                const userStr = params.get('user');
-                if (userStr) {
-                    const user = JSON.parse(userStr);
-                    return user.id;
-                }
-            } catch (e) {
-                console.error('Error parsing user from initData:', e);
-            }
-            return null;
-        }
-
-        if (tg) {
-            tg.ready();
-            tg.expand();
-            tg.setBackgroundColor('#ffffff');
-            tg.setHeaderColor('#FFD700');
-
-            TELEGRAM_INIT_DATA = tg.initData || '';
-
-            // محاولة استخراج USER_ID از مصادر متعددة
-            USER_ID = tg.initDataUnsafe?.user?.id;
-
-            // اگر نمی‌رسید، سعی کن از initData مستقیم استخراج کن
-            if (!USER_ID && TELEGRAM_INIT_DATA) {
-                USER_ID = extractUserIdFromInitData(TELEGRAM_INIT_DATA);
-            }
-
-            // اگر هنوز نمی‌رسید، سعی کن از محیط کاربر بگیر
-            if (!USER_ID && tg.initDataUnsafe) {
-                console.warn('⚠️ Trying alternative user extraction methods...');
-                const initDataUnsafe = tg.initDataUnsafe;
-                if (initDataUnsafe.user && initDataUnsafe.user.id) {
-                    USER_ID = initDataUnsafe.user.id;
-                }
-            }
-
-            console.log('✅ Telegram Web App Ready');
-            console.log('📱 User ID:', USER_ID);
-            console.log('🔑 Init Data Length:', TELEGRAM_INIT_DATA ? TELEGRAM_INIT_DATA.length : 0);
-            console.log('📊 Init Data Unsafe:', tg.initDataUnsafe);
-        } else {
-            console.warn('⚠️ Telegram WebApp Not Available');
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 📱 App State
-        // ═══════════════════════════════════════════════════════════════
 
         let appState = {
             user: null,
@@ -1024,332 +804,135 @@
         };
 
         // ═══════════════════════════════════════════════════════════════
-        // 🎯 Initialize
+        // 📱 Telegram Init
         // ═══════════════════════════════════════════════════════════════
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 DOMContentLoaded Event Fired');
-            console.log('⏰ Timestamp:', new Date().toISOString());
-
-            if (appState.isDarkMode) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                updateThemeButton();
-            }
-
-            const userData = tg?.initDataUnsafe?.user;
-            if (userData) {
-                appState.user = userData;
-                console.log('👤 User Data:', userData);
-
-                // تأكد من أن USER_ID موجود
-                if (!USER_ID && userData.id) {
-                    USER_ID = userData.id;
-                    console.log('✅ USER_ID extracted from appState:', USER_ID);
-                }
-            } else {
-                console.warn('⚠️ No user data from Telegram');
-                console.warn('⏰ Trying again in 500ms...');
-
-                // محاولة أخرى بعد تأخير
-                setTimeout(() => {
-                    const userDataRetry = tg?.initDataUnsafe?.user;
-                    if (userDataRetry && !USER_ID) {
-                        USER_ID = userDataRetry.id;
-                        console.log('✅ USER_ID extracted on retry:', USER_ID);
-                    }
-                }, 500);
-            }
-
-            initializeEventListeners();
-
-            // تأخیر برای اطمینان از بارگذاری DOM و داده‌های Telegram
-            setTimeout(() => {
-                console.log('📊 Final USER_ID before loadInitialData:', USER_ID);
-                loadInitialData();
-            }, 800);
-
-            startPolling();
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🎛️ Event Listeners
-        // ═══════════════════════════════════════════════════════════════
-
-        function initializeEventListeners() {
-            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-            });
-
-            document.getElementById('add-portfolio-btn').addEventListener('click', openPortfolioModal);
-            document.getElementById('add-portfolio-btn-2').addEventListener('click', openPortfolioModal);
-            document.getElementById('add-alert-btn').addEventListener('click', openAlertModal);
-            document.getElementById('add-alert-btn-2').addEventListener('click', openAlertModal);
-
-            document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', closeModals);
-            });
-
-            document.getElementById('portfolio-form').addEventListener('submit', handlePortfolioSubmit);
-            document.getElementById('alert-form').addEventListener('submit', handleAlertSubmit);
-
-            document.getElementById('notification-toggle').addEventListener('change', handleNotificationToggle);
-            document.getElementById('notification-time').addEventListener('change', handleNotificationTimeChange);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
-
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', e => { if (e.target === modal) closeModals(); });
-            });
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            TELEGRAM_INIT_DATA = tg.initData || '';
+            USER_ID = tg.initDataUnsafe?.user?.id;
+            console.log('✅ Telegram Ready - User ID:', USER_ID);
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // 🏠 Navigation
+        // 🎯 Global Functions
         // ═══════════════════════════════════════════════════════════════
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.tab === tabName);
-            });
-
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.toggle('active', content.id === `${tabName}-tab`);
-            });
-
-            if (tabName === 'portfolio') loadPortfolio();
-            else if (tabName === 'prices') loadPrices();
-            else if (tabName === 'alerts') loadAlerts();
-            else if (tabName === 'profile') loadProfile();
+        function formatNumber(num) {
+            if (!num) return '۰';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
         }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🌙 Theme
-        // ═══════════════════════════════════════════════════════════════
-
-        function toggleTheme() {
-            appState.isDarkMode = !appState.isDarkMode;
-            document.documentElement.setAttribute('data-theme', appState.isDarkMode ? 'dark' : 'light');
-            localStorage.setItem('theme', appState.isDarkMode ? 'dark' : 'light');
-            updateThemeButton();
-        }
-
-        function updateThemeButton() {
-            const btn = document.getElementById('theme-toggle');
-            btn.querySelector('.theme-icon').textContent = appState.isDarkMode ? '☀️' : '🌙';
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // � تاریخ شمسی (Jalali Date Converter)
-        // ═══════════════════════════════════════════════════════════════
-
-        function gregorianToJalali(date) {
-            if (typeof date === 'string') {
-                date = new Date(date + 'T00:00:00');
-            }
-            const gy = date.getFullYear();
-            const gm = date.getMonth() + 1;
-            const gd = date.getDate();
-
-            let jy, jm, jd;
-            const g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
-            for (let i = 0; i < gm; ++i) g_d_n += (new Date(gy, i + 1, 0)).getDate();
-
-            const j_d_n = g_d_n - 79;
-            jy = -1600 + 400 * Math.floor(j_d_n / 146097);
-            j_d_n %= 146097;
-
-            let flag = true;
-            if (j_d_n >= 36525) {
-                j_d_n--;
-                jy += 100 * Math.floor(j_d_n / 36524);
-                j_d_n %= 36524;
-                if (j_d_n >= 365) j_d_n++;
-                flag = false;
-            }
-            jy += 4 * Math.floor(j_d_n / 1461);
-            j_d_n %= 1461;
-            if (flag) {
-                if (j_d_n >= 366) {
-                    j_d_n--;
-                    jy += Math.floor(j_d_n / 365);
-                    j_d_n = j_d_n % 365;
-                }
-            }
-
-            const sal_a = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-            if (jy > 979) {
-                jm = 0;
-                while (jm < 12 && j_d_n >= sal_a[jm]) jm++;
-            } else {
-                jm = 0;
-                while (jm < 12 && j_d_n >= sal_a[jm]) jm++;
-            }
-            if (jm > 1) j_d_n -= sal_a[jm - 1];
-            jd = j_d_n + 1;
-
-            return { year: jy, month: jm, day: jd };
-        }
-
-        function formatJalaliDate(date) {
-            if (typeof date === 'string') {
-                const parts = date.split('-');
-                if (parts.length === 3) {
-                    date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                }
-            }
-            const jalali = gregorianToJalali(date);
-            const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-                'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
-            return `${jalali.day} ${months[jalali.month - 1]} ${jalali.year}`;
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 💰 فرمت قیمت (Price Formatting)
-        // ═══════════════════════════════════════════════════════════════
 
         function formatNumberWithComma(num) {
             if (!num) return '';
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
+        function gregorianToJalali(date) {
+            if (typeof date === 'string') date = new Date(date + 'T00:00:00');
+            const gy = date.getFullYear(), gm = date.getMonth() + 1, gd = date.getDate();
+            let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
+            for (let i = 0; i < gm; i++) g_d_n += new Date(gy, i + 1, 0).getDate();
+            let j_d_n = g_d_n - 79, jy = -1600 + 400 * Math.floor(j_d_n / 146097);
+            j_d_n %= 146097;
+            let flag = true;
+            if (j_d_n >= 36525) { j_d_n--; jy += 100 * Math.floor(j_d_n / 36524); j_d_n %= 36524; if (j_d_n >= 365) j_d_n++; flag = false; }
+            jy += 4 * Math.floor(j_d_n / 1461); j_d_n %= 1461;
+            if (flag) { if (j_d_n >= 366) { j_d_n--; jy += Math.floor(j_d_n / 365); j_d_n = j_d_n % 365; } }
+            const sal_a = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            let jm = 0;
+            while (jm < 12 && j_d_n >= sal_a[jm]) jm++;
+            if (jm > 1) j_d_n -= sal_a[jm - 1];
+            return { year: jy, month: jm, day: j_d_n + 1 };
+        }
+
+        function formatJalaliDate(date) {
+            if (typeof date === 'string') { const parts = date.split('-'); date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])); }
+            const jalali = gregorianToJalali(date);
+            const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+            return `${jalali.day} ${months[jalali.month - 1]} ${jalali.year}`;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
         // ═══════════════════════════════════════════════════════════════
-        // �📊 Load Data
+        // 📊 Load Data Functions (GLOBAL SCOPE)
         // ═══════════════════════════════════════════════════════════════
 
-        async function loadInitialData() {
-            console.log('🔄 ===== LOADING INITIAL DATA =====');
-            console.log('👤 User ID:', USER_ID);
-            console.log('🔑 Init Data Length:', TELEGRAM_INIT_DATA ? TELEGRAM_INIT_DATA.length : 0);
-
-            if (!USER_ID) {
-                console.error('❌ CRITICAL: NO USER ID FOUND');
-                console.error('تلگرام کے ڈیٹا:', tg.initDataUnsafe);
-                console.error('اقدام ضروری: Mini App کو Telegram سے دوبارہ کھولیں');
-                showToast('❌ خطا: شناسه کاربر یافت نشد\nلطفا مینی اپ را دوباره باز کنید', 'error');
-
-                // آخری تلاش: تاخیر اور دوبارہ کوشش
-                setTimeout(() => {
-                    if (!USER_ID && tg?.initDataUnsafe?.user?.id) {
-                        USER_ID = tg.initDataUnsafe.user.id;
-                        console.log('✅ USER_ID پایا شد بعد تاخیر:', USER_ID);
-                        loadInitialData();
-                        return;
+        async function loadPrices() {
+            try {
+                console.log('📡 Fetching prices...');
+                const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
+                    headers: {
+                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                        'User-ID': USER_ID || 'unknown'
                     }
-                }, 1000);
-                try {
-                    const results = await Promise.allSettled([
-                        loadPrices(),
-                        loadPortfolio(),
-                        loadAlerts(),
-                        loadProfile(),
-                    ]);
-
-                    results.forEach((result, index) => {
-                        if (result.status === 'rejected') {
-                            console.error(`❌ Function ${index} failed:`, result.reason);
-                        }
-                    });
-
-                    console.log('✅ ===== DATA LOADING COMPLETE =====');
-                } catch (error) {
-                    console.error('❌ Critical Error:', error);
-                }
+                });
+                if (!response.ok) throw new Error('API Error');
+                const data = await response.json();
+                appState.prices = data;
+                renderPrices();
+                console.log('✅ Prices loaded');
+            } catch (error) {
+                console.error('❌ Price error:', error);
+                showToast('خطا در دریافت قیمت‌ها');
             }
+        }
 
-            async function loadPrices() {
-                try {
-                    console.log('📡 Fetching prices...');
-
-                    const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'Content-Type': 'application/json',
-                            'User-ID': USER_ID || 'unknown'
-                        }
-                    });
-
-                    console.log('📊 Response Status:', response.status);
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ API Error:', response.status, errorText);
-                        throw new Error(`Status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    console.log('✅ Prices Loaded:', data);
-                    appState.prices = data;
-                    renderPrices();
-                } catch (error) {
-                    console.error('❌ Error loading prices:', error);
-                    showToast('خطا در دریافت قیمت‌ها', 'error');
-                }
-            }
-
-            function renderPrices() {
-                const container = document.getElementById('prices-container');
-                const html = `
+        function renderPrices() {
+            const container = document.getElementById('prices-container');
+            if (!container) return;
+            const html = `
                 <div class="price-card">
                     <div class="price-card-title">طلای 18 عیار</div>
-                    <div class="price-card-value">${formatNumber(appState.prices.gold18)}</div>
-                    <div class="price-card-change ${appState.prices.change18Percent >= 0 ? 'positive' : 'negative'}">
-                        ${appState.prices.change18Percent >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change18Percent)}%
+                    <div class="price-card-value">${formatNumber(appState.prices.gold18 || 0)}</div>
+                    <div class="price-card-change ${(appState.prices.change18Percent || 0) >= 0 ? 'positive' : 'negative'}">
+                        ${(appState.prices.change18Percent || 0) >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change18Percent || 0).toFixed(2)}%
                     </div>
                 </div>
                 <div class="price-card">
                     <div class="price-card-title">طلای 24 عیار</div>
-                    <div class="price-card-value">${formatNumber(appState.prices.gold24)}</div>
-                    <div class="price-card-change ${appState.prices.change24Percent >= 0 ? 'positive' : 'negative'}">
-                        ${appState.prices.change24Percent >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change24Percent)}%
+                    <div class="price-card-value">${formatNumber(appState.prices.gold24 || 0)}</div>
+                    <div class="price-card-change ${(appState.prices.change24Percent || 0) >= 0 ? 'positive' : 'negative'}">
+                        ${(appState.prices.change24Percent || 0) >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change24Percent || 0).toFixed(2)}%
                     </div>
                 </div>
             `;
-                container.innerHTML = html;
+            container.innerHTML = html;
+        }
+
+        async function loadPortfolio() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
+                });
+                if (!response.ok) throw new Error('Failed');
+                const data = await response.json();
+                appState.portfolio = data.items || [];
+                renderPortfolio();
+            } catch (error) {
+                console.error('❌ Portfolio error:', error);
             }
+        }
 
-            async function loadPortfolio() {
-                try {
-                    console.log('📡 Fetching portfolio...');
-
-                    const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'User-ID': USER_ID || 'unknown'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ Portfolio Error:', response.status, errorText);
-                        throw new Error('Failed');
-                    }
-
-                    const data = await response.json();
-                    console.log('✅ Portfolio Loaded:', data);
-                    appState.portfolio = data.items || [];
-                    renderPortfolio();
-                } catch (error) {
-                    console.error('❌ Portfolio error:', error);
-                    showToast('خطا در دریافت دارایی‌ها', 'error');
-                }
+        function renderPortfolio() {
+            const container = document.getElementById('portfolio-list');
+            const emptyState = document.getElementById('empty-portfolio');
+            if (!container || !emptyState) return;
+            if (!appState.portfolio || appState.portfolio.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
             }
-
-            function renderPortfolio() {
-                const container = document.getElementById('portfolio-list');
-                const emptyState = document.getElementById('empty-portfolio');
-
-                if (appState.portfolio.length === 0) {
-                    container.style.display = 'none';
-                    emptyState.style.display = 'block';
-                    return;
-                }
-
-                container.style.display = 'flex';
-                emptyState.style.display = 'none';
-
-                const html = appState.portfolio.map(item => `
+            container.style.display = 'flex';
+            emptyState.style.display = 'none';
+            container.innerHTML = appState.portfolio.map(item => `
                 <div class="portfolio-item">
                     <div class="portfolio-item-info">
                         <div class="portfolio-item-title">${item.goldType} عیار</div>
@@ -1360,52 +943,34 @@
                     </div>
                 </div>
             `).join('');
+        }
 
-                container.innerHTML = html;
+        async function loadAlerts() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
+                });
+                if (!response.ok) throw new Error('Failed');
+                const data = await response.json();
+                appState.alerts = data.alerts || [];
+                renderAlerts();
+            } catch (error) {
+                console.error('❌ Alerts error:', error);
             }
+        }
 
-            async function loadAlerts() {
-                try {
-                    console.log('📡 Fetching alerts...');
-
-                    const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'User-ID': USER_ID || 'unknown'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ Alerts Error:', response.status, errorText);
-                        throw new Error('Failed');
-                    }
-
-                    const data = await response.json();
-                    console.log('✅ Alerts Loaded:', data);
-                    appState.alerts = data.alerts || [];
-                    renderAlerts();
-                } catch (error) {
-                    console.error('❌ Alerts error:', error);
-                    showToast('خطا در دریافت هشدارها', 'error');
-                }
+        function renderAlerts() {
+            const container = document.getElementById('alerts-list');
+            const emptyState = document.getElementById('empty-alerts');
+            if (!container || !emptyState) return;
+            if (!appState.alerts || appState.alerts.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
             }
-
-            function renderAlerts() {
-                const container = document.getElementById('alerts-list');
-                const emptyState = document.getElementById('empty-alerts');
-
-                if (appState.alerts.length === 0) {
-                    container.style.display = 'none';
-                    emptyState.style.display = 'block';
-                    return;
-                }
-
-                container.style.display = 'flex';
-                emptyState.style.display = 'none';
-
-                const html = appState.alerts.map(alert => `
+            container.style.display = 'flex';
+            emptyState.style.display = 'none';
+            container.innerHTML = appState.alerts.map(alert => `
                 <div class="alert-item">
                     <div class="alert-item-info">
                         <div class="alert-item-title">${alert.goldType} عیار</div>
@@ -1416,80 +981,154 @@
                     </div>
                 </div>
             `).join('');
+        }
 
-                container.innerHTML = html;
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
+                });
+                if (!response.ok) throw new Error('Failed');
+                const data = await response.json();
+                appState.user = { ...appState.user, ...data };
+                renderProfile();
+            } catch (error) {
+                console.error('❌ Profile error:', error);
             }
+        }
 
-            async function loadProfile() {
-                try {
-                    console.log('📡 Fetching profile...');
-
-                    const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'User-ID': USER_ID || 'unknown'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ Profile Error:', response.status, errorText);
-                        throw new Error('Failed');
-                    }
-
-                    const data = await response.json();
-                    console.log('✅ Profile Loaded:', data);
-                    appState.user = { ...appState.user, ...data };
-                    renderProfile();
-                } catch (error) {
-                    console.error('❌ Profile error:', error);
-                    showToast('خطا در دریافت پروفایل', 'error');
-                }
-            }
-
-            function renderProfile() {
-                const nameEl = document.getElementById('profile-name');
-                const usernameEl = document.getElementById('profile-username');
-                const notificationToggle = document.getElementById('notification-toggle');
-                const notificationTime = document.getElementById('notification-time');
-
-                const firstName = appState.user?.first_name || 'کاربر';
-                const username = appState.user?.username ? `@${appState.user.username}` : 'بدون نام کاربری';
-
-                nameEl.textContent = firstName;
-                usernameEl.textContent = username;
-
-                if (appState.user?.notification_enabled !== undefined) {
-                    notificationToggle.checked = appState.user.notification_enabled;
-                }
-                if (appState.user?.notification_time) {
-                    notificationTime.value = appState.user.notification_time;
-                }
-
-                const userId = appState.user?.user_id || appState.user?.id || USER_ID || 'نامشخص';
-                const profileDetails = document.getElementById('profile-details');
+        function renderProfile() {
+            const nameEl = document.getElementById('profile-name');
+            const usernameEl = document.getElementById('profile-username');
+            if (!nameEl || !usernameEl) return;
+            const firstName = appState.user?.first_name || 'کاربر';
+            const username = appState.user?.username ? `@${appState.user.username}` : 'بدون نام کاربری';
+            nameEl.textContent = firstName;
+            usernameEl.textContent = username;
+            const userId = appState.user?.user_id || appState.user?.id || USER_ID || 'نامشخص';
+            const profileDetails = document.getElementById('profile-details');
+            if (profileDetails) {
                 profileDetails.innerHTML = `
-                <div class="profile-detail-item">
-                    <span>🆔 شناسه کاربر</span>
-                    <strong>${userId}</strong>
-                </div>
-                <div class="profile-detail-item">
-                    <span>📱 نام اول</span>
-                    <strong>${firstName}</strong>
-                </div>
-                <div class="profile-detail-item">
-                    <span>👤 نام کاربری</span>
-                    <strong>${username}</strong>
-                </div>
-            `;
+                    <div class="profile-detail-item"><span>🆔 شناسه</span><strong>${userId}</strong></div>
+                    <div class="profile-detail-item"><span>📱 نام</span><strong>${firstName}</strong></div>
+                    <div class="profile-detail-item"><span>👤 نام کاربری</span><strong>${username}</strong></div>
+                `;
+            }
+        }
+
+        async function loadInitialData() {
+            console.log('🔄 Loading all data...');
+            if (!USER_ID) { console.error('❌ NO USER ID'); return; }
+            try {
+                await Promise.all([loadPrices(), loadPortfolio(), loadAlerts(), loadProfile()]);
+                console.log('✅ Data loaded');
+            } catch (error) {
+                console.error('❌ Error:', error);
+            }
+        }
+
+        async function deletePortfolio(id) {
+            if (!confirm('حذف شود؟')) return;
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
+                });
+                if (response.ok) { showToast('✅ حذف شد'); await loadPortfolio(); }
+            } catch (error) { showToast('❌ خطا'); }
+        }
+
+        async function deleteAlert(id) {
+            if (!confirm('حذف شود؟')) return;
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
+                });
+                if (response.ok) { showToast('✅ حذف شد'); await loadAlerts(); }
+            } catch (error) { showToast('❌ خطا'); }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🎛️ Event Listeners & UI
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ DOM Ready');
+
+            if (appState.isDarkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-toggle').querySelector('.theme-icon').textContent = '☀️';
             }
 
-            // ═══════════════════════════════════════════════════════════════
-            // 📝 Forms
-            // ═══════════════════════════════════════════════════════════════
+            // Tab switching
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.dataset.tab;
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                    if (tabName === 'portfolio') loadPortfolio();
+                    else if (tabName === 'prices') loadPrices();
+                    else if (tabName === 'alerts') loadAlerts();
+                    else if (tabName === 'profile') loadProfile();
+                });
+            });
 
-            async function handlePortfolioSubmit(e) {
+            // Theme toggle
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                appState.isDarkMode = !appState.isDarkMode;
+                document.documentElement.setAttribute('data-theme', appState.isDarkMode ? 'dark' : 'light');
+                document.getElementById('theme-toggle').querySelector('.theme-icon').textContent = appState.isDarkMode ? '☀️' : '🌙';
+                localStorage.setItem('theme', appState.isDarkMode ? 'dark' : 'light');
+            });
+
+            // Modal buttons
+            document.getElementById('add-portfolio-btn').addEventListener('click', () => {
+                document.getElementById('portfolio-modal').classList.add('active');
+                document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
+            });
+
+            document.getElementById('add-portfolio-btn-2').addEventListener('click', () => {
+                document.getElementById('portfolio-modal').classList.add('active');
+                document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
+            });
+
+            document.getElementById('add-alert-btn').addEventListener('click', () => {
+                document.getElementById('alert-modal').classList.add('active');
+            });
+
+            document.getElementById('add-alert-btn-2').addEventListener('click', () => {
+                document.getElementById('alert-modal').classList.add('active');
+            });
+
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+                });
+            });
+
+            // Price input formatting
+            const setupPriceInput = (inputName) => {
+                const input = document.querySelector(`input[name="${inputName}"]`);
+                if (input) {
+                    input.addEventListener('input', function () {
+                        let value = this.value.replace(/,/g, '');
+                        this.value = formatNumberWithComma(value);
+                    });
+                }
+            };
+
+            // Re-setup when modals open
+            const observer = new MutationObserver(() => {
+                setupPriceInput('purchasePrice');
+                setupPriceInput('targetPrice');
+            });
+            observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+
+            // Form submissions
+            document.getElementById('portfolio-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const payload = {
@@ -1498,9 +1137,7 @@
                     purchasePrice: parseInt(formData.get('purchasePrice').replace(/,/g, '')),
                     purchaseDate: formData.get('purchaseDate'),
                 };
-
                 try {
-                    console.log('📤 Submitting portfolio:', payload);
                     const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/add`, {
                         method: 'POST',
                         headers: {
@@ -1510,25 +1147,16 @@
                         },
                         body: JSON.stringify(payload)
                     });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ Submit Error:', response.status, errorText);
-                        throw new Error('Failed');
+                    if (response.ok) {
+                        showToast('✅ دارایی اضافه شد');
+                        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+                        e.target.reset();
+                        await loadPortfolio();
                     }
+                } catch (error) { showToast('❌ خطا'); }
+            });
 
-                    console.log('✅ Portfolio added successfully');
-                    showToast('✅ دارایی اضافه شد', 'success');
-                    closeModals();
-                    e.target.reset();
-                    await loadPortfolio();
-                } catch (error) {
-                    console.error('❌ Error:', error);
-                    showToast('❌ خطا در اضافه کردن دارایی', 'error');
-                }
-            }
-
-            async function handleAlertSubmit(e) {
+            document.getElementById('alert-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const payload = {
@@ -1536,9 +1164,7 @@
                     alertType: formData.get('alertType'),
                     targetPrice: parseInt(formData.get('targetPrice').replace(/,/g, ''))
                 };
-
                 try {
-                    console.log('📤 Submitting alert:', payload);
                     const response = await fetch(`${CONFIG.API_BASE}/api/alerts/add`, {
                         method: 'POST',
                         headers: {
@@ -1548,186 +1174,21 @@
                         },
                         body: JSON.stringify(payload)
                     });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ Submit Error:', response.status, errorText);
-                        throw new Error('Failed');
-                    }
-
-                    console.log('✅ Alert added successfully');
-                    showToast('✅ هشدار تنظیم شد', 'success');
-                    closeModals();
-                    e.target.reset();
-                    await loadAlerts();
-                } catch (error) {
-                    console.error('❌ Error:', error);
-                    showToast('❌ خطا در تنظیم هشدار', 'error');
-                }
-            }
-
-            // ═══════════════════════════════════════════════════════════════
-            // 🔧 Actions
-            // ═══════════════════════════════════════════════════════════════
-
-            async function deletePortfolio(id) {
-                if (!confirm('آیا مطمئن هستید؟')) return;
-                try {
-                    console.log('🗑️ Deleting portfolio:', id);
-                    const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'User-ID': USER_ID || 'unknown'
-                        }
-                    });
                     if (response.ok) {
-                        console.log('✅ Portfolio deleted');
-                        showToast('✅ حذف شد', 'success');
-                        await loadPortfolio();
-                    } else {
-                        throw new Error('Failed');
-                    }
-                } catch (error) {
-                    console.error('❌ Delete Error:', error);
-                    showToast('❌ خطا', 'error');
-                }
-            }
-
-            async function deleteAlert(id) {
-                if (!confirm('آیا مطمئن هستید؟')) return;
-                try {
-                    console.log('🗑️ Deleting alert:', id);
-                    const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'User-ID': USER_ID || 'unknown'
-                        }
-                    });
-                    if (response.ok) {
-                        console.log('✅ Alert deleted');
-                        showToast('✅ حذف شد', 'success');
+                        showToast('✅ هشدار تنظیم شد');
+                        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+                        e.target.reset();
                         await loadAlerts();
-                    } else {
-                        throw new Error('Failed');
                     }
-                } catch (error) {
-                    console.error('❌ Delete Error:', error);
-                    showToast('❌ خطا', 'error');
-                }
-            }
+                } catch (error) { showToast('❌ خطا'); }
+            });
 
-            async function handleNotificationToggle(e) {
-                try {
-                    console.log('🔔 Toggling notifications:', e.target.checked);
-                    const response = await fetch(`${CONFIG.API_BASE}/api/profile/notification`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'Content-Type': 'application/json',
-                            'User-ID': USER_ID || 'unknown'
-                        },
-                        body: JSON.stringify({ enabled: e.target.checked })
-                    });
-                    if (response.ok) {
-                        console.log('✅ Notification setting updated');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }
-
-            async function handleNotificationTimeChange(e) {
-                try {
-                    console.log('🕐 Changing notification time:', e.target.value);
-                    const response = await fetch(`${CONFIG.API_BASE}/api/profile/notification-time`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'Content-Type': 'application/json',
-                            'User-ID': USER_ID || 'unknown'
-                        },
-                        body: JSON.stringify({ time: e.target.value })
-                    });
-                    if (response.ok) {
-                        console.log('✅ Notification time updated');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }
-
-            async function handleLogout() {
-                if (!confirm('آیا می‌خواهید خروج کنید؟')) return;
-                localStorage.clear();
-                sessionStorage.clear();
-                if (tg?.close) tg.close();
-            }
-
-            // ═══════════════════════════════════════════════════════════════
-            // 🎨 Utilities
-            // ═══════════════════════════════════════════════════════════════
-
-            function formatNumber(num) {
-                if (!num) return '۰';
-                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    .replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
-            }
-
-            function showToast(message) {
-                const toast = document.getElementById('toast');
-                toast.textContent = message;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            }
-
-            function openPortfolioModal() {
-                document.getElementById('portfolio-modal').classList.add('active');
-                document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
-
-                // اضافه کردن event listeners برای فرمت‌بندی قیمت
-                const priceInput = document.querySelector('input[name="purchasePrice"]');
-                if (priceInput) {
-                    priceInput.addEventListener('input', function () {
-                        let value = this.value.replace(/,/g, '');
-                        this.value = formatNumberWithComma(value);
-                    });
-                }
-            }
-
-            function openAlertModal() {
-                document.getElementById('alert-modal').classList.add('active');
-
-                // اضافه کردن event listeners برای فرمت‌بندی قیمت
-                const targetPriceInput = document.querySelector('input[name="targetPrice"]');
-                if (targetPriceInput) {
-                    targetPriceInput.addEventListener('input', function () {
-                        let value = this.value.replace(/,/g, '');
-                        this.value = formatNumberWithComma(value);
-                    });
-                }
-            }
-
-            function closeModals() {
-                document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-            }
-
-            function startPolling() {
-                console.log('⏰ Starting polling every', CONFIG.POLLING_INTERVAL / 1000, 'seconds');
-                setInterval(() => {
-                    console.log('📡 Auto-refreshing prices...');
-                    loadPrices();
-                }, CONFIG.POLLING_INTERVAL);
-            }
-
-            console.log('✅ =====================================================');
-            console.log('✅ Mini App Fully Initialized');
-            console.log('✅ API Base:', CONFIG.API_BASE);
-            console.log('✅ Polling Interval:', CONFIG.POLLING_INTERVAL / 1000, 'seconds');
-            console.log('✅ User ID:', USER_ID);
-            console.log('✅ Init Data Present:', !!TELEGRAM_INIT_DATA);
-            console.log('✅ =====================================================');
+            // Load initial data
+            setTimeout(() => {
+                loadInitialData();
+                setInterval(() => loadPrices(), CONFIG.POLLING_INTERVAL);
+            }, 500);
+        });
     </script>
 </body>
 

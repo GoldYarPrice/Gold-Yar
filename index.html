@@ -963,6 +963,21 @@
         let TELEGRAM_INIT_DATA = null;
         let USER_ID = null;
 
+        function extractUserIdFromInitData(initData) {
+            try {
+                if (!initData) return null;
+                const params = new URLSearchParams(initData);
+                const userStr = params.get('user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    return user.id;
+                }
+            } catch (e) {
+                console.error('Error parsing user from initData:', e);
+            }
+            return null;
+        }
+
         if (tg) {
             tg.ready();
             tg.expand();
@@ -970,11 +985,28 @@
             tg.setHeaderColor('#FFD700');
 
             TELEGRAM_INIT_DATA = tg.initData || '';
+
+            // محاولة استخراج USER_ID از مصادر متعددة
             USER_ID = tg.initDataUnsafe?.user?.id;
+
+            // اگر نمی‌رسید، سعی کن از initData مستقیم استخراج کن
+            if (!USER_ID && TELEGRAM_INIT_DATA) {
+                USER_ID = extractUserIdFromInitData(TELEGRAM_INIT_DATA);
+            }
+
+            // اگر هنوز نمی‌رسید، سعی کن از محیط کاربر بگیر
+            if (!USER_ID && tg.initDataUnsafe) {
+                console.warn('⚠️ Trying alternative user extraction methods...');
+                const initDataUnsafe = tg.initDataUnsafe;
+                if (initDataUnsafe.user && initDataUnsafe.user.id) {
+                    USER_ID = initDataUnsafe.user.id;
+                }
+            }
 
             console.log('✅ Telegram Web App Ready');
             console.log('📱 User ID:', USER_ID);
-            console.log('🔑 Init Data:', TELEGRAM_INIT_DATA ? 'موجود' : 'نیست');
+            console.log('🔑 Init Data Length:', TELEGRAM_INIT_DATA ? TELEGRAM_INIT_DATA.length : 0);
+            console.log('📊 Init Data Unsafe:', tg.initDataUnsafe);
         } else {
             console.warn('⚠️ Telegram WebApp Not Available');
         }
@@ -997,6 +1029,7 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 DOMContentLoaded Event Fired');
+            console.log('⏰ Timestamp:', new Date().toISOString());
 
             if (appState.isDarkMode) {
                 document.documentElement.setAttribute('data-theme', 'dark');
@@ -1007,16 +1040,33 @@
             if (userData) {
                 appState.user = userData;
                 console.log('👤 User Data:', userData);
+
+                // تأكد من أن USER_ID موجود
+                if (!USER_ID && userData.id) {
+                    USER_ID = userData.id;
+                    console.log('✅ USER_ID extracted from appState:', USER_ID);
+                }
             } else {
                 console.warn('⚠️ No user data from Telegram');
+                console.warn('⏰ Trying again in 500ms...');
+
+                // محاولة أخرى بعد تأخير
+                setTimeout(() => {
+                    const userDataRetry = tg?.initDataUnsafe?.user;
+                    if (userDataRetry && !USER_ID) {
+                        USER_ID = userDataRetry.id;
+                        console.log('✅ USER_ID extracted on retry:', USER_ID);
+                    }
+                }, 500);
             }
 
             initializeEventListeners();
 
-            // تأخیر کوچک برای اطمینان از بارگذاری DOM
+            // تأخیر برای اطمینان از بارگذاری DOM و داده‌های Telegram
             setTimeout(() => {
+                console.log('📊 Final USER_ID before loadInitialData:', USER_ID);
                 loadInitialData();
-            }, 500);
+            }, 800);
 
             startPolling();
         });
@@ -1048,6 +1098,32 @@
             document.getElementById('notification-time').addEventListener('change', handleNotificationTimeChange);
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
 
+            // إضافة معالجات الأرقام مع الفواصل
+            document.querySelectorAll('input[type="number"][name*="price"]').forEach(input => {
+                input.addEventListener('input', function (e) {
+                    // إزالة الفواصل والعلامات
+                    const value = this.value.replace(/[^\d]/g, '');
+                    // إضافة الفواصل
+                    const formatted = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    this.value = formatted;
+                });
+            });
+
+            // معالج التاریخ - تحويل إلى شمسی
+            const dateInput = document.querySelector('input[name="purchaseDate"]');
+            if (dateInput) {
+                dateInput.addEventListener('change', function (e) {
+                    if (this.value) {
+                        const shamsiDate = gregorianToShamsi(this.value);
+                        console.log('تاریخ شمسی:', shamsiDate);
+                        // عرض التاریخ الشمسی
+                        const shamsiText = this.parentElement.querySelector('.shamsi-date');
+                        if (shamsiText) {
+                            shamsiText.textContent = 'تاریخ شمسی: ' + shamsiDate;
+                        }
+                    }
+                });
+            }
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', e => { if (e.target === modal) closeModals(); });
             });
@@ -1095,68 +1171,77 @@
         async function loadInitialData() {
             console.log('🔄 ===== LOADING INITIAL DATA =====');
             console.log('👤 User ID:', USER_ID);
-            console.log('🔑 Init Data:', TELEGRAM_INIT_DATA ? `${TELEGRAM_INIT_DATA.substring(0, 50)}...` : 'NOT FOUND');
+            console.log('🔑 Init Data Length:', TELEGRAM_INIT_DATA ? TELEGRAM_INIT_DATA.length : 0);
 
             if (!USER_ID) {
-                console.error('❌ NO USER ID - Mini App not properly initialized');
-                showToast('خطا: شناسه کاربر یافت نشد. مینی اپ را از طریق ربات باز کنید', 'error');
-                return;
-            }
+                console.error('❌ CRITICAL: NO USER ID FOUND');
+                console.error('تلگرام کے ڈیٹا:', tg.initDataUnsafe);
+                console.error('اقدام ضروری: Mini App کو Telegram سے دوبارہ کھولیں');
+                showToast('❌ خطا: شناسه کاربر یافت نشد\nلطفا مینی اپ را دوباره باز کنید', 'error');
 
-            try {
-                const results = await Promise.allSettled([
-                    loadPrices(),
-                    loadPortfolio(),
-                    loadAlerts(),
-                    loadProfile(),
-                ]);
-
-                results.forEach((result, index) => {
-                    if (result.status === 'rejected') {
-                        console.error(`❌ Function ${index} failed:`, result.reason);
+                // آخری تلاش: تاخیر اور دوبارہ کوشش
+                setTimeout(() => {
+                    if (!USER_ID && tg?.initDataUnsafe?.user?.id) {
+                        USER_ID = tg.initDataUnsafe.user.id;
+                        console.log('✅ USER_ID پایا شد بعد تاخیر:', USER_ID);
+                        loadInitialData();
+                        return;
                     }
-                });
+                }, 1000);
+                try {
+                    const results = await Promise.allSettled([
+                        loadPrices(),
+                        loadPortfolio(),
+                        loadAlerts(),
+                        loadProfile(),
+                    ]);
 
-                console.log('✅ ===== DATA LOADING COMPLETE =====');
-            } catch (error) {
-                console.error('❌ Critical Error:', error);
-            }
-        }
+                    results.forEach((result, index) => {
+                        if (result.status === 'rejected') {
+                            console.error(`❌ Function ${index} failed:`, result.reason);
+                        }
+                    });
 
-        async function loadPrices() {
-            try {
-                console.log('📡 Fetching prices...');
-
-                const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'Content-Type': 'application/json',
-                        'User-ID': USER_ID || 'unknown'
-                    }
-                });
-
-                console.log('📊 Response Status:', response.status);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ API Error:', response.status, errorText);
-                    throw new Error(`Status: ${response.status}`);
+                    console.log('✅ ===== DATA LOADING COMPLETE =====');
+                } catch (error) {
+                    console.error('❌ Critical Error:', error);
                 }
-
-                const data = await response.json();
-                console.log('✅ Prices Loaded:', data);
-                appState.prices = data;
-                renderPrices();
-            } catch (error) {
-                console.error('❌ Error loading prices:', error);
-                showToast('خطا در دریافت قیمت‌ها', 'error');
             }
-        }
 
-        function renderPrices() {
-            const container = document.getElementById('prices-container');
-            const html = `
+            async function loadPrices() {
+                try {
+                    console.log('📡 Fetching prices...');
+
+                    const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'Content-Type': 'application/json',
+                            'User-ID': USER_ID || 'unknown'
+                        }
+                    });
+
+                    console.log('📊 Response Status:', response.status);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ API Error:', response.status, errorText);
+                        throw new Error(`Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('✅ Prices Loaded:', data);
+                    appState.prices = data;
+                    renderPrices();
+                } catch (error) {
+                    console.error('❌ Error loading prices:', error);
+                    showToast('خطا در دریافت قیمت‌ها', 'error');
+                }
+            }
+
+            function renderPrices() {
+                const container = document.getElementById('prices-container');
+                const html = `
                 <div class="price-card">
                     <div class="price-card-title">طلای 18 عیار</div>
                     <div class="price-card-value">${formatNumber(appState.prices.gold18)}</div>
@@ -1172,51 +1257,51 @@
                     </div>
                 </div>
             `;
-            container.innerHTML = html;
-        }
+                container.innerHTML = html;
+            }
 
-        async function loadPortfolio() {
-            try {
-                console.log('📡 Fetching portfolio...');
+            async function loadPortfolio() {
+                try {
+                    console.log('📡 Fetching portfolio...');
 
-                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'User-ID': USER_ID || 'unknown'
+                    const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'User-ID': USER_ID || 'unknown'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Portfolio Error:', response.status, errorText);
+                        throw new Error('Failed');
                     }
-                });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ Portfolio Error:', response.status, errorText);
-                    throw new Error('Failed');
+                    const data = await response.json();
+                    console.log('✅ Portfolio Loaded:', data);
+                    appState.portfolio = data.items || [];
+                    renderPortfolio();
+                } catch (error) {
+                    console.error('❌ Portfolio error:', error);
+                    showToast('خطا در دریافت دارایی‌ها', 'error');
+                }
+            }
+
+            function renderPortfolio() {
+                const container = document.getElementById('portfolio-list');
+                const emptyState = document.getElementById('empty-portfolio');
+
+                if (appState.portfolio.length === 0) {
+                    container.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    return;
                 }
 
-                const data = await response.json();
-                console.log('✅ Portfolio Loaded:', data);
-                appState.portfolio = data.items || [];
-                renderPortfolio();
-            } catch (error) {
-                console.error('❌ Portfolio error:', error);
-                showToast('خطا در دریافت دارایی‌ها', 'error');
-            }
-        }
+                container.style.display = 'flex';
+                emptyState.style.display = 'none';
 
-        function renderPortfolio() {
-            const container = document.getElementById('portfolio-list');
-            const emptyState = document.getElementById('empty-portfolio');
-
-            if (appState.portfolio.length === 0) {
-                container.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            container.style.display = 'flex';
-            emptyState.style.display = 'none';
-
-            const html = appState.portfolio.map(item => `
+                const html = appState.portfolio.map(item => `
                 <div class="portfolio-item">
                     <div class="portfolio-item-info">
                         <div class="portfolio-item-title">${item.goldType} عیار</div>
@@ -1228,51 +1313,51 @@
                 </div>
             `).join('');
 
-            container.innerHTML = html;
-        }
+                container.innerHTML = html;
+            }
 
-        async function loadAlerts() {
-            try {
-                console.log('📡 Fetching alerts...');
+            async function loadAlerts() {
+                try {
+                    console.log('📡 Fetching alerts...');
 
-                const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'User-ID': USER_ID || 'unknown'
+                    const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'User-ID': USER_ID || 'unknown'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Alerts Error:', response.status, errorText);
+                        throw new Error('Failed');
                     }
-                });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ Alerts Error:', response.status, errorText);
-                    throw new Error('Failed');
+                    const data = await response.json();
+                    console.log('✅ Alerts Loaded:', data);
+                    appState.alerts = data.alerts || [];
+                    renderAlerts();
+                } catch (error) {
+                    console.error('❌ Alerts error:', error);
+                    showToast('خطا در دریافت هشدارها', 'error');
+                }
+            }
+
+            function renderAlerts() {
+                const container = document.getElementById('alerts-list');
+                const emptyState = document.getElementById('empty-alerts');
+
+                if (appState.alerts.length === 0) {
+                    container.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    return;
                 }
 
-                const data = await response.json();
-                console.log('✅ Alerts Loaded:', data);
-                appState.alerts = data.alerts || [];
-                renderAlerts();
-            } catch (error) {
-                console.error('❌ Alerts error:', error);
-                showToast('خطا در دریافت هشدارها', 'error');
-            }
-        }
+                container.style.display = 'flex';
+                emptyState.style.display = 'none';
 
-        function renderAlerts() {
-            const container = document.getElementById('alerts-list');
-            const emptyState = document.getElementById('empty-alerts');
-
-            if (appState.alerts.length === 0) {
-                container.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            container.style.display = 'flex';
-            emptyState.style.display = 'none';
-
-            const html = appState.alerts.map(alert => `
+                const html = appState.alerts.map(alert => `
                 <div class="alert-item">
                     <div class="alert-item-info">
                         <div class="alert-item-title">${alert.goldType} عیار</div>
@@ -1284,59 +1369,59 @@
                 </div>
             `).join('');
 
-            container.innerHTML = html;
-        }
+                container.innerHTML = html;
+            }
 
-        async function loadProfile() {
-            try {
-                console.log('📡 Fetching profile...');
+            async function loadProfile() {
+                try {
+                    console.log('📡 Fetching profile...');
 
-                const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'User-ID': USER_ID || 'unknown'
+                    const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'User-ID': USER_ID || 'unknown'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Profile Error:', response.status, errorText);
+                        throw new Error('Failed');
                     }
-                });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ Profile Error:', response.status, errorText);
-                    throw new Error('Failed');
+                    const data = await response.json();
+                    console.log('✅ Profile Loaded:', data);
+                    appState.user = { ...appState.user, ...data };
+                    renderProfile();
+                } catch (error) {
+                    console.error('❌ Profile error:', error);
+                    showToast('خطا در دریافت پروفایل', 'error');
+                }
+            }
+
+            function renderProfile() {
+                const nameEl = document.getElementById('profile-name');
+                const usernameEl = document.getElementById('profile-username');
+                const notificationToggle = document.getElementById('notification-toggle');
+                const notificationTime = document.getElementById('notification-time');
+
+                const firstName = appState.user?.first_name || 'کاربر';
+                const username = appState.user?.username ? `@${appState.user.username}` : 'بدون نام کاربری';
+
+                nameEl.textContent = firstName;
+                usernameEl.textContent = username;
+
+                if (appState.user?.notification_enabled !== undefined) {
+                    notificationToggle.checked = appState.user.notification_enabled;
+                }
+                if (appState.user?.notification_time) {
+                    notificationTime.value = appState.user.notification_time;
                 }
 
-                const data = await response.json();
-                console.log('✅ Profile Loaded:', data);
-                appState.user = { ...appState.user, ...data };
-                renderProfile();
-            } catch (error) {
-                console.error('❌ Profile error:', error);
-                showToast('خطا در دریافت پروفایل', 'error');
-            }
-        }
-
-        function renderProfile() {
-            const nameEl = document.getElementById('profile-name');
-            const usernameEl = document.getElementById('profile-username');
-            const notificationToggle = document.getElementById('notification-toggle');
-            const notificationTime = document.getElementById('notification-time');
-
-            const firstName = appState.user?.first_name || 'کاربر';
-            const username = appState.user?.username ? `@${appState.user.username}` : 'بدون نام کاربری';
-
-            nameEl.textContent = firstName;
-            usernameEl.textContent = username;
-
-            if (appState.user?.notification_enabled !== undefined) {
-                notificationToggle.checked = appState.user.notification_enabled;
-            }
-            if (appState.user?.notification_time) {
-                notificationTime.value = appState.user.notification_time;
-            }
-
-            const userId = appState.user?.user_id || appState.user?.id || USER_ID || 'نامشخص';
-            const profileDetails = document.getElementById('profile-details');
-            profileDetails.innerHTML = `
+                const userId = appState.user?.user_id || appState.user?.id || USER_ID || 'نامشخص';
+                const profileDetails = document.getElementById('profile-details');
+                profileDetails.innerHTML = `
                 <div class="profile-detail-item">
                     <span>🆔 شناسه کاربر</span>
                     <strong>${userId}</strong>
@@ -1350,233 +1435,354 @@
                     <strong>${username}</strong>
                 </div>
             `;
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 📝 Forms
-        // ═══════════════════════════════════════════════════════════════
-
-        async function handlePortfolioSubmit(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const payload = {
-                goldType: formData.get('goldType'),
-                weight: parseFloat(formData.get('weight')),
-                purchasePrice: parseInt(formData.get('purchasePrice')),
-                purchaseDate: formData.get('purchaseDate'),
-            };
-
-            try {
-                console.log('📤 Submitting portfolio:', payload);
-                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/add`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'Content-Type': 'application/json',
-                        'User-ID': USER_ID || 'unknown'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ Submit Error:', response.status, errorText);
-                    throw new Error('Failed');
-                }
-
-                console.log('✅ Portfolio added successfully');
-                showToast('✅ دارایی اضافه شد', 'success');
-                closeModals();
-                e.target.reset();
-                await loadPortfolio();
-            } catch (error) {
-                console.error('❌ Error:', error);
-                showToast('❌ خطا در اضافه کردن دارایی', 'error');
             }
-        }
 
-        async function handleAlertSubmit(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const payload = {
-                goldType: formData.get('goldType'),
-                alertType: formData.get('alertType'),
-                targetPrice: parseInt(formData.get('targetPrice'))
-            };
+            // ═══════════════════════════════════════════════════════════════
+            // 📝 Forms
+            // ═══════════════════════════════════════════════════════════════
 
-            try {
-                console.log('📤 Submitting alert:', payload);
-                const response = await fetch(`${CONFIG.API_BASE}/api/alerts/add`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'Content-Type': 'application/json',
-                        'User-ID': USER_ID || 'unknown'
-                    },
-                    body: JSON.stringify(payload)
-                });
+            async function handlePortfolioSubmit(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const payload = {
+                    goldType: formData.get('goldType'),
+                    weight: parseFloat(formData.get('weight')),
+                    purchasePrice: parseInt(formData.get('purchasePrice')),
+                    purchaseDate: formData.get('purchaseDate'),
+                };
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ Submit Error:', response.status, errorText);
-                    throw new Error('Failed');
-                }
+                try {
+                    console.log('📤 Submitting portfolio:', payload);
+                    const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'Content-Type': 'application/json',
+                            'User-ID': USER_ID || 'unknown'
+                        },
+                        body: JSON.stringify(payload)
+                    });
 
-                console.log('✅ Alert added successfully');
-                showToast('✅ هشدار تنظیم شد', 'success');
-                closeModals();
-                e.target.reset();
-                await loadAlerts();
-            } catch (error) {
-                console.error('❌ Error:', error);
-                showToast('❌ خطا در تنظیم هشدار', 'error');
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🔧 Actions
-        // ═══════════════════════════════════════════════════════════════
-
-        async function deletePortfolio(id) {
-            if (!confirm('آیا مطمئن هستید؟')) return;
-            try {
-                console.log('🗑️ Deleting portfolio:', id);
-                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'User-ID': USER_ID || 'unknown'
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Submit Error:', response.status, errorText);
+                        throw new Error('Failed');
                     }
-                });
-                if (response.ok) {
-                    console.log('✅ Portfolio deleted');
-                    showToast('✅ حذف شد', 'success');
+
+                    console.log('✅ Portfolio added successfully');
+                    showToast('✅ دارایی اضافه شد', 'success');
+                    closeModals();
+                    e.target.reset();
                     await loadPortfolio();
-                } else {
-                    throw new Error('Failed');
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    showToast('❌ خطا در اضافه کردن دارایی', 'error');
                 }
-            } catch (error) {
-                console.error('❌ Delete Error:', error);
-                showToast('❌ خطا', 'error');
             }
-        }
 
-        async function deleteAlert(id) {
-            if (!confirm('آیا مطمئن هستید؟')) return;
-            try {
-                console.log('🗑️ Deleting alert:', id);
-                const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'User-ID': USER_ID || 'unknown'
+            async function handleAlertSubmit(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const payload = {
+                    goldType: formData.get('goldType'),
+                    alertType: formData.get('alertType'),
+                    targetPrice: parseInt(formData.get('targetPrice'))
+                };
+
+                try {
+                    console.log('📤 Submitting alert:', payload);
+                    const response = await fetch(`${CONFIG.API_BASE}/api/alerts/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'Content-Type': 'application/json',
+                            'User-ID': USER_ID || 'unknown'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Submit Error:', response.status, errorText);
+                        throw new Error('Failed');
                     }
-                });
-                if (response.ok) {
-                    console.log('✅ Alert deleted');
-                    showToast('✅ حذف شد', 'success');
+
+                    console.log('✅ Alert added successfully');
+                    showToast('✅ هشدار تنظیم شد', 'success');
+                    closeModals();
+                    e.target.reset();
                     await loadAlerts();
-                } else {
-                    throw new Error('Failed');
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    showToast('❌ خطا در تنظیم هشدار', 'error');
                 }
-            } catch (error) {
-                console.error('❌ Delete Error:', error);
-                showToast('❌ خطا', 'error');
             }
-        }
 
-        async function handleNotificationToggle(e) {
-            try {
-                console.log('🔔 Toggling notifications:', e.target.checked);
-                const response = await fetch(`${CONFIG.API_BASE}/api/profile/notification`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'Content-Type': 'application/json',
-                        'User-ID': USER_ID || 'unknown'
-                    },
-                    body: JSON.stringify({ enabled: e.target.checked })
-                });
-                if (response.ok) {
-                    console.log('✅ Notification setting updated');
+            // ═══════════════════════════════════════════════════════════════
+            // 🔧 Actions
+            // ═══════════════════════════════════════════════════════════════
+
+            async function deletePortfolio(id) {
+                if (!confirm('آیا مطمئن هستید؟')) return;
+                try {
+                    console.log('🗑️ Deleting portfolio:', id);
+                    const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'User-ID': USER_ID || 'unknown'
+                        }
+                    });
+                    if (response.ok) {
+                        console.log('✅ Portfolio deleted');
+                        showToast('✅ حذف شد', 'success');
+                        await loadPortfolio();
+                    } else {
+                        throw new Error('Failed');
+                    }
+                } catch (error) {
+                    console.error('❌ Delete Error:', error);
+                    showToast('❌ خطا', 'error');
                 }
-            } catch (error) {
-                console.error('Error:', error);
             }
-        }
 
-        async function handleNotificationTimeChange(e) {
-            try {
-                console.log('🕐 Changing notification time:', e.target.value);
-                const response = await fetch(`${CONFIG.API_BASE}/api/profile/notification-time`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'Content-Type': 'application/json',
-                        'User-ID': USER_ID || 'unknown'
-                    },
-                    body: JSON.stringify({ time: e.target.value })
-                });
-                if (response.ok) {
-                    console.log('✅ Notification time updated');
+            async function deleteAlert(id) {
+                if (!confirm('آیا مطمئن هستید؟')) return;
+                try {
+                    console.log('🗑️ Deleting alert:', id);
+                    const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'User-ID': USER_ID || 'unknown'
+                        }
+                    });
+                    if (response.ok) {
+                        console.log('✅ Alert deleted');
+                        showToast('✅ حذف شد', 'success');
+                        await loadAlerts();
+                    } else {
+                        throw new Error('Failed');
+                    }
+                } catch (error) {
+                    console.error('❌ Delete Error:', error);
+                    showToast('❌ خطا', 'error');
                 }
-            } catch (error) {
-                console.error('Error:', error);
             }
-        }
 
-        async function handleLogout() {
-            if (!confirm('آیا می‌خواهید خروج کنید؟')) return;
-            localStorage.clear();
-            sessionStorage.clear();
-            if (tg?.close) tg.close();
-        }
+            async function handleNotificationToggle(e) {
+                try {
+                    console.log('🔔 Toggling notifications:', e.target.checked);
+                    const response = await fetch(`${CONFIG.API_BASE}/api/profile/notification`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'Content-Type': 'application/json',
+                            'User-ID': USER_ID || 'unknown'
+                        },
+                        body: JSON.stringify({ enabled: e.target.checked })
+                    });
+                    if (response.ok) {
+                        console.log('✅ Notification setting updated');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
 
-        // ═══════════════════════════════════════════════════════════════
-        // 🎨 Utilities
-        // ═══════════════════════════════════════════════════════════════
+            async function handleNotificationTimeChange(e) {
+                try {
+                    console.log('🕐 Changing notification time:', e.target.value);
+                    const response = await fetch(`${CONFIG.API_BASE}/api/profile/notification-time`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                            'Content-Type': 'application/json',
+                            'User-ID': USER_ID || 'unknown'
+                        },
+                        body: JSON.stringify({ time: e.target.value })
+                    });
+                    if (response.ok) {
+                        console.log('✅ Notification time updated');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
 
-        function formatNumber(num) {
-            if (!num) return '۰';
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                .replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
-        }
+            async function handleLogout() {
+                if (!confirm('آیا می‌خواهید خروج کنید؟')) return;
+                localStorage.clear();
+                sessionStorage.clear();
+                if (tg?.close) tg.close();
+            }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+            // ═══════════════════════════════════════════════════════════════
+            // 🎨 Utilities
+            // ═══════════════════════════════════════════════════════════════
 
-        function openPortfolioModal() {
-            document.getElementById('portfolio-modal').classList.add('active');
-            document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
-        }
+            // تحويل التاریخ الميلادی إلى شمسی
+            function gregorianToShamsi(date) {
+                const d = new Date(date);
+                const gy = d.getFullYear();
+                const gm = d.getMonth() + 1;
+                const gd = d.getDate();
 
-        function openAlertModal() {
-            document.getElementById('alert-modal').classList.add('active');
-        }
+                let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
 
-        function closeModals() {
-            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-        }
+                for (let i = 0; i < gm; ++i) {
+                    switch (i) {
+                        case 0: case 2: case 4: case 6: case 7: case 9: case 11:
+                            g_d_n += 31; break;
+                        case 1: case 3: case 5: case 8: case 10:
+                            g_d_n += 30; break;
+                        default:
+                            if (gy % 400 === 0 || (gy % 100 !== 0 && gy % 4 === 0))
+                                g_d_n += 29;
+                            else
+                                g_d_n += 28;
+                    }
+                }
 
-        function startPolling() {
-            console.log('⏰ Starting polling every', CONFIG.POLLING_INTERVAL / 1000, 'seconds');
-            setInterval(() => {
-                console.log('📡 Auto-refreshing prices...');
-                loadPrices();
-            }, CONFIG.POLLING_INTERVAL);
-        }
+                g_d_n += gd;
 
-        console.log('✅ =====================================================');
-        console.log('✅ Mini App Fully Initialized');
-        console.log('✅ API Base:', CONFIG.API_BASE);
-        console.log('✅ Polling Interval:', CONFIG.POLLING_INTERVAL / 1000, 'seconds');
-        console.log('✅ User ID:', USER_ID);
-        console.log('✅ Init Data Present:', !!TELEGRAM_INIT_DATA);
-        console.log('✅ =====================================================');
+                let s_d_n = g_d_n - 79;
+
+                let sy = -1600;
+                let leap = -14;
+                let jp = 0;
+
+                while (s_d_n >= 366) {
+                    sy++;
+                    if (sy % 33 === 1 || sy % 33 === 5 || sy % 33 === 9 || sy % 33 === 13 || sy % 33 === 17 || sy % 33 === 22 || sy % 33 === 26 || sy % 33 === 30) {
+                        if (s_d_n >= 366) {
+                            s_d_n -= 366;
+                            leap++;
+                        } else
+                            break;
+                    } else {
+                        if (s_d_n >= 365) {
+                            s_d_n -= 365;
+                        } else
+                            break;
+                    }
+                }
+
+                if (sy > 0)
+                    leap = Math.floor((sy + 38) / 128) * 1 - Math.floor((sy + 381) / 128) * 1;
+
+                let sm = 0;
+                if (s_d_n < 186)
+                    sm = 1 + Math.floor(s_d_n / 31);
+                else
+                    sm = 7 + Math.floor((s_d_n - 186) / 30);
+
+                let sd = 1 + (s_d_n % (sm < 7 ? 31 : 30));
+
+                sy += 1600;
+
+                const year = sy.toString().padStart(4, '۰');
+                const month = sm.toString().padStart(2, '۰');
+                const day = sd.toString().padStart(2, '۰');
+
+                return `${year}/${month}/${day}`;
+            }
+
+            // تحویل شمسی به میلادی
+            function shamsiToGregorian(shamsiDate) {
+                const [year, month, day] = shamsiDate.split('/').map(Number);
+
+                let gy = year + 1600;
+                let gm = month;
+                let gd = day;
+
+                let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
+
+                for (let i = 0; i < gm; ++i) {
+                    switch (i) {
+                        case 0: case 2: case 4: case 6: case 7: case 9: case 11:
+                            g_d_n += 31; break;
+                        case 1: case 3: case 5: case 8: case 10:
+                            g_d_n += 30; break;
+                        default:
+                            if (gy % 400 === 0 || (gy % 100 !== 0 && gy % 4 === 0))
+                                g_d_n += 29;
+                            else
+                                g_d_n += 28;
+                    }
+                }
+
+                g_d_n += gd;
+
+                const date = new Date();
+                date.setFullYear(year + 1600);
+                date.setMonth(month - 1);
+                date.setDate(day);
+
+                return date.toISOString().split('T')[0];
+            }
+
+            // تنسیق رقم مع فواصل كل 3 أرقام
+            function formatNumberWithCommas(num) {
+                if (!num) return '';
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+
+            function formatNumber(num) {
+                if (!num) return '۰';
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    .replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+            }
+
+            function showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            function openPortfolioModal() {
+                document.getElementById('portfolio-modal').classList.add('active');
+                const dateInput = document.querySelector('input[name="purchaseDate"]');
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+                dateInput.max = today; // منع اختيار تاريخ في المستقبل
+
+                // عرض التاریخ الشمسی
+                const shamsiDate = gregorianToShamsi(today);
+                let shamsiText = document.querySelector('.shamsi-date');
+                if (!shamsiText) {
+                    shamsiText = document.createElement('small');
+                    shamsiText.className = 'shamsi-date';
+                    shamsiText.style.cssText = 'display:block; color: var(--text-secondary); margin-top: 4px;';
+                    dateInput.parentElement.appendChild(shamsiText);
+                }
+                shamsiText.textContent = '📅 تاریخ شمسی: ' + shamsiDate;
+            }
+
+            function openAlertModal() {
+                document.getElementById('alert-modal').classList.add('active');
+            }
+
+            function closeModals() {
+                document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            }
+
+            function startPolling() {
+                console.log('⏰ Starting polling every', CONFIG.POLLING_INTERVAL / 1000, 'seconds');
+                setInterval(() => {
+                    console.log('📡 Auto-refreshing prices...');
+                    loadPrices();
+                }, CONFIG.POLLING_INTERVAL);
+            }
+
+            console.log('✅ =====================================================');
+            console.log('✅ Mini App Fully Initialized');
+            console.log('✅ API Base:', CONFIG.API_BASE);
+            console.log('✅ Polling Interval:', CONFIG.POLLING_INTERVAL / 1000, 'seconds');
+            console.log('✅ User ID:', USER_ID);
+            console.log('✅ Init Data Present:', !!TELEGRAM_INIT_DATA);
+            console.log('✅ =====================================================');
     </script>
 </body>
 

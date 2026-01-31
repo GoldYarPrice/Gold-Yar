@@ -89,14 +89,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Get user data from Telegram
-    const initData = tg?.initData;
     const userData = tg?.initDataUnsafe?.user;
+    const userId = userData?.id;
 
-    if (userData) {
+    console.log('🔍 Telegram User Data:', userData);
+    console.log('🆔 User ID:', userId);
+    console.log('📱 initData available:', !!TELEGRAM_INIT_DATA);
+
+    if (userId) {
         appState.user = userData;
-        console.log('👤 User:', userData);
+        console.log('✅ User authenticated:', {
+            id: userId,
+            first_name: userData.first_name,
+            username: userData.username
+        });
     } else {
-        console.warn('⚠️ No user data from Telegram');
+        console.error('❌ No user data from Telegram - Mini App might not be opened correctly');
+        showToast('خطا: نمی‌تونم کاربر رو تشخیص بدم. لطفا از طریق ربات وارد شوید', 'error');
     }
 
     // Initialize event listeners
@@ -206,7 +215,24 @@ function updateThemeButton() {
 // ═══════════════════════════════════════════════════════════════
 
 async function loadInitialData() {
-    console.log('🔄 loadInitialData called, TELEGRAM_INIT_DATA:', !!TELEGRAM_INIT_DATA);
+    const userId = tg?.initDataUnsafe?.user?.id;
+
+    console.log('🔄 loadInitialData started');
+    console.log('User ID:', userId);
+    console.log('TELEGRAM_INIT_DATA available:', !!TELEGRAM_INIT_DATA);
+    console.log('Authorization header will be:', `tg ${TELEGRAM_INIT_DATA.substring(0, 50)}...`);
+
+    if (!userId) {
+        console.error('❌ User ID not available - cannot load data');
+        showToast('خطا: شناسه کاربر یافت نشد', 'error');
+        return;
+    }
+
+    if (!TELEGRAM_INIT_DATA) {
+        console.error('❌ TELEGRAM_INIT_DATA not available');
+        showToast('خطا: داده‌های تلگرام یافت نشدند', 'error');
+        return;
+    }
 
     try {
         const results = await Promise.allSettled([
@@ -237,6 +263,7 @@ async function loadInitialData() {
 async function loadPrices() {
     try {
         console.log('📡 Loading prices...');
+        console.log('Endpoint:', `${CONFIG.API_BASE}/api/gold-prices`);
 
         const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
             method: 'GET',
@@ -250,7 +277,7 @@ async function loadPrices() {
         if (!response.ok) {
             const errorText = await response.text();
             console.error('Response error:', errorText);
-            throw new Error(`Failed to fetch prices: ${response.status}`);
+            throw new Error(`Failed to fetch prices: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
@@ -326,6 +353,8 @@ function renderPriceDetails() {
 async function loadPortfolio() {
     try {
         console.log('📡 Loading portfolio...');
+        const userId = tg?.initDataUnsafe?.user?.id;
+        console.log('User ID for portfolio:', userId);
 
         const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
             method: 'GET',
@@ -335,7 +364,11 @@ async function loadPortfolio() {
             }
         });
 
-        if (!response.ok) throw new Error('Failed to fetch portfolio');
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Portfolio response error:', errorText);
+            throw new Error('Failed to fetch portfolio');
+        }
 
         const data = await response.json();
         console.log('✅ Portfolio loaded:', data);
@@ -392,6 +425,8 @@ function renderPortfolio() {
 
 async function loadAlerts() {
     try {
+        console.log('📡 Loading alerts...');
+
         const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
             method: 'GET',
             headers: {
@@ -400,9 +435,14 @@ async function loadAlerts() {
             }
         });
 
-        if (!response.ok) throw new Error('Failed to fetch alerts');
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Alerts response error:', errorText);
+            throw new Error('Failed to fetch alerts');
+        }
 
         const data = await response.json();
+        console.log('✅ Alerts loaded:', data);
         appState.alerts = data.alerts || [];
 
         renderAlerts();
@@ -456,6 +496,10 @@ function renderAlerts() {
 
 async function loadProfile() {
     try {
+        console.log('📡 Loading profile...');
+        const userId = tg?.initDataUnsafe?.user?.id;
+        console.log('User ID for profile:', userId);
+
         const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
             method: 'GET',
             headers: {
@@ -464,9 +508,14 @@ async function loadProfile() {
             }
         });
 
-        if (!response.ok) throw new Error('Failed to fetch profile');
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Profile response error:', errorText);
+            throw new Error('Failed to fetch profile');
+        }
 
         const data = await response.json();
+        console.log('✅ Profile loaded:', data);
         appState.user = { ...appState.user, ...data };
 
         renderProfile();
@@ -512,6 +561,8 @@ function renderProfile() {
 
 async function loadStats() {
     try {
+        console.log('📡 Loading stats...');
+
         const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/stats`, {
             method: 'GET',
             headers: {
@@ -520,9 +571,14 @@ async function loadStats() {
             }
         });
 
-        if (!response.ok) throw new Error('Failed to fetch stats');
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Stats response error:', errorText);
+            throw new Error('Failed to fetch stats');
+        }
 
         const data = await response.json();
+        console.log('✅ Stats loaded:', data);
         renderStats(data);
     } catch (error) {
         console.error('❌ Error loading stats:', error);

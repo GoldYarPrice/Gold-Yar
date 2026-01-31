@@ -55,6 +55,11 @@ html[data-theme="dark"] {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 html {
@@ -62,6 +67,8 @@ html {
 }
 
 body {
+    -webkit-user-select: none;
+    user-select: none;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, -apple-system, BlinkMacSystemFont;
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -69,6 +76,18 @@ body {
     font-size: 16px;
     line-height: 1.5;
     overflow-x: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+body::selection,
+body *::selection {
+    background-color: transparent;
+}
+
+body::-moz-selection,
+body *::-moz-selection {
+    background-color: transparent;
 }
 
 /* ═══════════════════════════════════════════════════════════════ */
@@ -98,6 +117,7 @@ body {
     padding: 8px 12px;
     background: none;
     border: none;
+    -webkit-tap-highlight-color: transparent;
     cursor: pointer;
     color: var(--text-secondary);
     transition: var(--transition);
@@ -867,6 +887,8 @@ input:checked+.toggle-slider:before {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
+    -webkit-user-select: text;
+    user-select: text;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
 }

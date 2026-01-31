@@ -8,7 +8,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 const CONFIG = {
-    API_BASE: 'https://your-worker-domain.com', // Update with your Cloudflare Worker URL
+    API_BASE: 'https://page-teleg.goldyarprice.workers.dev', // Cloudflare Worker URL
     POLLING_INTERVAL: 5000, // 5 seconds
     TOAST_DURATION: 3000, // 3 seconds
 };
@@ -19,11 +19,18 @@ const CONFIG = {
 
 const tg = window.Telegram.WebApp;
 
+// Store initData globally for API calls
+let TELEGRAM_INIT_DATA = null;
+
 // Initialize Telegram Web App
 if (tg) {
     tg.ready();
     tg.expand();
     tg.enableClosingConfirmation();
+
+    // Get and store initData immediately
+    TELEGRAM_INIT_DATA = tg.initData || '';
+    console.log('📱 Telegram initData captured:', !!TELEGRAM_INIT_DATA);
 
     // Set theme based on system preference
     if (tg.colorScheme === 'dark') {
@@ -32,7 +39,34 @@ if (tg) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📱 State Management
+// � Disable Copy, Right-Click, and Zoom
+// ═══════════════════════════════════════════════════════════════
+
+// Disable right-click context menu
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+// Disable copy
+document.addEventListener('copy', (e) => e.preventDefault());
+
+// Disable text selection with mouse
+document.addEventListener('mousedown', (e) => {
+    if (e.detail > 1) e.preventDefault();
+});
+
+// Disable pinch zoom
+document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+// Disable keyboard zoom (Ctrl/Cmd +/-)
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
+        e.preventDefault();
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// �📱 State Management
 // ═══════════════════════════════════════════════════════════════
 
 let appState = {
@@ -172,13 +206,24 @@ function updateThemeButton() {
 // ═══════════════════════════════════════════════════════════════
 
 async function loadInitialData() {
+    console.log('🔄 loadInitialData called, TELEGRAM_INIT_DATA:', !!TELEGRAM_INIT_DATA);
+
     try {
-        await Promise.all([
+        const results = await Promise.allSettled([
             loadPrices(),
             loadPortfolio(),
             loadProfile(),
             loadStats()
         ]);
+
+        results.forEach((result, index) => {
+            const names = ['loadPrices', 'loadPortfolio', 'loadProfile', 'loadStats'];
+            if (result.status === 'rejected') {
+                console.error(`❌ ${names[index]} failed:`, result.reason);
+            } else {
+                console.log(`✅ ${names[index]} completed`);
+            }
+        });
     } catch (error) {
         console.error('❌ Error loading initial data:', error);
         showToast('خطا در بارگیری داده‌ها', 'error');
@@ -191,21 +236,32 @@ async function loadInitialData() {
 
 async function loadPrices() {
     try {
+        console.log('📡 Loading prices...');
+
         const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
+            method: 'GET',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`
             }
         });
 
-        if (!response.ok) throw new Error('Failed to fetch prices');
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', errorText);
+            throw new Error(`Failed to fetch prices: ${response.status}`);
+        }
 
         const data = await response.json();
+        console.log('✅ Prices loaded:', data);
         appState.prices = data;
 
         renderPrices();
         renderPriceDetails();
     } catch (error) {
         console.error('❌ Error loading prices:', error);
+        showToast('خطا در دریافت قیمت‌ها: ' + error.message, 'error');
     }
 }
 
@@ -269,15 +325,20 @@ function renderPriceDetails() {
 
 async function loadPortfolio() {
     try {
+        console.log('📡 Loading portfolio...');
+
         const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
+            method: 'GET',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                'Content-Type': 'application/json'
             }
         });
 
         if (!response.ok) throw new Error('Failed to fetch portfolio');
 
         const data = await response.json();
+        console.log('✅ Portfolio loaded:', data);
         appState.portfolio = data.items || [];
 
         renderPortfolio();
@@ -332,8 +393,10 @@ function renderPortfolio() {
 async function loadAlerts() {
     try {
         const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
+            method: 'GET',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -394,8 +457,10 @@ function renderAlerts() {
 async function loadProfile() {
     try {
         const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
+            method: 'GET',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -448,8 +513,10 @@ function renderProfile() {
 async function loadStats() {
     try {
         const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/stats`, {
+            method: 'GET',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -537,7 +604,7 @@ async function handlePortfolioSubmit(e) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`
             },
             body: JSON.stringify(payload)
         });
@@ -581,7 +648,7 @@ async function handleAlertSubmit(e) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`
             },
             body: JSON.stringify(payload)
         });
@@ -613,7 +680,8 @@ async function deletePortfolio(id) {
         const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -634,7 +702,8 @@ async function deleteAlert(id) {
         const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -653,7 +722,8 @@ async function toggleAlert(id) {
         const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}/toggle`, {
             method: 'POST',
             headers: {
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -672,7 +742,7 @@ async function handleNotificationToggle(e) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`
             },
             body: JSON.stringify({
                 enabled: e.target.checked
@@ -693,7 +763,7 @@ async function handleNotificationTimeChange(e) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `tg ${tg?.initData}`
+                'Authorization': `tg ${TELEGRAM_INIT_DATA}`
             },
             body: JSON.stringify({
                 time: e.target.value

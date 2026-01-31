@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FFD700">
+    <title>طلا یار - مینی اپ</title>
+    <script src="https://web.telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        /* ═══════════════════════════════════════════════════════════════ */
+        /* 🎨 طلا یار - Mini App Styles */
+        /* ═══════════════════════════════════════════════════════════════ */
+
+        :root {
+            /* Light Theme */
+            --primary-color: #FFD700;
+            --primary-dark: #FFC700;
+            --secondary-color: #4F46E5;
+            --danger-color: #EF4444;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+
+            --bg-color: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-tertiary: #F3F4F6;
+
+            --text-color: #1F2937;
+            --text-secondary: #6B7280;
+            --text-tertiary: #9CA3AF;
+
+            --border-color: #E5E7EB;
+            --border-light: #F3F4F6;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html[data-theme="dark"] {
+            --bg-color: #111827;
+            --bg-secondary: #1F2937;
+            --bg-tertiary: #374151;
+            --text-color: #F9FAFB;
+            --text-secondary: #D1D5DB;
+            --text-tertiary: #9CA3AF;
+            --border-color: #374151;
+            --border-light: #1F2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, -apple-system, BlinkMacSystemFont;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        body::selection, body *::selection {
+            background-color: transparent;
+        }
+
+        body::-moz-selection, body *::-moz-selection {
+            background-color: transparent;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 8px 0;
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 12px;
+            font-weight: 500;
+            min-width: 60px;
+        }
+
+        .nav-tab .icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-tab.active {
+            color: var(--primary-color);
+        }
+
+        /* Main Container */
+        .main-container {
+            padding-bottom: 80px;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px 0;
+        }
+
+        .header h1, .header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .theme-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: var(--transition);
+        }
+
+        .theme-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Price Cards */
+        .prices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .price-card {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .price-card-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .price-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .price-card-change {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .price-card-change.positive {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+        }
+
+        .price-card-change.negative {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-block {
+            width: 100%;
+            display: flex;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quick-actions .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 14px 20px;
+        }
+
+        /* Lists */
+        .portfolio-list, .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .portfolio-item, .alert-item {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .portfolio-item-info, .alert-item-info {
+            flex: 1;
+        }
+
+        .portfolio-item-title, .alert-item-title {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .portfolio-item-details, .alert-item-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .portfolio-item-actions, .alert-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background-color: var(--bg-tertiary);
+            color: var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: none;
+            z-index: 300;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        /* Skeleton */
+        .skeleton-loading {
+            pointer-events: none;
+            background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--border-color) 50%, var(--bg-tertiary) 100%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            height: 100px;
+            border-radius: var(--radius-md);
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Profile */
+        .profile-header {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            min-width: 80px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .profile-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 20px;
+        }
+
+        .profile-info p {
+            margin: 4px 0 0 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        /* Settings */
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        #notification-time {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-tertiary);
+            color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-card:nth-child(3) {
+                grid-column: 1 / -1;
+            }
+
+            .header h1, .header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Tab Bar -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="home" title="خانه">
+            <span class="icon">🏠</span>
+        </button>
+        <button class="nav-tab" data-tab="portfolio" title="دارایی‌ها">
+            <span class="icon">💎</span>
+        </button>
+        <button class="nav-tab" data-tab="prices" title="قیمت‌ها">
+            <span class="icon">📊</span>
+        </button>
+        <button class="nav-tab" data-tab="alerts" title="هشدارها">
+            <span class="icon">🔔</span>
+        </button>
+        <button class="nav-tab" data-tab="profile" title="پروفایل">
+            <span class="icon">👤</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Home Tab -->
+        <section id="home-tab" class="tab-content active">
+            <div class="container">
+                <div class="header">
+                    <h1>💰 طلا یار</h1>
+                    <button id="theme-toggle" class="theme-btn" title="تغییر تم">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">قیمت فعلی</h2>
+                    <div id="prices-container" class="prices-grid">
+                        <div class="skeleton-loading"></div>
+                        <div class="skeleton-loading"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">خلاصه دارایی</h2>
+                    <div id="stats-container" class="stats-grid">
+                        <div class="stat-card skeleton-loading"></div>
+                        <div class="stat-card skeleton-loading"></div>
+                        <div class="stat-card skeleton-loading"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">اقدامات سریع</h2>
+                    <div class="quick-actions">
+                        <button id="add-portfolio-btn" class="btn btn-primary btn-block">
+                            <span>➕</span> اضافه کردن دارایی
+                        </button>
+                        <button id="add-alert-btn" class="btn btn-secondary btn-block">
+                            <span>🔔</span> تنظیم هشدار
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Tab -->
+        <section id="portfolio-tab" class="tab-content">
+            <div class="container">
+                <div class="header">
+                    <h2>💎 دارایی‌های من</h2>
+                    <button id="add-portfolio-btn-2" class="btn btn-primary">➕</button>
+                </div>
+                <div id="portfolio-list" class="portfolio-list">
+                    <div class="skeleton-loading"></div>
+                </div>
+                <div id="empty-portfolio" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📭</div>
+                    <p>هنوز دارایی ثبت نشده</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prices Tab -->
+        <section id="prices-tab" class="tab-content">
+            <div class="container">
+                <h2 class="section-title">📊 قیمت‌های طلا</h2>
+                <div id="price-details-18" class="skeleton-loading"></div>
+                <div id="price-details-24" class="skeleton-loading"></div>
+            </div>
+        </section>
+
+        <!-- Alerts Tab -->
+        <section id="alerts-tab" class="tab-content">
+            <div class="container">
+                <div class="header">
+                    <h2>🔔 هشدارهای قیمتی</h2>
+                    <button id="add-alert-btn-2" class="btn btn-primary">➕</button>
+                </div>
+                <div id="alerts-list" class="alerts-list">
+                    <div class="skeleton-loading"></div>
+                </div>
+                <div id="empty-alerts" class="empty-state" style="display: none;">
+                    <div class="empty-icon">🔕</div>
+                    <p>هشداری تنظیم نشده</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Tab -->
+        <section id="profile-tab" class="tab-content">
+            <div class="container">
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">کاربر</h2>
+                        <p id="profile-username">بدون نام کاربری</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>اطلاعات شخصی</h3>
+                    <div id="profile-details" class="profile-details">
+                        <div class="skeleton-loading"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>⚙️ تنظیمات</h3>
+                    <div class="settings-list">
+                        <div class="setting-item">
+                            <span>📬 نوتیفیکیشن</span>
+                            <label class="toggle-switch">
+                                <input id="notification-toggle" type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span>🕐 زمان نوتیفیکیشن</span>
+                            <input id="notification-time" type="time">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <button id="logout-btn" class="btn btn-danger btn-block">🚪 خروج</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="portfolio-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>افزودن دارایی جدید</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="portfolio-form" class="modal-body">
+                <div class="form-group">
+                    <label>نوع طلا</label>
+                    <select name="goldType" required>
+                        <option value="">انتخاب کنید</option>
+                        <option value="24">طلای 24 عیار</option>
+                        <option value="18">طلای 18 عیار</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>وزن (گرم)</label>
+                    <input type="number" name="weight" placeholder="مثال: 5" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label>قیمت فی (تومان)</label>
+                    <input type="number" name="purchasePrice" placeholder="مثال: 2500000" required>
+                </div>
+                <div class="form-group">
+                    <label>تاریخ خرید</label>
+                    <input type="date" name="purchaseDate" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block">ذخیره</button>
+                    <button type="button" class="btn btn-secondary btn-block modal-close">انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="alert-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تنظیم هشدار قیمتی</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="alert-form" class="modal-body">
+                <div class="form-group">
+                    <label>نوع طلا</label>
+                    <select name="goldType" required>
+                        <option value="">انتخاب کنید</option>
+                        <option value="24">طلای 24 عیار</option>
+                        <option value="18">طلای 18 عیار</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>نوع هشدار</label>
+                    <select name="alertType" required>
+                        <option value="">انتخاب کنید</option>
+                        <option value="above">بالاتر از</option>
+                        <option value="below">پایین‌تر از</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>قیمت هدف (تومان)</label>
+                    <input type="number" name="targetPrice" placeholder="مثال: 2500000" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block">تنظیم</button>
+                    <button type="button" class="btn btn-secondary btn-block modal-close">انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // 🔒 Security & Protection
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) e.preventDefault();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🔧 Configuration
+        // ═══════════════════════════════════════════════════════════════
+
+        const CONFIG = {
+            API_BASE: 'https://page-teleg.goldyarprice.workers.dev',
+            POLLING_INTERVAL: 5000,
+        };
+
+        const tg = window.Telegram.WebApp;
+        let TELEGRAM_INIT_DATA = null;
+
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            TELEGRAM_INIT_DATA = tg.initData || '';
+            console.log('✅ Telegram Web App Ready');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 📱 App State
+        // ═══════════════════════════════════════════════════════════════
+
+        let appState = {
+            user: null,
+            prices: { gold18: 0, gold24: 0 },
+            portfolio: [],
+            alerts: [],
+            isDarkMode: localStorage.getItem('theme') === 'dark',
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🎯 Initialize
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (appState.isDarkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateThemeButton();
+            }
+
+            const userData = tg?.initDataUnsafe?.user;
+            if (userData) {
+                appState.user = userData;
+                console.log('👤 User:', userData);
+            }
+
+            initializeEventListeners();
+            await loadInitialData();
+            startPolling();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🎛️ Event Listeners
+        // ═══════════════════════════════════════════════════════════════
+
+        function initializeEventListeners() {
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            document.getElementById('add-portfolio-btn').addEventListener('click', openPortfolioModal);
+            document.getElementById('add-portfolio-btn-2').addEventListener('click', openPortfolioModal);
+            document.getElementById('add-alert-btn').addEventListener('click', openAlertModal);
+            document.getElementById('add-alert-btn-2').addEventListener('click', openAlertModal);
+
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', closeModals);
+            });
+
+            document.getElementById('portfolio-form').addEventListener('submit', handlePortfolioSubmit);
+            document.getElementById('alert-form').addEventListener('submit', handleAlertSubmit);
+
+            document.getElementById('notification-toggle').addEventListener('change', handleNotificationToggle);
+            document.getElementById('notification-time').addEventListener('change', handleNotificationTimeChange);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', e => { if (e.target === modal) closeModals(); });
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🏠 Navigation
+        // ═══════════════════════════════════════════════════════════════
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === `${tabName}-tab`);
+            });
+
+            if (tabName === 'portfolio') loadPortfolio();
+            else if (tabName === 'prices') loadPrices();
+            else if (tabName === 'alerts') loadAlerts();
+            else if (tabName === 'profile') loadProfile();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🌙 Theme
+        // ═══════════════════════════════════════════════════════════════
+
+        function toggleTheme() {
+            appState.isDarkMode = !appState.isDarkMode;
+            document.documentElement.setAttribute('data-theme', appState.isDarkMode ? 'dark' : 'light');
+            localStorage.setItem('theme', appState.isDarkMode ? 'dark' : 'light');
+            updateThemeButton();
+        }
+
+        function updateThemeButton() {
+            const btn = document.getElementById('theme-toggle');
+            btn.querySelector('.theme-icon').textContent = appState.isDarkMode ? '☀️' : '🌙';
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 📊 Load Data
+        // ═══════════════════════════════════════════════════════════════
+
+        async function loadInitialData() {
+            const userId = tg?.initDataUnsafe?.user?.id;
+            console.log('🔄 Loading data... User ID:', userId);
+
+            if (!userId) {
+                showToast('خطا: شناسه کاربر یافت نشد', 'error');
+                return;
+            }
+
+            try {
+                const results = await Promise.allSettled([
+                    loadPrices(),
+                    loadPortfolio(),
+                    loadProfile(),
+                ]);
+
+                results.forEach((result, index) => {
+                    if (result.status === 'rejected') {
+                        console.error(`❌ Function ${index} failed:`, result.reason);
+                    }
+                });
+            } catch (error) {
+                console.error('❌ Error:', error);
+            }
+        }
+
+        async function loadPrices() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}` }
+                });
+
+                if (!response.ok) throw new Error(`Status: ${response.status}`);
+
+                const data = await response.json();
+                appState.prices = data;
+                renderPrices();
+            } catch (error) {
+                console.error('❌ Error loading prices:', error);
+                showToast('خطا در دریافت قیمت‌ها', 'error');
+            }
+        }
+
+        function renderPrices() {
+            const container = document.getElementById('prices-container');
+            const html = `
+                <div class="price-card">
+                    <div class="price-card-title">طلای 18 عیار</div>
+                    <div class="price-card-value">${formatNumber(appState.prices.gold18)}</div>
+                    <div class="price-card-change ${appState.prices.change18Percent >= 0 ? 'positive' : 'negative'}">
+                        ${appState.prices.change18Percent >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change18Percent)}%
+                    </div>
+                </div>
+                <div class="price-card">
+                    <div class="price-card-title">طلای 24 عیار</div>
+                    <div class="price-card-value">${formatNumber(appState.prices.gold24)}</div>
+                    <div class="price-card-change ${appState.prices.change24Percent >= 0 ? 'positive' : 'negative'}">
+                        ${appState.prices.change24Percent >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change24Percent)}%
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function loadPortfolio() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}` }
+                });
+
+                if (!response.ok) throw new Error('Failed');
+                const data = await response.json();
+                appState.portfolio = data.items || [];
+                renderPortfolio();
+            } catch (error) {
+                console.error('❌ Portfolio error:', error);
+            }
+        }
+
+        function renderPortfolio() {
+            const container = document.getElementById('portfolio-list');
+            const emptyState = document.getElementById('empty-portfolio');
+
+            if (appState.portfolio.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'flex';
+            emptyState.style.display = 'none';
+
+            const html = appState.portfolio.map(item => `
+                <div class="portfolio-item">
+                    <div class="portfolio-item-info">
+                        <div class="portfolio-item-title">${item.goldType} عیار</div>
+                        <div class="portfolio-item-details">${item.weight} گرم • ${item.purchaseDate}</div>
+                    </div>
+                    <div class="portfolio-item-actions">
+                        <button class="icon-btn delete" onclick="deletePortfolio(${item.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+        }
+
+        async function loadAlerts() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}` }
+                });
+
+                if (!response.ok) throw new Error('Failed');
+                const data = await response.json();
+                appState.alerts = data.alerts || [];
+                renderAlerts();
+            } catch (error) {
+                console.error('❌ Alerts error:', error);
+            }
+        }
+
+        function renderAlerts() {
+            const container = document.getElementById('alerts-list');
+            const emptyState = document.getElementById('empty-alerts');
+
+            if (appState.alerts.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'flex';
+            emptyState.style.display = 'none';
+
+            const html = appState.alerts.map(alert => `
+                <div class="alert-item">
+                    <div class="alert-item-info">
+                        <div class="alert-item-title">${alert.goldType} عیار</div>
+                        <div class="alert-item-details">${alert.alertType === 'above' ? '⬆️' : '⬇️'} ${formatNumber(alert.targetPrice)}</div>
+                    </div>
+                    <div class="alert-item-actions">
+                        <button class="icon-btn delete" onclick="deleteAlert(${alert.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+        }
+
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}` }
+                });
+
+                if (!response.ok) throw new Error('Failed');
+                const data = await response.json();
+                appState.user = { ...appState.user, ...data };
+                renderProfile();
+            } catch (error) {
+                console.error('❌ Profile error:', error);
+            }
+        }
+
+        function renderProfile() {
+            const nameEl = document.getElementById('profile-name');
+            const usernameEl = document.getElementById('profile-username');
+            const notificationToggle = document.getElementById('notification-toggle');
+            const notificationTime = document.getElementById('notification-time');
+
+            nameEl.textContent = appState.user?.first_name || 'کاربر';
+            usernameEl.textContent = appState.user?.username ? `@${appState.user.username}` : 'بدون نام کاربری';
+            if (appState.user?.notification_enabled !== undefined) {
+                notificationToggle.checked = appState.user.notification_enabled;
+            }
+            if (appState.user?.notification_time) {
+                notificationTime.value = appState.user.notification_time;
+            }
+
+            const profileDetails = document.getElementById('profile-details');
+            profileDetails.innerHTML = `
+                <div class="profile-detail-item">
+                    <span>🆔 شناسه کاربر</span>
+                    <strong>${appState.user?.user_id || appState.user?.id}</strong>
+                </div>
+            `;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 📝 Forms
+        // ═══════════════════════════════════════════════════════════════
+
+        async function handlePortfolioSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const payload = {
+                goldType: formData.get('goldType'),
+                weight: parseFloat(formData.get('weight')),
+                purchasePrice: parseInt(formData.get('purchasePrice')),
+                purchaseDate: formData.get('purchaseDate'),
+            };
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/add`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('Failed');
+                showToast('✅ دارایی اضافه شد', 'success');
+                closeModals();
+                e.target.reset();
+                await loadPortfolio();
+            } catch (error) {
+                showToast('❌ خطا', 'error');
+            }
+        }
+
+        async function handleAlertSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const payload = {
+                goldType: formData.get('goldType'),
+                alertType: formData.get('alertType'),
+                targetPrice: parseInt(formData.get('targetPrice'))
+            };
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/alerts/add`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('Failed');
+                showToast('✅ هشدار تنظیم شد', 'success');
+                closeModals();
+                e.target.reset();
+                await loadAlerts();
+            } catch (error) {
+                showToast('❌ خطا', 'error');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🔧 Actions
+        // ═══════════════════════════════════════════════════════════════
+
+        async function deletePortfolio(id) {
+            if (!confirm('آیا مطمئن هستید؟')) return;
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}` }
+                });
+                if (response.ok) {
+                    showToast('✅ حذف شد', 'success');
+                    await loadPortfolio();
+                }
+            } catch (error) {
+                showToast('❌ خطا', 'error');
+            }
+        }
+
+        async function deleteAlert(id) {
+            if (!confirm('آیا مطمئن هستید؟')) return;
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}` }
+                });
+                if (response.ok) {
+                    showToast('✅ حذف شد', 'success');
+                    await loadAlerts();
+                }
+            } catch (error) {
+                showToast('❌ خطا', 'error');
+            }
+        }
+
+        async function handleNotificationToggle(e) {
+            try {
+                await fetch(`${CONFIG.API_BASE}/api/profile/notification`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: e.target.checked })
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function handleNotificationTimeChange(e) {
+            try {
+                await fetch(`${CONFIG.API_BASE}/api/profile/notification-time`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ time: e.target.value })
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function handleLogout() {
+            if (!confirm('آیا می‌خواهید خروج کنید؟')) return;
+            localStorage.clear();
+            sessionStorage.clear();
+            if (tg?.close) tg.close();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🎨 Utilities
+        // ═══════════════════════════════════════════════════════════════
+
+        function formatNumber(num) {
+            if (!num) return '۰';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                .replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function openPortfolioModal() {
+            document.getElementById('portfolio-modal').classList.add('active');
+            document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
+        }
+
+        function openAlertModal() {
+            document.getElementById('alert-modal').classList.add('active');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+        }
+
+        function startPolling() {
+            setInterval(loadPrices, CONFIG.POLLING_INTERVAL);
+        }
+
+        console.log('✅ Mini App Initialized');
+    </script>
+</body>
+</html>

@@ -600,12 +600,80 @@
                 grid-column: 1 / -1;
             }
         }
+
+        /* Auth Page */
+        .auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 1000;
+        }
+
+        .auth-content {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .auth-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .auth-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .auth-step h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .auth-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .link-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            padding: 0;
+            font-size: inherit;
+        }
+
+        .link-btn:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 
 <body>
     <!-- Navigation Tab Bar -->
-    <nav class="nav-tabs">
+    <nav class="nav-tabs" id="nav-tabs" style="display: none;">
         <button class="nav-tab active" data-tab="home">
             <span class="icon">🏠</span><span class="label">خانه</span>
         </button>
@@ -623,8 +691,93 @@
         </button>
     </nav>
 
+    <!-- Login Page -->
+    <div id="login-page" class="auth-container" style="display: flex;">
+        <div class="auth-content">
+            <div class="auth-header">
+                <h1>💰 طلا یار</h1>
+                <p>سامانه مدیریت سرمایه‌گذاری طلا</p>
+            </div>
+
+            <div id="login-step" class="auth-step">
+                <h2>ورود به حساب</h2>
+                <p class="auth-description">شناسه عددی خود را وارد کنید</p>
+
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label>شناسه عددی کاربری</label>
+                        <input type="number" id="user-id-input" placeholder="مثال: 7603976062" required
+                            autocomplete="off">
+                        <small id="user-id-hint" style="color: var(--text-secondary); margin-top: 8px; display: none;">
+                            شناسه خود را ندارید؟ <button type="button" class="link-btn" id="show-get-id-btn">دریافت
+                                شناسه</button>
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">ورود</button>
+                </form>
+
+                <div id="get-id-section"
+                    style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <h3>دریافت شناسه عددی</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">
+                        ابتدا روی دکمه زیر کلیک کنید تا به ربات طلا یار برویید
+                    </p>
+                    <button type="button" class="btn btn-secondary btn-block" id="open-bot-btn">
+                        🤖 باز کردن ربات
+                    </button>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 12px;">
+                        سپس دستور زیر را ارسال کنید:
+                    </p>
+                    <div
+                        style="background-color: var(--bg-secondary); padding: 12px; border-radius: 8px; margin-top: 8px; font-family: monospace;">
+                        /whatismyid
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 12px;">
+                        ربات شناسه شما را بفرستد. آن‌را کپی کنید و در بالا وارد کنید.
+                    </p>
+                </div>
+            </div>
+
+            <div id="verify-step" class="auth-step" style="display: none;">
+                <h2>تایید حساب</h2>
+                <p class="auth-description">کد تایید ۶ رقمی را وارد کنید</p>
+
+                <form id="verify-form" class="auth-form">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <p style="color: var(--text-secondary); font-size: 14px;">
+                            کد برای شناسه زیر ارسال شد:
+                        </p>
+                        <p style="font-size: 16px; font-weight: 600; color: var(--primary-color);">
+                            <span id="verify-user-id"></span>
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>کد تایید</label>
+                        <input type="text" id="verify-code-input" placeholder="۶ رقم" maxlength="6" required
+                            autocomplete="off">
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 16px;">
+                        <p style="color: var(--text-secondary); font-size: 13px;">
+                            کد برای <span id="verify-timer">۳۰۰</span> ثانیه معتبر است
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">تایید و ورود</button>
+                    <button type="button" class="btn btn-secondary btn-block" style="margin-top: 8px;"
+                        id="back-to-login-btn">بازگشت</button>
+                </form>
+            </div>
+
+            <div id="error-message"
+                style="display: none; background-color: rgba(239, 68, 68, 0.1); color: var(--danger-color); padding: 12px; border-radius: 8px; margin-top: 16px; text-align: center;">
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
-    <main class="main-container">
+    <main class="main-container" id="main-container" style="display: none;">
         <!-- Home Tab -->
         <section id="home-tab" class="tab-content active">
             <div class="container">
@@ -788,12 +941,14 @@
 
         const CONFIG = {
             API_BASE: 'https://page-teleg.goldyarprice.workers.dev',
+            BOT_URL: 'https://t.me/goldyar_investment_bot',
             POLLING_INTERVAL: 60000,
         };
 
         const tg = window.Telegram?.WebApp;
         let TELEGRAM_INIT_DATA = null;
         let USER_ID = null;
+        let TELEGRAM_USER_ID = null;
 
         let appState = {
             user: null,
@@ -801,6 +956,9 @@
             portfolio: [],
             alerts: [],
             isDarkMode: localStorage.getItem('theme') === 'dark',
+            isLoggedIn: localStorage.getItem('loginToken') !== null,
+            loginToken: localStorage.getItem('loginToken'),
+            verificationTimer: null,
         };
 
         // ═══════════════════════════════════════════════════════════════
@@ -811,8 +969,104 @@
             tg.ready();
             tg.expand();
             TELEGRAM_INIT_DATA = tg.initData || '';
-            USER_ID = tg.initDataUnsafe?.user?.id;
-            console.log('✅ Telegram Ready - User ID:', USER_ID);
+            TELEGRAM_USER_ID = tg.initDataUnsafe?.user?.id;
+            console.log('✅ Telegram Ready - Telegram User ID:', TELEGRAM_USER_ID);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🔐 Auth Functions
+        // ═══════════════════════════════════════════════════════════════
+
+        async function requestVerificationCode(userId) {
+            try {
+                console.log('📤 Requesting verification code for user:', userId);
+                const response = await fetch(`${CONFIG.API_BASE}/api/auth/request-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: parseInt(userId),
+                        telegramUserId: TELEGRAM_USER_ID
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'خطا در درخواست کد');
+                }
+
+                const data = await response.json();
+                console.log('✅ Verification code requested');
+                return true;
+            } catch (error) {
+                console.error('❌ Error requesting code:', error);
+                showAuthError(error.message);
+                return false;
+            }
+        }
+
+        async function verifyCode(userId, code) {
+            try {
+                console.log('📤 Verifying code for user:', userId);
+                const response = await fetch(`${CONFIG.API_BASE}/api/auth/verify-code`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: parseInt(userId),
+                        code: code.toUpperCase(),
+                        telegramUserId: TELEGRAM_USER_ID
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'کد نامعتبر است');
+                }
+
+                const data = await response.json();
+                console.log('✅ Code verified, token:', data.token);
+                return data.token;
+            } catch (error) {
+                console.error('❌ Error verifying code:', error);
+                showAuthError(error.message);
+                return null;
+            }
+        }
+
+        function saveLoginToken(token) {
+            localStorage.setItem('loginToken', token);
+            appState.loginToken = token;
+            appState.isLoggedIn = true;
+        }
+
+        function logout() {
+            localStorage.removeItem('loginToken');
+            appState.loginToken = null;
+            appState.isLoggedIn = false;
+            showLoginPage();
+        }
+
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+        }
+
+        function showLoginPage() {
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('nav-tabs').style.display = 'none';
+            document.getElementById('login-step').style.display = 'block';
+            document.getElementById('verify-step').style.display = 'none';
+            document.getElementById('get-id-section').style.display = 'none';
+            document.getElementById('user-id-hint').style.display = 'block';
+        }
+
+        function showMainApp() {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('main-container').style.display = 'block';
+            document.getElementById('nav-tabs').style.display = 'flex';
+            loadInitialData();
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1009,11 +1263,25 @@
             const profileDetails = document.getElementById('profile-details');
             if (profileDetails) {
                 profileDetails.innerHTML = `
-                    <div class="profile-detail-item"><span>🆔 شناسه</span><strong>${userId}</strong></div>
+                    <div class="profile-detail-item">
+                        <span>🆔 شناسه</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <strong>${userId}</strong>
+                            <button onclick="copyToClipboard('${userId}')" style="background: none; border: none; cursor: pointer; font-size: 14px; padding: 4px; color: var(--primary-color);">📋</button>
+                        </div>
+                    </div>
                     <div class="profile-detail-item"><span>📱 نام</span><strong>${firstName}</strong></div>
                     <div class="profile-detail-item"><span>👤 نام کاربری</span><strong>${username}</strong></div>
                 `;
             }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ کپی شد');
+            }).catch(() => {
+                showToast('❌ خطا در کپی');
+            });
         }
 
         async function loadInitialData() {
@@ -1056,11 +1324,109 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log('✅ DOM Ready');
 
-            if (appState.isDarkMode) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('theme-toggle').querySelector('.theme-icon').textContent = '☀️';
+            // اگر logged in نہیں ہے تو login page دکھائیں
+            if (!appState.isLoggedIn) {
+                showLoginPage();
+                setupAuthListeners();
+                return;
             }
 
+            // اگر logged in ہے تو main app دکھائیں
+            USER_ID = localStorage.getItem('userId');
+            showMainApp();
+            setupAppListeners();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🔐 Auth Event Listeners
+        // ═══════════════════════════════════════════════════════════════
+
+        function setupAuthListeners() {
+            // Login form
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const userId = document.getElementById('user-id-input').value.trim();
+                if (!userId) {
+                    showAuthError('لطفا شناسه عددی را وارد کنید');
+                    return;
+                }
+
+                const success = await requestVerificationCode(userId);
+                if (success) {
+                    USER_ID = userId;
+                    document.getElementById('verify-user-id').textContent = userId;
+                    document.getElementById('login-step').style.display = 'none';
+                    document.getElementById('verify-step').style.display = 'block';
+                    startVerificationTimer();
+                }
+            });
+
+            // Get ID button
+            document.getElementById('show-get-id-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('get-id-section').style.display =
+                    document.getElementById('get-id-section').style.display === 'none' ? 'block' : 'none';
+            });
+
+            // Open bot button
+            document.getElementById('open-bot-btn').addEventListener('click', () => {
+                window.open(CONFIG.BOT_URL, '_blank');
+            });
+
+            // Verify form
+            document.getElementById('verify-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const code = document.getElementById('verify-code-input').value.trim();
+                if (code.length !== 6) {
+                    showAuthError('کد باید ۶ رقم باشد');
+                    return;
+                }
+
+                const token = await verifyCode(USER_ID, code);
+                if (token) {
+                    saveLoginToken(token);
+                    localStorage.setItem('userId', USER_ID);
+                    showToast('✅ خوش آمدید!');
+                    setTimeout(() => {
+                        appState.isLoggedIn = true;
+                        showMainApp();
+                        setupAppListeners();
+                    }, 500);
+                }
+            });
+
+            // Back button
+            document.getElementById('back-to-login-btn').addEventListener('click', () => {
+                clearInterval(appState.verificationTimer);
+                document.getElementById('login-step').style.display = 'block';
+                document.getElementById('verify-step').style.display = 'none';
+                document.getElementById('verify-code-input').value = '';
+                document.getElementById('error-message').style.display = 'none';
+            });
+        }
+
+        function startVerificationTimer() {
+            let timeLeft = 300; // 5 minutes
+            const timerElement = document.getElementById('verify-timer');
+
+            appState.verificationTimer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(appState.verificationTimer);
+                    showAuthError('کد منقضی شد. دوباره سعی کنید');
+                    document.getElementById('verify-step').style.display = 'none';
+                    document.getElementById('login-step').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🎛️ App Event Listeners
+        // ═══════════════════════════════════════════════════════════════
+
+        function setupAppListeners() {
             // Tab switching
             document.querySelectorAll('.nav-tab').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1075,6 +1441,12 @@
                     else if (tabName === 'profile') loadProfile();
                 });
             });
+
+            // Apply dark mode if saved
+            if (appState.isDarkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-toggle').querySelector('.theme-icon').textContent = '☀️';
+            }
 
             // Theme toggle
             document.getElementById('theme-toggle').addEventListener('click', () => {
@@ -1188,7 +1560,7 @@
                 loadInitialData();
                 setInterval(() => loadPrices(), CONFIG.POLLING_INTERVAL);
             }, 500);
-        });
+        }
     </script>
 </body>
 

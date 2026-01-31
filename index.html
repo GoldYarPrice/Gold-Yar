@@ -1098,32 +1098,6 @@
             document.getElementById('notification-time').addEventListener('change', handleNotificationTimeChange);
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
 
-            // إضافة معالجات الأرقام مع الفواصل
-            document.querySelectorAll('input[type="number"][name*="price"]').forEach(input => {
-                input.addEventListener('input', function (e) {
-                    // إزالة الفواصل والعلامات
-                    const value = this.value.replace(/[^\d]/g, '');
-                    // إضافة الفواصل
-                    const formatted = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                    this.value = formatted;
-                });
-            });
-
-            // معالج التاریخ - تحويل إلى شمسی
-            const dateInput = document.querySelector('input[name="purchaseDate"]');
-            if (dateInput) {
-                dateInput.addEventListener('change', function (e) {
-                    if (this.value) {
-                        const shamsiDate = gregorianToShamsi(this.value);
-                        console.log('تاریخ شمسی:', shamsiDate);
-                        // عرض التاریخ الشمسی
-                        const shamsiText = this.parentElement.querySelector('.shamsi-date');
-                        if (shamsiText) {
-                            shamsiText.textContent = 'تاریخ شمسی: ' + shamsiDate;
-                        }
-                    }
-                });
-            }
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', e => { if (e.target === modal) closeModals(); });
             });
@@ -1165,7 +1139,81 @@
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // 📊 Load Data
+        // � تاریخ شمسی (Jalali Date Converter)
+        // ═══════════════════════════════════════════════════════════════
+
+        function gregorianToJalali(date) {
+            if (typeof date === 'string') {
+                date = new Date(date + 'T00:00:00');
+            }
+            const gy = date.getFullYear();
+            const gm = date.getMonth() + 1;
+            const gd = date.getDate();
+
+            let jy, jm, jd;
+            const g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
+            for (let i = 0; i < gm; ++i) g_d_n += (new Date(gy, i + 1, 0)).getDate();
+
+            const j_d_n = g_d_n - 79;
+            jy = -1600 + 400 * Math.floor(j_d_n / 146097);
+            j_d_n %= 146097;
+
+            let flag = true;
+            if (j_d_n >= 36525) {
+                j_d_n--;
+                jy += 100 * Math.floor(j_d_n / 36524);
+                j_d_n %= 36524;
+                if (j_d_n >= 365) j_d_n++;
+                flag = false;
+            }
+            jy += 4 * Math.floor(j_d_n / 1461);
+            j_d_n %= 1461;
+            if (flag) {
+                if (j_d_n >= 366) {
+                    j_d_n--;
+                    jy += Math.floor(j_d_n / 365);
+                    j_d_n = j_d_n % 365;
+                }
+            }
+
+            const sal_a = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            if (jy > 979) {
+                jm = 0;
+                while (jm < 12 && j_d_n >= sal_a[jm]) jm++;
+            } else {
+                jm = 0;
+                while (jm < 12 && j_d_n >= sal_a[jm]) jm++;
+            }
+            if (jm > 1) j_d_n -= sal_a[jm - 1];
+            jd = j_d_n + 1;
+
+            return { year: jy, month: jm, day: jd };
+        }
+
+        function formatJalaliDate(date) {
+            if (typeof date === 'string') {
+                const parts = date.split('-');
+                if (parts.length === 3) {
+                    date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                }
+            }
+            const jalali = gregorianToJalali(date);
+            const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+            return `${jalali.day} ${months[jalali.month - 1]} ${jalali.year}`;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 💰 فرمت قیمت (Price Formatting)
+        // ═══════════════════════════════════════════════════════════════
+
+        function formatNumberWithComma(num) {
+            if (!num) return '';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // �📊 Load Data
         // ═══════════════════════════════════════════════════════════════
 
         async function loadInitialData() {
@@ -1305,7 +1353,7 @@
                 <div class="portfolio-item">
                     <div class="portfolio-item-info">
                         <div class="portfolio-item-title">${item.goldType} عیار</div>
-                        <div class="portfolio-item-details">${item.weight} گرم • ${item.purchaseDate}</div>
+                        <div class="portfolio-item-details">${item.weight} گرم • ${formatJalaliDate(item.purchaseDate)}</div>
                     </div>
                     <div class="portfolio-item-actions">
                         <button class="icon-btn delete" onclick="deletePortfolio(${item.id})">🗑️</button>
@@ -1447,7 +1495,7 @@
                 const payload = {
                     goldType: formData.get('goldType'),
                     weight: parseFloat(formData.get('weight')),
-                    purchasePrice: parseInt(formData.get('purchasePrice')),
+                    purchasePrice: parseInt(formData.get('purchasePrice').replace(/,/g, '')),
                     purchaseDate: formData.get('purchaseDate'),
                 };
 
@@ -1486,7 +1534,7 @@
                 const payload = {
                     goldType: formData.get('goldType'),
                     alertType: formData.get('alertType'),
-                    targetPrice: parseInt(formData.get('targetPrice'))
+                    targetPrice: parseInt(formData.get('targetPrice').replace(/,/g, ''))
                 };
 
                 try {
@@ -1621,113 +1669,6 @@
             // 🎨 Utilities
             // ═══════════════════════════════════════════════════════════════
 
-            // تحويل التاریخ الميلادی إلى شمسی
-            function gregorianToShamsi(date) {
-                const d = new Date(date);
-                const gy = d.getFullYear();
-                const gm = d.getMonth() + 1;
-                const gd = d.getDate();
-
-                let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
-
-                for (let i = 0; i < gm; ++i) {
-                    switch (i) {
-                        case 0: case 2: case 4: case 6: case 7: case 9: case 11:
-                            g_d_n += 31; break;
-                        case 1: case 3: case 5: case 8: case 10:
-                            g_d_n += 30; break;
-                        default:
-                            if (gy % 400 === 0 || (gy % 100 !== 0 && gy % 4 === 0))
-                                g_d_n += 29;
-                            else
-                                g_d_n += 28;
-                    }
-                }
-
-                g_d_n += gd;
-
-                let s_d_n = g_d_n - 79;
-
-                let sy = -1600;
-                let leap = -14;
-                let jp = 0;
-
-                while (s_d_n >= 366) {
-                    sy++;
-                    if (sy % 33 === 1 || sy % 33 === 5 || sy % 33 === 9 || sy % 33 === 13 || sy % 33 === 17 || sy % 33 === 22 || sy % 33 === 26 || sy % 33 === 30) {
-                        if (s_d_n >= 366) {
-                            s_d_n -= 366;
-                            leap++;
-                        } else
-                            break;
-                    } else {
-                        if (s_d_n >= 365) {
-                            s_d_n -= 365;
-                        } else
-                            break;
-                    }
-                }
-
-                if (sy > 0)
-                    leap = Math.floor((sy + 38) / 128) * 1 - Math.floor((sy + 381) / 128) * 1;
-
-                let sm = 0;
-                if (s_d_n < 186)
-                    sm = 1 + Math.floor(s_d_n / 31);
-                else
-                    sm = 7 + Math.floor((s_d_n - 186) / 30);
-
-                let sd = 1 + (s_d_n % (sm < 7 ? 31 : 30));
-
-                sy += 1600;
-
-                const year = sy.toString().padStart(4, '۰');
-                const month = sm.toString().padStart(2, '۰');
-                const day = sd.toString().padStart(2, '۰');
-
-                return `${year}/${month}/${day}`;
-            }
-
-            // تحویل شمسی به میلادی
-            function shamsiToGregorian(shamsiDate) {
-                const [year, month, day] = shamsiDate.split('/').map(Number);
-
-                let gy = year + 1600;
-                let gm = month;
-                let gd = day;
-
-                let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
-
-                for (let i = 0; i < gm; ++i) {
-                    switch (i) {
-                        case 0: case 2: case 4: case 6: case 7: case 9: case 11:
-                            g_d_n += 31; break;
-                        case 1: case 3: case 5: case 8: case 10:
-                            g_d_n += 30; break;
-                        default:
-                            if (gy % 400 === 0 || (gy % 100 !== 0 && gy % 4 === 0))
-                                g_d_n += 29;
-                            else
-                                g_d_n += 28;
-                    }
-                }
-
-                g_d_n += gd;
-
-                const date = new Date();
-                date.setFullYear(year + 1600);
-                date.setMonth(month - 1);
-                date.setDate(day);
-
-                return date.toISOString().split('T')[0];
-            }
-
-            // تنسیق رقم مع فواصل كل 3 أرقام
-            function formatNumberWithCommas(num) {
-                if (!num) return '';
-                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            }
-
             function formatNumber(num) {
                 if (!num) return '۰';
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -1743,25 +1684,29 @@
 
             function openPortfolioModal() {
                 document.getElementById('portfolio-modal').classList.add('active');
-                const dateInput = document.querySelector('input[name="purchaseDate"]');
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.value = today;
-                dateInput.max = today; // منع اختيار تاريخ في المستقبل
+                document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
 
-                // عرض التاریخ الشمسی
-                const shamsiDate = gregorianToShamsi(today);
-                let shamsiText = document.querySelector('.shamsi-date');
-                if (!shamsiText) {
-                    shamsiText = document.createElement('small');
-                    shamsiText.className = 'shamsi-date';
-                    shamsiText.style.cssText = 'display:block; color: var(--text-secondary); margin-top: 4px;';
-                    dateInput.parentElement.appendChild(shamsiText);
+                // اضافه کردن event listeners برای فرمت‌بندی قیمت
+                const priceInput = document.querySelector('input[name="purchasePrice"]');
+                if (priceInput) {
+                    priceInput.addEventListener('input', function () {
+                        let value = this.value.replace(/,/g, '');
+                        this.value = formatNumberWithComma(value);
+                    });
                 }
-                shamsiText.textContent = '📅 تاریخ شمسی: ' + shamsiDate;
             }
 
             function openAlertModal() {
                 document.getElementById('alert-modal').classList.add('active');
+
+                // اضافه کردن event listeners برای فرمت‌بندی قیمت
+                const targetPriceInput = document.querySelector('input[name="targetPrice"]');
+                if (targetPriceInput) {
+                    targetPriceInput.addEventListener('input', function () {
+                        let value = this.value.replace(/,/g, '');
+                        this.value = formatNumberWithComma(value);
+                    });
+                }
             }
 
             function closeModals() {

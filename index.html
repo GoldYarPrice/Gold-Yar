@@ -708,9 +708,9 @@
                         <label>شناسه عددی کاربری</label>
                         <input type="number" id="user-id-input" placeholder="مثال: 7603976062" required
                             autocomplete="off">
-                        <small id="user-id-hint" style="color: var(--text-secondary); margin-top: 8px; display: none;">
-                            شناسه خود را ندارید؟ <button type="button" class="link-btn" id="show-get-id-btn">دریافت
-                                شناسه</button>
+                        <small id="user-id-hint" style="color: var(--text-secondary); margin-top: 8px; display: block;">
+                            🆔 شناسه خود را ندارید؟ <button type="button" class="link-btn" id="show-get-id-btn"
+                                style="color: var(--primary-color); text-decoration: underline;">اینجا بزنید</button>
                         </small>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">ورود</button>
@@ -719,22 +719,32 @@
                 <div id="get-id-section"
                     style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
                     <h3>دریافت شناسه عددی</h3>
-                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">
-                        ابتدا روی دکمه زیر کلیک کنید تا به ربات طلا یار برویید
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
+                        برای دریافت شناسه عددی، روی دکمه زیر بزنید. ربات دستور را خودکار ارسال می‌کند:
                     </p>
-                    <button type="button" class="btn btn-secondary btn-block" id="open-bot-btn">
-                        🤖 باز کردن ربات
+                    <button type="button" class="btn btn-primary btn-block" id="open-bot-btn">
+                        🤖 باز کردن ربات و دریافت شناسه
                     </button>
-                    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 12px;">
-                        سپس دستور زیر را ارسال کنید:
-                    </p>
                     <div
-                        style="background-color: var(--bg-secondary); padding: 12px; border-radius: 8px; margin-top: 8px; font-family: monospace;">
-                        /whatismyid
+                        style="margin-top: 20px; padding: 12px; background-color: rgba(59, 130, 246, 0.1); border-radius: 8px; border-right: 3px solid var(--primary-color);">
+                        <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">
+                            💡 <strong>نحوه استفاده:</strong> ربات صفحه‌ای برای شما باز خواهد کرد. شناسه عددی شما در
+                            آنجا نمایش داده می‌شود. روی دکمه 📋 کپی کردن شناسه بزنید تا کپی شود.
+                        </p>
                     </div>
-                    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 12px;">
-                        ربات شناسه شما را بفرستد. آن‌را کپی کنید و در بالا وارد کنید.
-                    </p>
+                    <div
+                        style="margin-top: 12px; padding: 12px; background-color: var(--bg-secondary); border-radius: 8px;">
+                        <p style="color: var(--text-secondary); font-size: 12px; margin: 0;">
+                            <strong>📍 مراحل:</strong><br>
+                            1️⃣ روی "باز کردن ربات و دریافت شناسه" بزنید<br>
+                            2️⃣ روی دکمه 📋 در ربات بزنید تا شناسه کپی شود<br>
+                            3️⃣ شناسه را در بالا وارد کنید
+                        </p>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-block" id="back-to-login-id-btn"
+                        style="margin-top: 16px;">
+                        🔙 بازگشت
+                    </button>
                 </div>
             </div>
 
@@ -1350,7 +1360,6 @@
                     showAuthError('لطفا شناسه عددی را وارد کنید');
                     return;
                 }
-
                 const success = await requestVerificationCode(userId);
                 if (success) {
                     USER_ID = userId;
@@ -1361,16 +1370,20 @@
                 }
             });
 
-            // Get ID button
+            // Get ID button - show ID section
             document.getElementById('show-get-id-btn').addEventListener('click', (e) => {
                 e.preventDefault();
-                document.getElementById('get-id-section').style.display =
-                    document.getElementById('get-id-section').style.display === 'none' ? 'block' : 'none';
+                document.getElementById('get-id-section').style.display = 'block';
+                document.getElementById('login-form').style.display = 'none';
+                document.querySelector('.auth-header').style.display = 'none';
             });
 
-            // Open bot button
+            // Open bot button - opens bot with getid parameter
             document.getElementById('open-bot-btn').addEventListener('click', () => {
-                window.open(CONFIG.BOT_URL, '_blank');
+                const botUrl = CONFIG.BOT_URL;
+                const botUsername = botUrl.split('/').pop();
+                const deepLinkUrl = `https://t.me/${botUsername}?start=getid`;
+                window.open(deepLinkUrl, '_blank');
             });
 
             // Verify form
@@ -1381,7 +1394,6 @@
                     showAuthError('کد باید ۶ رقم باشد');
                     return;
                 }
-
                 const token = await verifyCode(USER_ID, code);
                 if (token) {
                     saveLoginToken(token);
@@ -1395,13 +1407,21 @@
                 }
             });
 
-            // Back button
+            // Back button for verify step
             document.getElementById('back-to-login-btn').addEventListener('click', () => {
                 clearInterval(appState.verificationTimer);
                 document.getElementById('login-step').style.display = 'block';
                 document.getElementById('verify-step').style.display = 'none';
                 document.getElementById('verify-code-input').value = '';
                 document.getElementById('error-message').style.display = 'none';
+            });
+
+            // Back button for get ID step
+            document.getElementById('back-to-login-id-btn').addEventListener('click', () => {
+                document.getElementById('get-id-section').style.display = 'none';
+                document.getElementById('login-form').style.display = 'block';
+                document.querySelector('.auth-header').style.display = 'block';
+                document.getElementById('user-id-input').value = '';
             });
         }
 

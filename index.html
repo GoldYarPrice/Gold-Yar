@@ -990,9 +990,15 @@
         async function requestVerificationCode(userId) {
             try {
                 console.log('📤 Requesting verification code for user:', userId);
+                console.log('Telegram User ID:', TELEGRAM_USER_ID);
+                console.log('Init Data:', TELEGRAM_INIT_DATA ? 'Available' : 'Not available');
+
                 const response = await fetch(`${CONFIG.API_BASE}/api/auth/request-code`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`
+                    },
                     body: JSON.stringify({
                         userId: parseInt(userId),
                         telegramUserId: TELEGRAM_USER_ID
@@ -1017,9 +1023,15 @@
         async function verifyCode(userId, code) {
             try {
                 console.log('📤 Verifying code for user:', userId);
+                console.log('Telegram User ID:', TELEGRAM_USER_ID);
+                console.log('Init Data:', TELEGRAM_INIT_DATA ? 'Available' : 'Not available');
+
                 const response = await fetch(`${CONFIG.API_BASE}/api/auth/verify-code`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`
+                    },
                     body: JSON.stringify({
                         userId: parseInt(userId),
                         code: code.toUpperCase(),
@@ -1275,10 +1287,7 @@
                 profileDetails.innerHTML = `
                     <div class="profile-detail-item">
                         <span>🆔 شناسه</span>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <strong>${userId}</strong>
-                            <button onclick="copyToClipboard('${userId}')" style="background: none; border: none; cursor: pointer; font-size: 14px; padding: 4px; color: var(--primary-color);">📋</button>
-                        </div>
+                        <strong style="cursor: pointer; user-select: text;" onclick="copyToClipboard('${userId}')">${userId}</strong>
                     </div>
                     <div class="profile-detail-item"><span>📱 نام</span><strong>${firstName}</strong></div>
                     <div class="profile-detail-item"><span>👤 نام کاربری</span><strong>${username}</strong></div>
@@ -1380,9 +1389,8 @@
 
             // Open bot button - opens bot with getid parameter
             document.getElementById('open-bot-btn').addEventListener('click', () => {
-                const botUrl = CONFIG.BOT_URL;
-                const botUsername = botUrl.split('/').pop();
-                const deepLinkUrl = `https://t.me/${botUsername}?start=getid`;
+                // Use direct bot username
+                const deepLinkUrl = `https://t.me/goldyar_investment_bot?start=getid`;
                 window.open(deepLinkUrl, '_blank');
             });
 

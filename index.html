@@ -670,7 +670,13 @@
                 <p>مدیریت حرفه‌ای سرمایه‌گذاری طلا</p>
             </div>
 
-            <div id="autoLoginLoading" style="text-align: center; padding: 40px;"><div class="spinner"></div><p style="margin-top: 20px; color: rgba(255, 255, 255, 0.7);">در حال ورود خودکار...</p></div><div id="loginForm" style="display: none;">
+            <div id="autoLoginLoading" style="text-align: center; padding: 40px;">
+                <div class="spinner"></div>
+                <p style="margin-top: 20px; color: rgba(255, 255, 255, 0.7);">در حال ورود خودکار...</p>
+                <button id="autoLoginCancel" onclick="cancelAutoLogin()" class="btn btn-secondary"
+                    style="display: none; margin-top: 20px; width: auto; padding: 10px 30px;">ورود دستی</button>
+            </div>
+            <div id="loginForm" style="display: none;">
                 <!-- How to get ID instruction -->
                 <div
                     style="background: rgba(31, 41, 55, 0.5); padding: 16px; border-radius: 16px; border: 1px solid rgba(55, 65, 81, 0.5); text-align: center; margin-bottom: 20px; backdrop-filter: blur(4px);">
@@ -965,9 +971,6 @@
 
         // Auto-login with Telegram data
         async function autoLogin() {
-            const autoLoginLoading = document.getElementById('autoLoginLoading');
-            const loginForm = document.getElementById('loginForm');
-
             try {
                 const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
 
@@ -992,34 +995,66 @@
                     if (data.success && data.token) {
                         console.log('✅ Auto-login successful');
                         localStorage.setItem('authToken', data.token);
-                        if (autoLoginLoading) autoLoginLoading.style.display = 'none';
-                        loadUserData();
                         return true;
                     }
+                } else {
+                    console.log('⚠️ No Telegram user data available');
                 }
             } catch (error) {
                 console.error('❌ Auto-login failed:', error);
             }
-
-            // Show manual login form if auto-login failed
-            if (autoLoginLoading) autoLoginLoading.style.display = 'none';
-            if (loginForm) loginForm.style.display = 'block';
             return false;
         }
 
-        // Check if already logged in or try auto-login
-        const token = localStorage.getItem('authToken');
-        if (token) {
+        // Cancel auto-login and show manual login form
+        function cancelAutoLogin() {
             const autoLoginLoading = document.getElementById('autoLoginLoading');
+            const loginForm = document.getElementById('loginForm');
             if (autoLoginLoading) autoLoginLoading.style.display = 'none';
-            // Try auto-login with Telegram data
-            autoLogin().then(success => {
-                if (!success) {
-                    // Show login page if auto-login failed
-                    console.log('📝 Manual login required');
-                }
-            });
+            if (loginForm) loginForm.style.display = 'block';
         }
+
+        // Show manual login after auto-login fails
+        function showManualLogin() {
+            const autoLoginLoading = document.getElementById('autoLoginLoading');
+            const loginForm = document.getElementById('loginForm');
+            if (autoLoginLoading) autoLoginLoading.style.display = 'none';
+            if (loginForm) loginForm.style.display = 'block';
+        }
+
+        // Main initialization
+        (async function init() {
+            const autoLoginLoading = document.getElementById('autoLoginLoading');
+            const loginForm = document.getElementById('loginForm');
+            const existingToken = localStorage.getItem('authToken');
+
+            // Case 1: Has existing token - try loading directly
+            if (existingToken) {
+                if (autoLoginLoading) autoLoginLoading.style.display = 'none';
+                loadUserData();
+                return;
+            }
+
+            // Case 2: No token - try auto-login
+            // Show cancel button after 5 seconds
+            const cancelTimer = setTimeout(() => {
+                const cancelBtn = document.getElementById('autoLoginCancel');
+                if (cancelBtn) cancelBtn.style.display = 'inline-block';
+            }, 5000);
+
+            const success = await autoLogin();
+            clearTimeout(cancelTimer);
+
+            if (success) {
+                // Auto-login succeeded - hide loading and load app
+                if (autoLoginLoading) autoLoginLoading.style.display = 'none';
+                loadUserData();
+            } else {
+                // Auto-login failed - show manual login
+                console.log('📝 Manual login required');
+                showManualLogin();
+            }
+        })();
 
         // Copy /whatismyid command
         function copyCommand() {

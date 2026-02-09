@@ -171,6 +171,34 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .user-avatar-placeholder {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            background: rgba(212, 175, 55, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+
         .header-info h2 {
             color: #d4af37;
             margin-bottom: 5px;
@@ -723,8 +751,11 @@
         <div class="container">
             <div class="header">
                 <div class="header-info">
-                    <h2 id="userName">کاربر</h2>
-                    <p id="userId"></p>
+                    <div id="userAvatar" class="user-avatar-placeholder">👤</div>
+                    <div>
+                        <h2 id="userName">کاربر</h2>
+                        <p id="userId"></p>
+                    </div>
                 </div>
                 <button class="btn-logout" onclick="logout()">خروج</button>
             </div>
@@ -995,6 +1026,7 @@
                     if (data.success && data.token) {
                         console.log('✅ Auto-login successful');
                         localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('authUserId', String(tgUser.id));
                         return true;
                     }
                 } else {
@@ -1027,15 +1059,38 @@
             const autoLoginLoading = document.getElementById('autoLoginLoading');
             const loginForm = document.getElementById('loginForm');
             const existingToken = localStorage.getItem('authToken');
+            const storedUserId = localStorage.getItem('authUserId');
+            const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
 
-            // Case 1: Has existing token - try loading directly
-            if (existingToken) {
+            // Check if Telegram user matches stored user (multi-account support)
+            if (existingToken && tgUser && tgUser.id && storedUserId) {
+                if (String(tgUser.id) !== String(storedUserId)) {
+                    // Different account detected - clear old session and re-login
+                    console.log('🔄 Different Telegram account detected:', tgUser.id, 'vs stored:', storedUserId);
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('authUserId');
+                    // Fall through to auto-login below
+                } else {
+                    // Same account - use existing token
+                    console.log('✅ Same account, using existing token');
+                    if (autoLoginLoading) autoLoginLoading.style.display = 'none';
+                    loadUserData();
+                    return;
+                }
+            } else if (existingToken && !tgUser) {
+                // No Telegram data (opened outside Telegram?) - use existing token
+                console.log('ℹ️ No Telegram data, using existing token');
                 if (autoLoginLoading) autoLoginLoading.style.display = 'none';
                 loadUserData();
                 return;
+            } else if (existingToken && tgUser && !storedUserId) {
+                // Has token but no stored userId (old session) - re-login to be safe
+                console.log('🔄 Old session without userId, re-authenticating...');
+                localStorage.removeItem('authToken');
+                // Fall through to auto-login below
             }
 
-            // Case 2: No token - try auto-login
+            // No valid token - try auto-login
             // Show cancel button after 5 seconds
             const cancelTimer = setTimeout(() => {
                 const cancelBtn = document.getElementById('autoLoginCancel');
@@ -1132,6 +1187,7 @@
 
                 if (data.success) {
                     localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('authUserId', userId);
                     loadUserData();
                 } else {
                     alert(data.message || 'کد تایید نامعتبر است');
@@ -1169,9 +1225,21 @@
                         }
                     });
 
+                    // Store userId for multi-account detection
+                    if (data.user.user_id) {
+                        localStorage.setItem('authUserId', String(data.user.user_id));
+                    }
+
                     // Update UI
                     document.getElementById('userName').textContent = data.user.first_name || 'کاربر';
                     document.getElementById('userId').textContent = `شناسه: ${data.user.user_id}`;
+
+                    // Set profile photo from Telegram
+                    const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+                    const avatarEl = document.getElementById('userAvatar');
+                    if (tgUser && tgUser.photo_url) {
+                        avatarEl.outerHTML = `<img id="userAvatar" class="user-avatar" src="${tgUser.photo_url}" alt="" onerror="this.outerHTML='<div id=userAvatar class=user-avatar-placeholder>👤</div>'">`;
+                    }
                     document.getElementById('notificationTime').textContent = data.user.notification_time || '00:40';
 
                     // Calculate total gold weight
@@ -1221,6 +1289,7 @@
                     loadCurrentGoldPrice();
                 } else {
                     localStorage.removeItem('authToken');
+                    localStorage.removeItem('authUserId');
                     alert('نشست منقضی شده است. لطفا مجددا وارد شوید');
                 }
             } catch (error) {
@@ -1693,6 +1762,7 @@
         function logout() {
             if (confirm('آیا می‌خواهید از حساب خارج شوید؟')) {
                 localStorage.removeItem('authToken');
+                localStorage.removeItem('authUserId');
                 userData = null;
 
                 document.getElementById('appPage').classList.remove('active');

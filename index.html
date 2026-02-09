@@ -45,9 +45,10 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: max(180px, calc(120px + env(safe-area-inset-bottom)));
+            padding-bottom: max(220px, calc(150px + env(safe-area-inset-bottom)));
             /* افزایش بیشتر برای نمایش کامل محتوا + safe area */
             min-height: 100vh;
+            position: relative;
         }
 
         /* Login Page */
@@ -878,12 +879,14 @@
 
                 <div class="input-group" id="pricePerGramGroup">
                     <label>قیمت خرید هر گرم (تومان)</label>
-                    <input type="number" id="newPricePerGram" placeholder="مثال: 5000000">
+                    <input type="text" id="newPricePerGram" placeholder="مثال: 5,000,000"
+                        oninput="formatPriceInput(this)">
                 </div>
 
                 <div class="input-group" id="totalPriceGroup" style="display: none;">
                     <label>قیمت کل خرید (تومان)</label>
-                    <input type="number" id="newTotalPrice" placeholder="مثال: 27500000">
+                    <input type="text" id="newTotalPrice" placeholder="مثال: 27,500,000"
+                        oninput="formatPriceInput(this)">
                 </div>
 
                 <div class="input-group">
@@ -924,7 +927,8 @@
 
                 <div class="input-group">
                     <label>قیمت هدف (تومان)</label>
-                    <input type="number" id="alertTargetPrice" placeholder="مثال: 5200000">
+                    <input type="text" id="alertTargetPrice" placeholder="مثال: 5,200,000"
+                        oninput="formatPriceInput(this)">
                 </div>
             </div>
             <button class="btn btn-primary" onclick="addAlert()">ثبت هشدار</button>
@@ -1255,7 +1259,7 @@
                             <div class="portfolio-item-value" style="text-align: left;">
                                 <div class="current" style="font-size: 1.1em;">${formatPrice(itemCurrentValue)} تومان</div>
                                 <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                                    <span>${profitSign}${formatPrice(profit)}</span>
+                                    <span>${profitSign}${formatPrice(profit)} تومان</span>
                                     <span style="font-size: 0.85em; opacity: 0.8;">(${profitSign}${profitPercent}%)</span>
                                 </div>
                             </div>
@@ -1399,9 +1403,9 @@
 
             let pricePerGram = 0;
             if (priceType === 'per_gram') {
-                pricePerGram = parseFloat(document.getElementById('newPricePerGram').value);
+                pricePerGram = parsePriceInput(document.getElementById('newPricePerGram').value);
             } else {
-                const totalPrice = parseFloat(document.getElementById('newTotalPrice').value);
+                const totalPrice = parsePriceInput(document.getElementById('newTotalPrice').value);
                 if (weight > 0) {
                     pricePerGram = Math.round(totalPrice / weight);
                 }
@@ -1477,7 +1481,7 @@
         async function addAlert() {
             const goldType = document.getElementById('alertGoldType').value;
             const alertType = document.getElementById('alertType').value;
-            const targetPrice = parseFloat(document.getElementById('alertTargetPrice').value);
+            const targetPrice = parsePriceInput(document.getElementById('alertTargetPrice').value);
 
             if (!targetPrice) {
                 alert('لطفا قیمت هدف را وارد کنید');
@@ -1625,6 +1629,29 @@
             // تبدیل به عدد صحیح و جداسازی با کاما
             const rounded = Math.round(price);
             return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Format price input - جداساز real-time برای input ها
+        function formatPriceInput(input) {
+            // حذف تمام کاراکترهای غیر عددی
+            let value = input.value.replace(/[^0-9]/g, '');
+
+            // اگر خالی بود، return
+            if (!value) {
+                input.value = '';
+                return;
+            }
+
+            // تبدیل به عدد و جداسازی با کاما
+            const formatted = parseInt(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            input.value = formatted;
+        }
+
+        // Parse price from formatted input
+        function parsePriceInput(value) {
+            if (!value) return 0;
+            // حذف کاماها و تبدیل به عدد
+            return parseInt(value.replace(/,/g, '')) || 0;
         }
     </script>
 </body>

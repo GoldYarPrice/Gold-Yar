@@ -1388,12 +1388,16 @@
                     const profitLossEl = document.getElementById('profitLoss');
                     const profitSign = profit >= 0 ? '+' : '-';
                     profitLossEl.textContent = formatPrice(Math.abs(profit)) + profitSign;
-                    profitLossEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+                    if (profit === 0) {
+                        profitLossEl.className = 'stat-value';
+                    } else {
+                        profitLossEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+                    }
 
                     const profitPercentEl = document.getElementById('profitPercent');
                     const profitPercentSign = profitPercent >= 0 ? '+' : '';
                     profitPercentEl.textContent = profitPercentSign + profitPercent.toFixed(2) + '%';
-                    profitPercentEl.style.color = profit >= 0 ? '#34c759' : '#ff3b30';
+                    profitPercentEl.style.color = 'rgba(255, 255, 255, 0.6)';
 
                     // Portfolio Tab Summary - مطابق ربات
                     document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
@@ -1402,12 +1406,16 @@
 
                     const totalProfitEl = document.getElementById('totalPortfolioProfit');
                     totalProfitEl.textContent = formatPrice(Math.abs(profit)) + (profit >= 0 ? '+' : '-');
-                    totalProfitEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+                    if (profit === 0) {
+                        totalProfitEl.className = 'stat-value';
+                    } else {
+                        totalProfitEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+                    }
 
                     const totalProfitPercentEl = document.getElementById('totalPortfolioProfitPercent');
                     const totalProfitPercentSign = profitPercent >= 0 ? '+' : '';
                     totalProfitPercentEl.textContent = totalProfitPercentSign + profitPercent.toFixed(2) + '%';
-                    totalProfitPercentEl.style.color = profit >= 0 ? '#34c759' : '#ff3b30';
+                    totalProfitPercentEl.style.color = 'rgba(255, 255, 255, 0.6)';
 
                     // Load portfolio items
                     loadPortfolioItems(data.portfolio.items);
@@ -1455,7 +1463,10 @@
                     const changeEl = document.getElementById('priceChange');
                     const changeTextEl = document.getElementById('priceChangeText');
 
-                    if (data.changePercent >= 0) {
+                    if (data.changePercent === 0) {
+                        changeEl.className = 'price-change';
+                        changeTextEl.textContent = '0.00%';
+                    } else if (data.changePercent > 0) {
                         changeEl.className = 'price-change up';
                         changeTextEl.textContent = `▲ ${data.changePercent.toFixed(2)}%`;
                     } else {
@@ -1491,7 +1502,10 @@
                         const changeTextEl = document.getElementById('priceChangeText');
                         const changePercent = userData.portfolio.profitPercent || 0;
 
-                        if (changePercent >= 0) {
+                        if (changePercent === 0) {
+                            changeEl.className = 'price-change';
+                            changeTextEl.textContent = '0.00%';
+                        } else if (changePercent > 0) {
                             changeEl.className = 'price-change up';
                             changeTextEl.textContent = `▲ ${changePercent.toFixed(2)}%`;
                         } else {
@@ -1541,18 +1555,19 @@
                 const profit = parseFloat(item.profit) || 0;
                 const profitPercent = parseFloat(item.profitPercent) || 0;
 
-                const profitClass = profit >= 0 ? 'profit' : 'loss';
+                const profitClass = profit === 0 ? '' : (profit >= 0 ? 'profit' : 'loss');
                 const profitSign = profit >= 0 ? '+' : '-';
+                const borderColor = profit === 0 ? 'rgba(255, 255, 255, 0.3)' : (profit >= 0 ? '#34c759' : '#ff3b30');
 
                 return `
-                    <div class="portfolio-item" style="border-right: 3px solid ${profit >= 0 ? '#34c759' : '#ff3b30'};">
+                    <div class="portfolio-item" style="border-right: 3px solid ${borderColor};">
                         <div class="portfolio-item-info">
                             <h4 style="display: flex; align-items: center; gap: 8px;">
-                                <span style="background: rgba(212, 175, 55, 0.2); padding: 3px 10px; border-radius: 8px; font-size: clamp(0.75em, 3.5vw, 0.95em); white-space: nowrap;">${weight.toFixed(2)} گرم</span>
+                                <span style="background: rgba(212, 175, 55, 0.2); padding: 3px 10px; border-radius: 8px; font-size: clamp(0.85em, 3.8vw, 1.05em); white-space: nowrap;">${weight.toFixed(2)} گرم</span>
                                 <span style="font-size: 0.85em; color: rgba(255, 255, 255, 0.7);">طلای 18 عیار</span>
                             </h4>
                             <p style="margin-top: 8px;">💰 قیمت خرید (هر گرم): ${formatPrice(pricePerGram)} تومان</p>
-                            <p style="margin-top: 4px;">� ارزش فعلی: ${formatPrice(itemCurrentValue)} تومان</p>
+                            <p style="margin-top: 4px;">💎 ارزش فعلی: ${formatPrice(itemCurrentValue)} تومان</p>
                             <p style="font-size: 0.8em; color: rgba(255, 255, 255, 0.5); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">

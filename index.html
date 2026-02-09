@@ -1,1593 +1,614 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html dir="rtl" lang="fa">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#FFD700">
-    <title>طلا یار - مینی اپ</title>
-    <script src="https://web.telegram.org/js/telegram-web-app.js"></script>
-
+    <title>طلا یار - Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* ═══════════════════════════════════════════════════════════════ */
-        /* 🎨 طلا یار - Mini App Styles */
-        /* ═══════════════════════════════════════════════════════════════ */
-
-        :root {
-            /* Light Theme */
-            --primary-color: #FFD700;
-            --primary-dark: #FFC700;
-            --secondary-color: #4F46E5;
-            --danger-color: #EF4444;
-            --success-color: #10B981;
-            --warning-color: #F59E0B;
-
-            --bg-color: #FFFFFF;
-            --bg-secondary: #F9FAFB;
-            --bg-tertiary: #F3F4F6;
-
-            --text-color: #1F2937;
-            --text-secondary: #6B7280;
-            --text-tertiary: #9CA3AF;
-
-            --border-color: #E5E7EB;
-            --border-light: #F3F4F6;
-
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        html[data-theme="dark"] {
-            --bg-color: #111827;
-            --bg-secondary: #1F2937;
-            --bg-tertiary: #374151;
-            --text-color: #F9FAFB;
-            --text-secondary: #D1D5DB;
-            --text-tertiary: #9CA3AF;
-            --border-color: #374151;
-            --border-light: #1F2937;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        html {
-            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: var(--transition);
-            font-size: 16px;
-            overflow-x: hidden;
-        }
-
-        /* Navigation */
-        .nav-tabs {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            background-color: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            padding: 8px 0;
-            z-index: 100;
-        }
-
-        .nav-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: var(--transition);
-            font-size: 12px;
-            min-width: 60px;
-        }
-
-        .nav-tab .icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-        .nav-tab .label {
-            font-size: 10px;
-        }
-
-        .nav-tab.active {
-            color: var(--primary-color);
-        }
-
-        /* Main Container */
-        .main-container {
-            padding-bottom: 80px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d3b1f 0%, #1c6b3b 50%, #0d3b1f 100%);
+            color: #f5f3e8;
             min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 16px;
+            background: rgba(28, 107, 59, 0.3);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(212, 176, 59, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #d4b03b, #f5e89d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .section {
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin: 0;
-        }
-
-        .theme-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid var(--border-color);
-            background-color: var(--bg-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        /* Price Cards */
-        .prices-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-        }
-
-        .price-card {
-            background-color: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            text-align: center;
-        }
-
-        .price-card-title {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .price-card-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-
-        .price-card-change {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-
-        .price-card-change.positive {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: var(--success-color);
-        }
-
-        .price-card-change.negative {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: var(--danger-color);
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .stat-card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            text-align: center;
-        }
-
-        .stat-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn:active {
-            transform: scale(0.96);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: #000;
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .quick-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .quick-actions .btn {
-            width: 100%;
-        }
-
-        /* Lists */
-        .portfolio-list,
-        .alerts-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .portfolio-item,
-        .alert-item {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .portfolio-item-info,
-        .alert-item-info {
-            flex: 1;
-        }
-
-        .portfolio-item-title,
-        .alert-item-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .portfolio-item-details,
-        .alert-item-details {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background-color: var(--bg-tertiary);
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 48px 16px;
-            color: var(--text-secondary);
-        }
-
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        /* Tab Content */
-        .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease-in;
         }
 
-        .tab-content.active {
+        .section.active {
             display: block;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 200;
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--bg-color);
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            max-width: 600px;
-            width: 100%;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .modal-close {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background-color: var(--bg-secondary);
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            background-color: var(--bg-secondary);
-            color: var(--text-color);
-            font-size: 14px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .form-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            padding: 16px 20px;
-            border-radius: var(--radius-md);
-            display: none;
-            z-index: 300;
-            max-width: 90%;
-        }
-
-        .toast.show {
-            display: block;
-        }
-
-        /* Skeleton */
-        .skeleton-loading {
-            background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--border-color) 50%, var(--bg-tertiary) 100%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            height: 100px;
-            border-radius: var(--radius-md);
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
             }
 
-            100% {
-                background-position: -200% 0;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        /* Profile */
-        .profile-header {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-            padding: 20px;
-            background-color: var(--bg-secondary);
-            border-radius: var(--radius-lg);
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-info h2 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .profile-info p {
-            margin: 4px 0 0 0;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .profile-details {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .profile-detail-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px;
-            background-color: var(--bg-secondary);
-            border-radius: var(--radius-md);
-        }
-
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background-color: var(--bg-secondary);
-            border-radius: var(--radius-md);
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 48px;
-            height: 28px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border-color);
-            border-radius: 28px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        input:checked+.toggle-slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked+.toggle-slider:before {
-            transform: translateX(20px);
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .stat-card:nth-child(3) {
-                grid-column: 1 / -1;
-            }
-        }
-
-        /* Auth Page */
-        .auth-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--bg-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            z-index: 1000;
-        }
-
-        .auth-content {
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .auth-header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-            color: var(--primary-color);
-        }
-
-        .auth-header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .auth-step h2 {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-
-        .auth-description {
-            color: var(--text-secondary);
-            font-size: 14px;
+        .input-group {
             margin-bottom: 20px;
         }
 
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            color: #e8e6d5;
         }
 
-        .link-btn {
-            background: none;
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(212, 176, 59, 0.4);
+            border-radius: 10px;
+            background: rgba(13, 59, 31, 0.5);
+            color: #f5f3e8;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #d4b03b;
+            background: rgba(13, 59, 31, 0.7);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
             border: none;
-            color: var(--primary-color);
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
             cursor: pointer;
-            font-weight: 600;
-            text-decoration: underline;
-            padding: 0;
-            font-size: inherit;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
         }
 
-        .link-btn:hover {
-            opacity: 0.8;
+        .btn-primary {
+            background: linear-gradient(45deg, #d4b03b, #f5e89d);
+            color: #0d3b1f;
+            box-shadow: 0 5px 20px rgba(212, 176, 59, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 176, 59, 0.7);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(212, 176, 59, 0.2);
+            color: #e8e6d5;
+            border: 2px solid rgba(212, 176, 59, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 176, 59, 0.3);
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #c9c7b0;
+            margin-top: 10px;
+            line-height: 1.5;
+            background: rgba(13, 59, 31, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            border-right: 3px solid #d4b03b;
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid rgba(220, 53, 69, 0.5);
+            color: #ffb3ba;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 2px solid rgba(40, 167, 69, 0.5);
+            color: #b3ffb3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+
+        .spinner {
+            border: 3px solid rgba(212, 176, 59, 0.3);
+            border-top: 3px solid #d4b03b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .card {
+            background: rgba(13, 59, 31, 0.4);
+            border: 2px solid rgba(212, 176, 59, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            color: #f5e89d;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 176, 59, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212, 176, 59, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #c9c7b0;
+            font-size: 0.95em;
+        }
+
+        .info-value {
+            color: #f5e89d;
+            font-weight: bold;
+        }
+
+        .profit-positive {
+            color: #28a745;
+        }
+
+        .profit-negative {
+            color: #dc3545;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(212, 176, 59, 0.3);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px 10px 0 0;
+            color: #c9c7b0;
+        }
+
+        .tab.active {
+            background: rgba(212, 176, 59, 0.3);
+            color: #f5e89d;
+            font-weight: bold;
+        }
+
+        .alert-item,
+        .portfolio-item {
+            background: rgba(13, 59, 31, 0.3);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-right: 4px solid #d4b03b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #c9c7b0;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
         }
     </style>
 </head>
 
 <body>
-    <!-- Navigation Tab Bar -->
-    <nav class="nav-tabs" id="nav-tabs" style="display: none;">
-        <button class="nav-tab active" data-tab="home">
-            <span class="icon">🏠</span><span class="label">خانه</span>
-        </button>
-        <button class="nav-tab" data-tab="portfolio">
-            <span class="icon">💎</span><span class="label">دارایی</span>
-        </button>
-        <button class="nav-tab" data-tab="prices">
-            <span class="icon">📊</span><span class="label">قیمت</span>
-        </button>
-        <button class="nav-tab" data-tab="alerts">
-            <span class="icon">🔔</span><span class="label">هشدار</span>
-        </button>
-        <button class="nav-tab" data-tab="profile">
-            <span class="icon">👤</span><span class="label">پروفایل</span>
-        </button>
-    </nav>
+    <div class="container">
+        <h1>🏆 طلا یار</h1>
 
-    <!-- Login Page -->
-    <div id="login-page" class="auth-container" style="display: flex;">
-        <div class="auth-content">
-            <div class="auth-header">
-                <h1>💰 طلا یار</h1>
-                <p>سامانه مدیریت سرمایه‌گذاری طلا</p>
-            </div>
+        <!-- صفحه لاگین -->
+        <div id="loginSection" class="section active">
+            <div class="card">
+                <div class="card-title">ورود به حساب کاربری</div>
 
-            <div id="login-step" class="auth-step">
-                <h2>ورود به حساب</h2>
-                <p class="auth-description">شناسه عددی خود را وارد کنید</p>
+                <div id="loginError" class="error" style="display:none;"></div>
 
-                <form id="login-form" class="auth-form">
-                    <div class="form-group">
-                        <label>شناسه عددی کاربری</label>
-                        <input type="number" id="user-id-input" placeholder="مثال: 7603976062" required
-                            autocomplete="off">
-                        <small id="user-id-hint" style="color: var(--text-secondary); margin-top: 8px; display: block;">
-                            🆔 شناسه خود را ندارید؟ <button type="button" class="link-btn" id="show-get-id-btn"
-                                style="color: var(--primary-color); text-decoration: underline;">اینجا بزنید</button>
-                        </small>
+                <div class="input-group">
+                    <label>شناسه عددی شما:</label>
+                    <input type="number" id="userIdInput" placeholder="مثال: 5573580713">
+                </div>
+
+                <button class="btn btn-primary" onclick="requestCode()" id="requestCodeBtn">
+                    دریافت کد تایید
+                </button>
+
+                <div id="codeSection" style="display:none;">
+                    <div class="input-group">
+                        <label>کد تایید:</label>
+                        <input type="text" id="codeInput" placeholder="کد 10 کاراکتری" maxlength="10">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">ورود</button>
-                </form>
-
-                <div id="get-id-section"
-                    style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                    <h3>دریافت شناسه عددی</h3>
-                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
-                        برای دریافت شناسه عددی، روی دکمه زیر بزنید. ربات دستور را خودکار ارسال می‌کند:
-                    </p>
-                    <button type="button" class="btn btn-primary btn-block" id="open-bot-btn">
-                        🤖 باز کردن ربات و دریافت شناسه
-                    </button>
-                    <div
-                        style="margin-top: 20px; padding: 12px; background-color: rgba(59, 130, 246, 0.1); border-radius: 8px; border-right: 3px solid var(--primary-color);">
-                        <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">
-                            💡 <strong>نحوه استفاده:</strong> ربات صفحه‌ای برای شما باز خواهد کرد. شناسه عددی شما در
-                            آنجا نمایش داده می‌شود. روی دکمه 📋 کپی کردن شناسه بزنید تا کپی شود.
-                        </p>
-                    </div>
-                    <div
-                        style="margin-top: 12px; padding: 12px; background-color: var(--bg-secondary); border-radius: 8px;">
-                        <p style="color: var(--text-secondary); font-size: 12px; margin: 0;">
-                            <strong>📍 مراحل:</strong><br>
-                            1️⃣ روی "باز کردن ربات و دریافت شناسه" بزنید<br>
-                            2️⃣ روی دکمه 📋 در ربات بزنید تا شناسه کپی شود<br>
-                            3️⃣ شناسه را در بالا وارد کنید
-                        </p>
-                    </div>
-                    <button type="button" class="btn btn-secondary btn-block" id="back-to-login-id-btn"
-                        style="margin-top: 16px;">
-                        🔙 بازگشت
+                    <button class="btn btn-primary" onclick="verifyCode()" id="verifyBtn">
+                        تأیید و ورود
                     </button>
                 </div>
+
+                <div class="help-text">
+                    <strong>📱 شناسه خود را ندارید؟</strong><br>
+                    در ربات تلگرام دستور زیر را ارسال کنید:<br>
+                    <code
+                        style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 5px;">/whatismyid</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحه اصلی -->
+        <div id="mainSection" class="section">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('dashboard')">داشبورد</div>
+                <div class="tab" onclick="switchTab('portfolio')">دارایی‌ها</div>
+                <div class="tab" onclick="switchTab('alerts')">هشدارها</div>
             </div>
 
-            <div id="verify-step" class="auth-step" style="display: none;">
-                <h2>تایید حساب</h2>
-                <p class="auth-description">کد تایید ۶ رقمی را وارد کنید</p>
-
-                <form id="verify-form" class="auth-form">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <p style="color: var(--text-secondary); font-size: 14px;">
-                            کد برای شناسه زیر ارسال شد:
-                        </p>
-                        <p style="font-size: 16px; font-weight: 600; color: var(--primary-color);">
-                            <span id="verify-user-id"></span>
-                        </p>
+            <!-- تب داشبورد -->
+            <div id="dashboardTab" class="tab-content">
+                <div class="card">
+                    <div class="card-title">اطلاعات کاربری</div>
+                    <div class="info-row">
+                        <span class="info-label">نام:</span>
+                        <span class="info-value" id="userName">-</span>
                     </div>
-
-                    <div class="form-group">
-                        <label>کد تایید</label>
-                        <input type="text" id="verify-code-input" placeholder="۶ رقم" maxlength="6" required
-                            autocomplete="off">
+                    <div class="info-row">
+                        <span class="info-label">شناسه:</span>
+                        <span class="info-value" id="userId">-</span>
                     </div>
-
-                    <div style="text-align: center; margin-bottom: 16px;">
-                        <p style="color: var(--text-secondary); font-size: 13px;">
-                            کد برای <span id="verify-timer">۳۰۰</span> ثانیه معتبر است
-                        </p>
+                    <div class="info-row">
+                        <span class="info-label">نوتیفیکیشن:</span>
+                        <span class="info-value" id="notifStatus">-</span>
                     </div>
+                </div>
 
-                    <button type="submit" class="btn btn-primary btn-block">تایید و ورود</button>
-                    <button type="button" class="btn btn-secondary btn-block" style="margin-top: 8px;"
-                        id="back-to-login-btn">بازگشت</button>
-                </form>
+                <div class="card">
+                    <div class="card-title">خلاصه دارایی</div>
+                    <div class="info-row">
+                        <span class="info-label">سرمایه:</span>
+                        <span class="info-value" id="totalInvestment">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">ارزش فعلی:</span>
+                        <span class="info-value" id="currentValue">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">سود/زیان:</span>
+                        <span class="info-value" id="profit">-</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="logout()">خروج از حساب</button>
             </div>
 
-            <div id="error-message"
-                style="display: none; background-color: rgba(239, 68, 68, 0.1); color: var(--danger-color); padding: 12px; border-radius: 8px; margin-top: 16px; text-align: center;">
+            <!-- تب دارایی‌ها -->
+            <div id="portfolioTab" class="tab-content" style="display:none;">
+                <div id="portfolioList"></div>
+            </div>
+
+            <!-- تب هشدارها -->
+            <div id="alertsTab" class="tab-content" style="display:none;">
+                <div id="alertsList"></div>
+            </div>
+        </div>
+
+        <!-- لودینگ -->
+        <div id="loadingSection" class="section">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>در حال بارگذاری...</p>
             </div>
         </div>
     </div>
-
-    <!-- Main Content -->
-    <main class="main-container" id="main-container" style="display: none;">
-        <!-- Home Tab -->
-        <section id="home-tab" class="tab-content active">
-            <div class="container">
-                <div class="header">
-                    <h1>💰 طلا یار</h1>
-                    <button id="theme-toggle" class="theme-btn"><span class="theme-icon">🌙</span></button>
-                </div>
-                <div class="section">
-                    <h2 class="section-title">قیمت فعلی</h2>
-                    <div id="prices-container" class="prices-grid">
-                        <div class="skeleton-loading"></div>
-                        <div class="skeleton-loading"></div>
-                    </div>
-                </div>
-                <div class="section">
-                    <h2 class="section-title">اقدامات سریع</h2>
-                    <div class="quick-actions">
-                        <button id="add-portfolio-btn" class="btn btn-primary btn-block">➕ اضافه کردن دارایی</button>
-                        <button id="add-alert-btn" class="btn btn-secondary btn-block">🔔 تنظیم هشدار</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Portfolio Tab -->
-        <section id="portfolio-tab" class="tab-content">
-            <div class="container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                    <h2 style="margin: 0;">💎 دارایی‌های من</h2>
-                    <button id="add-portfolio-btn-2" class="btn btn-primary">➕</button>
-                </div>
-                <div id="portfolio-list" class="portfolio-list"></div>
-                <div id="empty-portfolio" class="empty-state" style="display: none;">
-                    <div class="empty-icon">📭</div>
-                    <p>هنوز دارایی ثبت نشده</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Prices Tab -->
-        <section id="prices-tab" class="tab-content">
-            <div class="container">
-                <h2 class="section-title">📊 قیمت‌های طلا</h2>
-                <div id="price-details-18" class="skeleton-loading"></div>
-                <div id="price-details-24" class="skeleton-loading"></div>
-            </div>
-        </section>
-
-        <!-- Alerts Tab -->
-        <section id="alerts-tab" class="tab-content">
-            <div class="container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                    <h2 style="margin: 0;">🔔 هشدارهای قیمتی</h2>
-                    <button id="add-alert-btn-2" class="btn btn-primary">➕</button>
-                </div>
-                <div id="alerts-list" class="alerts-list"></div>
-                <div id="empty-alerts" class="empty-state" style="display: none;">
-                    <div class="empty-icon">🔕</div>
-                    <p>هشداری تنظیم نشده</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Profile Tab -->
-        <section id="profile-tab" class="tab-content">
-            <div class="container">
-                <div class="profile-header">
-                    <div class="profile-avatar">👤</div>
-                    <div class="profile-info">
-                        <h2 id="profile-name">کاربر</h2>
-                        <p id="profile-username">بدون نام کاربری</p>
-                    </div>
-                </div>
-                <div class="section">
-                    <h3>اطلاعات شخصی</h3>
-                    <div id="profile-details" class="profile-details"></div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Modals -->
-    <div id="portfolio-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>افزودن دارایی جدید</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <form id="portfolio-form" class="modal-body">
-                <div class="form-group">
-                    <label>نوع طلا</label>
-                    <select name="goldType" required>
-                        <option value="">انتخاب کنید</option>
-                        <option value="24">طلای 24 عیار</option>
-                        <option value="18">طلای 18 عیار</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>وزن (گرم)</label>
-                    <input type="number" name="weight" placeholder="مثال: 5" step="0.1" required>
-                </div>
-                <div class="form-group">
-                    <label>قیمت فی (تومان)</label>
-                    <input type="number" name="purchasePrice" placeholder="مثال: 2500000" required>
-                </div>
-                <div class="form-group">
-                    <label>تاریخ خرید</label>
-                    <input type="date" name="purchaseDate" required>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-block">ذخیره</button>
-                    <button type="button" class="btn btn-secondary btn-block modal-close">انصراف</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="alert-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>تنظیم هشدار قیمتی</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <form id="alert-form" class="modal-body">
-                <div class="form-group">
-                    <label>نوع طلا</label>
-                    <select name="goldType" required>
-                        <option value="">انتخاب کنید</option>
-                        <option value="24">طلای 24 عیار</option>
-                        <option value="18">طلای 18 عیار</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>نوع هشدار</label>
-                    <select name="alertType" required>
-                        <option value="">انتخاب کنید</option>
-                        <option value="above">بالاتر از</option>
-                        <option value="below">پایین‌تر از</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>قیمت هدف (تومان)</label>
-                    <input type="number" name="targetPrice" placeholder="مثال: 2500000" required>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-block">تنظیم</button>
-                    <button type="button" class="btn btn-secondary btn-block modal-close">انصراف</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="toast" class="toast"></div>
 
     <script>
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        const API_BASE = 'https://page-teleg.goldyarprice.workers.dev';
+        let authToken = localStorage.getItem('goldyar_token');
 
-        // ═══════════════════════════════════════════════════════════════
-        // 🔧 Configuration & State
-        // ═══════════════════════════════════════════════════════════════
+        // Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
 
-        const CONFIG = {
-            API_BASE: 'https://page-teleg.goldyarprice.workers.dev',
-            BOT_URL: 'https://t.me/goldyar_investment_bot',
-            POLLING_INTERVAL: 60000,
+        // بررسی ورود خودکار
+        window.onload = function() {
+            if (authToken) {
+                loadUserData();
+            } else {
+                showSection('loginSection');
+            }
         };
 
-        const tg = window.Telegram?.WebApp;
-        let TELEGRAM_INIT_DATA = null;
-        let USER_ID = null;
-        let TELEGRAM_USER_ID = null;
-
-        let appState = {
-            user: null,
-            prices: { gold18: 0, gold24: 0 },
-            portfolio: [],
-            alerts: [],
-            isDarkMode: localStorage.getItem('theme') === 'dark',
-            isLoggedIn: localStorage.getItem('loginToken') !== null,
-            loginToken: localStorage.getItem('loginToken'),
-            verificationTimer: null,
-        };
-
-        // ═══════════════════════════════════════════════════════════════
-        // 📱 Telegram Init
-        // ═══════════════════════════════════════════════════════════════
-
-        if (tg) {
-            tg.ready();
-            tg.expand();
-            TELEGRAM_INIT_DATA = tg.initData || '';
-            TELEGRAM_USER_ID = tg.initDataUnsafe?.user?.id;
-            console.log('✅ Telegram Ready - Telegram User ID:', TELEGRAM_USER_ID);
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // 🔐 Auth Functions
-        // ═══════════════════════════════════════════════════════════════
+        function showError(message, elementId = 'loginError') {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
 
-        async function requestVerificationCode(userId) {
+        async function requestCode() {
+            const userId = document.getElementById('userIdInput').value.trim();
+            
+            if (!userId) {
+                showError('لطفاً شناسه عددی خود را وارد کنید');
+                return;
+            }
+
+            const btn = document.getElementById('requestCodeBtn');
+            btn.disabled = true;
+            btn.textContent = 'در حال ارسال...';
+
             try {
-                console.log('📤 Requesting verification code for user:', userId);
-                console.log('Telegram User ID:', TELEGRAM_USER_ID);
-                console.log('Init Data:', TELEGRAM_INIT_DATA ? 'Available' : 'Not available');
-
-                const response = await fetch(`${CONFIG.API_BASE}/api/auth/request-code`, {
+                const response = await fetch(`${API_BASE}/api/request-code`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`
-                    },
-                    body: JSON.stringify({
-                        userId: parseInt(userId),
-                        telegramUserId: TELEGRAM_USER_ID
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: parseInt(userId) })
                 });
 
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'خطا در درخواست کد');
-                }
-
                 const data = await response.json();
-                console.log('✅ Verification code requested');
-                return true;
+
+                if (data.success) {
+                    document.getElementById('codeSection').style.display = 'block';
+                    btn.textContent = 'کد ارسال شد ✓';
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'ارسال مجدد کد';
+                    }, 30000);
+                } else {
+                    showError(data.error || 'خطا در ارسال کد');
+                    btn.disabled = false;
+                    btn.textContent = 'دریافت کد تایید';
+                }
             } catch (error) {
-                console.error('❌ Error requesting code:', error);
-                showAuthError(error.message);
-                return false;
+                showError('خطا در برقراری ارتباط با سرور');
+                btn.disabled = false;
+                btn.textContent = 'دریافت کد تایید';
             }
         }
 
-        async function verifyCode(userId, code) {
-            try {
-                console.log('📤 Verifying code for user:', userId);
-                console.log('Telegram User ID:', TELEGRAM_USER_ID);
-                console.log('Init Data:', TELEGRAM_INIT_DATA ? 'Available' : 'Not available');
+        async function verifyCode() {
+            const userId = document.getElementById('userIdInput').value.trim();
+            const code = document.getElementById('codeInput').value.trim();
 
-                const response = await fetch(`${CONFIG.API_BASE}/api/auth/verify-code`, {
+            if (!code) {
+                showError('لطفاً کد تایید را وارد کنید');
+                return;
+            }
+
+            const btn = document.getElementById('verifyBtn');
+            btn.disabled = true;
+            btn.textContent = 'در حال تأیید...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/verify-code`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`
-                    },
-                    body: JSON.stringify({
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
                         userId: parseInt(userId),
-                        code: code.toUpperCase(),
-                        telegramUserId: TELEGRAM_USER_ID
+                        code: code.toUpperCase()
                     })
                 });
 
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'کد نامعتبر است');
-                }
-
                 const data = await response.json();
-                console.log('✅ Code verified, token:', data.token);
-                return data.token;
+
+                if (data.success) {
+                    authToken = data.token;
+                    localStorage.setItem('goldyar_token', authToken);
+                    loadUserData();
+                } else {
+                    showError(data.error || 'کد تایید نامعتبر است');
+                    btn.disabled = false;
+                    btn.textContent = 'تأیید و ورود';
+                }
             } catch (error) {
-                console.error('❌ Error verifying code:', error);
-                showAuthError(error.message);
-                return null;
+                showError('خطا در برقراری ارتباط با سرور');
+                btn.disabled = false;
+                btn.textContent = 'تأیید و ورود';
             }
         }
 
-        function saveLoginToken(token) {
-            localStorage.setItem('loginToken', token);
-            appState.loginToken = token;
-            appState.isLoggedIn = true;
+        async function loadUserData() {
+            showSection('loadingSection');
+
+            try {
+                const response = await fetch(`${API_BASE}/api/user`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayUserData(data);
+                    showSection('mainSection');
+                } else {
+                    localStorage.removeItem('goldyar_token');
+                    authToken = null;
+                    showSection('loginSection');
+                    showError('نشست منقضی شده. لطفاً مجدداً وارد شوید');
+                }
+            } catch (error) {
+                showSection('loginSection');
+                showError('خطا در بارگذاری اطلاعات');
+            }
+        }
+
+        function displayUserData(data) {
+            // اطلاعات کاربری
+            document.getElementById('userName').textContent = data.user.first_name || 'کاربر';
+            document.getElementById('userId').textContent = data.user.user_id;
+            document.getElementById('notifStatus').textContent = 
+                data.user.notification_enabled ? `فعال (${data.user.notification_time})` : 'غیرفعال';
+
+            // دارایی
+            document.getElementById('totalInvestment').textContent = 
+                formatNumber(data.portfolio.totalInvestment) + ' تومان';
+            document.getElementById('currentValue').textContent = 
+                formatNumber(data.portfolio.currentValue) + ' تومان';
+            
+            const profitEl = document.getElementById('profit');
+            const profit = data.portfolio.profit;
+            const profitPercent = data.portfolio.profitPercent;
+            
+            if (profit > 0) {
+                profitEl.className = 'info-value profit-positive';
+                profitEl.textContent = `+${formatNumber(profit)} تومان (${profitPercent.toFixed(2)}%+)`;
+            } else if (profit < 0) {
+                profitEl.className = 'info-value profit-negative';
+                profitEl.textContent = `${formatNumber(profit)} تومان (${profitPercent.toFixed(2)}%-)`;
+            } else {
+                profitEl.className = 'info-value';
+                profitEl.textContent = 'بدون تغییر';
+            }
+
+            // لیست دارایی‌ها
+            const portfolioList = document.getElementById('portfolioList');
+            if (data.portfolio.items.length === 0) {
+                portfolioList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>هنوز دارایی‌ای ثبت نشده است</p>
+                    </div>
+                `;
+            } else {
+                portfolioList.innerHTML = data.portfolio.items.map(item => `
+                    <div class="portfolio-item">
+                        <strong>${item.weight} گرم طلای ${item.gold_type}</strong><br>
+                        قیمت خرید: ${formatNumber(item.purchase_price)} تومان<br>
+                        تاریخ: ${item.purchase_date}
+                    </div>
+                `).join('');
+            }
+
+            // لیست هشدارها
+            const alertsList = document.getElementById('alertsList');
+            if (data.alerts.length === 0) {
+                alertsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔔</div>
+                        <p>هنوز هشداری ثبت نشده است</p>
+                    </div>
+                `;
+            } else {
+                alertsList.innerHTML = data.alerts.map(alert => {
+                    const typeText = alert.alert_type === 'above' ? 'بالاتر از' : 'پایین‌تر از';
+                    return `
+                        <div class="alert-item">
+                            <strong>طلای ${alert.gold_type} عیار</strong><br>
+                            ${typeText} ${formatNumber(alert.target_price)} تومان
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.getElementById(tabName + 'Tab').style.display = 'block';
         }
 
         function logout() {
-            localStorage.removeItem('loginToken');
-            appState.loginToken = null;
-            appState.isLoggedIn = false;
-            showLoginPage();
+            if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
+                localStorage.removeItem('goldyar_token');
+                authToken = null;
+                location.reload();
+            }
         }
-
-        function showAuthError(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
-        }
-
-        function showLoginPage() {
-            document.getElementById('login-page').style.display = 'flex';
-            document.getElementById('main-container').style.display = 'none';
-            document.getElementById('nav-tabs').style.display = 'none';
-            document.getElementById('login-step').style.display = 'block';
-            document.getElementById('verify-step').style.display = 'none';
-            document.getElementById('get-id-section').style.display = 'none';
-            document.getElementById('user-id-hint').style.display = 'block';
-        }
-
-        function showMainApp() {
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('main-container').style.display = 'block';
-            document.getElementById('nav-tabs').style.display = 'flex';
-            loadInitialData();
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🎯 Global Functions
-        // ═══════════════════════════════════════════════════════════════
 
         function formatNumber(num) {
-            if (!num) return '۰';
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
-        }
-
-        function formatNumberWithComma(num) {
-            if (!num) return '';
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
-
-        function gregorianToJalali(date) {
-            if (typeof date === 'string') date = new Date(date + 'T00:00:00');
-            const gy = date.getFullYear(), gm = date.getMonth() + 1, gd = date.getDate();
-            let g_d_n = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
-            for (let i = 0; i < gm; i++) g_d_n += new Date(gy, i + 1, 0).getDate();
-            let j_d_n = g_d_n - 79, jy = -1600 + 400 * Math.floor(j_d_n / 146097);
-            j_d_n %= 146097;
-            let flag = true;
-            if (j_d_n >= 36525) { j_d_n--; jy += 100 * Math.floor(j_d_n / 36524); j_d_n %= 36524; if (j_d_n >= 365) j_d_n++; flag = false; }
-            jy += 4 * Math.floor(j_d_n / 1461); j_d_n %= 1461;
-            if (flag) { if (j_d_n >= 366) { j_d_n--; jy += Math.floor(j_d_n / 365); j_d_n = j_d_n % 365; } }
-            const sal_a = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-            let jm = 0;
-            while (jm < 12 && j_d_n >= sal_a[jm]) jm++;
-            if (jm > 1) j_d_n -= sal_a[jm - 1];
-            return { year: jy, month: jm, day: j_d_n + 1 };
-        }
-
-        function formatJalaliDate(date) {
-            if (typeof date === 'string') { const parts = date.split('-'); date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])); }
-            const jalali = gregorianToJalali(date);
-            const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
-            return `${jalali.day} ${months[jalali.month - 1]} ${jalali.year}`;
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 📊 Load Data Functions (GLOBAL SCOPE)
-        // ═══════════════════════════════════════════════════════════════
-
-        async function loadPrices() {
-            try {
-                console.log('📡 Fetching prices...');
-                const response = await fetch(`${CONFIG.API_BASE}/api/gold-prices`, {
-                    headers: {
-                        'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                        'User-ID': USER_ID || 'unknown'
-                    }
-                });
-                if (!response.ok) throw new Error('API Error');
-                const data = await response.json();
-                appState.prices = data;
-                renderPrices();
-                console.log('✅ Prices loaded');
-            } catch (error) {
-                console.error('❌ Price error:', error);
-                showToast('خطا در دریافت قیمت‌ها');
-            }
-        }
-
-        function renderPrices() {
-            const container = document.getElementById('prices-container');
-            if (!container) return;
-            const html = `
-                <div class="price-card">
-                    <div class="price-card-title">طلای 18 عیار</div>
-                    <div class="price-card-value">${formatNumber(appState.prices.gold18 || 0)}</div>
-                    <div class="price-card-change ${(appState.prices.change18Percent || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(appState.prices.change18Percent || 0) >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change18Percent || 0).toFixed(2)}%
-                    </div>
-                </div>
-                <div class="price-card">
-                    <div class="price-card-title">طلای 24 عیار</div>
-                    <div class="price-card-value">${formatNumber(appState.prices.gold24 || 0)}</div>
-                    <div class="price-card-change ${(appState.prices.change24Percent || 0) >= 0 ? 'positive' : 'negative'}">
-                        ${(appState.prices.change24Percent || 0) >= 0 ? '📈' : '📉'} ${Math.abs(appState.prices.change24Percent || 0).toFixed(2)}%
-                    </div>
-                </div>
-            `;
-            container.innerHTML = html;
-        }
-
-        async function loadPortfolio() {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio`, {
-                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
-                });
-                if (!response.ok) throw new Error('Failed');
-                const data = await response.json();
-                appState.portfolio = data.items || [];
-                renderPortfolio();
-            } catch (error) {
-                console.error('❌ Portfolio error:', error);
-            }
-        }
-
-        function renderPortfolio() {
-            const container = document.getElementById('portfolio-list');
-            const emptyState = document.getElementById('empty-portfolio');
-            if (!container || !emptyState) return;
-            if (!appState.portfolio || appState.portfolio.length === 0) {
-                container.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-            container.style.display = 'flex';
-            emptyState.style.display = 'none';
-            container.innerHTML = appState.portfolio.map(item => `
-                <div class="portfolio-item">
-                    <div class="portfolio-item-info">
-                        <div class="portfolio-item-title">${item.goldType} عیار</div>
-                        <div class="portfolio-item-details">${item.weight} گرم • ${formatJalaliDate(item.purchaseDate)}</div>
-                    </div>
-                    <div class="portfolio-item-actions">
-                        <button class="icon-btn delete" onclick="deletePortfolio(${item.id})">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function loadAlerts() {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/api/alerts`, {
-                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
-                });
-                if (!response.ok) throw new Error('Failed');
-                const data = await response.json();
-                appState.alerts = data.alerts || [];
-                renderAlerts();
-            } catch (error) {
-                console.error('❌ Alerts error:', error);
-            }
-        }
-
-        function renderAlerts() {
-            const container = document.getElementById('alerts-list');
-            const emptyState = document.getElementById('empty-alerts');
-            if (!container || !emptyState) return;
-            if (!appState.alerts || appState.alerts.length === 0) {
-                container.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-            container.style.display = 'flex';
-            emptyState.style.display = 'none';
-            container.innerHTML = appState.alerts.map(alert => `
-                <div class="alert-item">
-                    <div class="alert-item-info">
-                        <div class="alert-item-title">${alert.goldType} عیار</div>
-                        <div class="alert-item-details">${alert.alertType === 'above' ? '⬆️' : '⬇️'} ${formatNumber(alert.targetPrice)}</div>
-                    </div>
-                    <div class="alert-item-actions">
-                        <button class="icon-btn delete" onclick="deleteAlert(${alert.id})">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function loadProfile() {
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/api/profile`, {
-                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
-                });
-                if (!response.ok) throw new Error('Failed');
-                const data = await response.json();
-                appState.user = { ...appState.user, ...data };
-                renderProfile();
-            } catch (error) {
-                console.error('❌ Profile error:', error);
-            }
-        }
-
-        function renderProfile() {
-            const nameEl = document.getElementById('profile-name');
-            const usernameEl = document.getElementById('profile-username');
-            if (!nameEl || !usernameEl) return;
-            const firstName = appState.user?.first_name || 'کاربر';
-            const username = appState.user?.username ? `@${appState.user.username}` : 'بدون نام کاربری';
-            nameEl.textContent = firstName;
-            usernameEl.textContent = username;
-            const userId = appState.user?.user_id || appState.user?.id || USER_ID || 'نامشخص';
-            const profileDetails = document.getElementById('profile-details');
-            if (profileDetails) {
-                profileDetails.innerHTML = `
-                    <div class="profile-detail-item">
-                        <span>🆔 شناسه</span>
-                        <strong style="cursor: pointer; user-select: text;" onclick="copyToClipboard('${userId}')">${userId}</strong>
-                    </div>
-                    <div class="profile-detail-item"><span>📱 نام</span><strong>${firstName}</strong></div>
-                    <div class="profile-detail-item"><span>👤 نام کاربری</span><strong>${username}</strong></div>
-                `;
-            }
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('✅ کپی شد');
-            }).catch(() => {
-                showToast('❌ خطا در کپی');
-            });
-        }
-
-        async function loadInitialData() {
-            console.log('🔄 Loading all data...');
-            if (!USER_ID) { console.error('❌ NO USER ID'); return; }
-            try {
-                await Promise.all([loadPrices(), loadPortfolio(), loadAlerts(), loadProfile()]);
-                console.log('✅ Data loaded');
-            } catch (error) {
-                console.error('❌ Error:', error);
-            }
-        }
-
-        async function deletePortfolio(id) {
-            if (!confirm('حذف شود؟')) return;
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
-                });
-                if (response.ok) { showToast('✅ حذف شد'); await loadPortfolio(); }
-            } catch (error) { showToast('❌ خطا'); }
-        }
-
-        async function deleteAlert(id) {
-            if (!confirm('حذف شود؟')) return;
-            try {
-                const response = await fetch(`${CONFIG.API_BASE}/api/alerts/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `tg ${TELEGRAM_INIT_DATA}`, 'User-ID': USER_ID || 'unknown' }
-                });
-                if (response.ok) { showToast('✅ حذف شد'); await loadAlerts(); }
-            } catch (error) { showToast('❌ خطا'); }
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🎛️ Event Listeners & UI
-        // ═══════════════════════════════════════════════════════════════
-
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('✅ DOM Ready');
-
-            // اگر logged in نہیں ہے تو login page دکھائیں
-            if (!appState.isLoggedIn) {
-                showLoginPage();
-                setupAuthListeners();
-                return;
-            }
-
-            // اگر logged in ہے تو main app دکھائیں
-            USER_ID = localStorage.getItem('userId');
-            showMainApp();
-            setupAppListeners();
-        });
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🔐 Auth Event Listeners
-        // ═══════════════════════════════════════════════════════════════
-
-        function setupAuthListeners() {
-            // Login form
-            document.getElementById('login-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const userId = document.getElementById('user-id-input').value.trim();
-                if (!userId) {
-                    showAuthError('لطفا شناسه عددی را وارد کنید');
-                    return;
-                }
-                const success = await requestVerificationCode(userId);
-                if (success) {
-                    USER_ID = userId;
-                    document.getElementById('verify-user-id').textContent = userId;
-                    document.getElementById('login-step').style.display = 'none';
-                    document.getElementById('verify-step').style.display = 'block';
-                    startVerificationTimer();
-                }
-            });
-
-            // Get ID button - show ID section
-            document.getElementById('show-get-id-btn').addEventListener('click', (e) => {
-                e.preventDefault();
-                document.getElementById('get-id-section').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
-                document.querySelector('.auth-header').style.display = 'none';
-            });
-
-            // Open bot button - opens bot with getid parameter
-            document.getElementById('open-bot-btn').addEventListener('click', () => {
-                // Use direct bot username
-                const deepLinkUrl = `https://t.me/goldyar_investment_bot?start=getid`;
-                window.open(deepLinkUrl, '_blank');
-            });
-
-            // Verify form
-            document.getElementById('verify-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const code = document.getElementById('verify-code-input').value.trim();
-                if (code.length !== 6) {
-                    showAuthError('کد باید ۶ رقم باشد');
-                    return;
-                }
-                const token = await verifyCode(USER_ID, code);
-                if (token) {
-                    saveLoginToken(token);
-                    localStorage.setItem('userId', USER_ID);
-                    showToast('✅ خوش آمدید!');
-                    setTimeout(() => {
-                        appState.isLoggedIn = true;
-                        showMainApp();
-                        setupAppListeners();
-                    }, 500);
-                }
-            });
-
-            // Back button for verify step
-            document.getElementById('back-to-login-btn').addEventListener('click', () => {
-                clearInterval(appState.verificationTimer);
-                document.getElementById('login-step').style.display = 'block';
-                document.getElementById('verify-step').style.display = 'none';
-                document.getElementById('verify-code-input').value = '';
-                document.getElementById('error-message').style.display = 'none';
-            });
-
-            // Back button for get ID step
-            document.getElementById('back-to-login-id-btn').addEventListener('click', () => {
-                document.getElementById('get-id-section').style.display = 'none';
-                document.getElementById('login-form').style.display = 'block';
-                document.querySelector('.auth-header').style.display = 'block';
-                document.getElementById('user-id-input').value = '';
-            });
-        }
-
-        function startVerificationTimer() {
-            let timeLeft = 300; // 5 minutes
-            const timerElement = document.getElementById('verify-timer');
-
-            appState.verificationTimer = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
-
-                if (timeLeft <= 0) {
-                    clearInterval(appState.verificationTimer);
-                    showAuthError('کد منقضی شد. دوباره سعی کنید');
-                    document.getElementById('verify-step').style.display = 'none';
-                    document.getElementById('login-step').style.display = 'block';
-                }
-            }, 1000);
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🎛️ App Event Listeners
-        // ═══════════════════════════════════════════════════════════════
-
-        function setupAppListeners() {
-            // Tab switching
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabName = btn.dataset.tab;
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById(`${tabName}-tab`).classList.add('active');
-                    if (tabName === 'portfolio') loadPortfolio();
-                    else if (tabName === 'prices') loadPrices();
-                    else if (tabName === 'alerts') loadAlerts();
-                    else if (tabName === 'profile') loadProfile();
-                });
-            });
-
-            // Apply dark mode if saved
-            if (appState.isDarkMode) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('theme-toggle').querySelector('.theme-icon').textContent = '☀️';
-            }
-
-            // Theme toggle
-            document.getElementById('theme-toggle').addEventListener('click', () => {
-                appState.isDarkMode = !appState.isDarkMode;
-                document.documentElement.setAttribute('data-theme', appState.isDarkMode ? 'dark' : 'light');
-                document.getElementById('theme-toggle').querySelector('.theme-icon').textContent = appState.isDarkMode ? '☀️' : '🌙';
-                localStorage.setItem('theme', appState.isDarkMode ? 'dark' : 'light');
-            });
-
-            // Modal buttons
-            document.getElementById('add-portfolio-btn').addEventListener('click', () => {
-                document.getElementById('portfolio-modal').classList.add('active');
-                document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
-            });
-
-            document.getElementById('add-portfolio-btn-2').addEventListener('click', () => {
-                document.getElementById('portfolio-modal').classList.add('active');
-                document.querySelector('input[name="purchaseDate"]').valueAsDate = new Date();
-            });
-
-            document.getElementById('add-alert-btn').addEventListener('click', () => {
-                document.getElementById('alert-modal').classList.add('active');
-            });
-
-            document.getElementById('add-alert-btn-2').addEventListener('click', () => {
-                document.getElementById('alert-modal').classList.add('active');
-            });
-
-            document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-                });
-            });
-
-            // Price input formatting
-            const setupPriceInput = (inputName) => {
-                const input = document.querySelector(`input[name="${inputName}"]`);
-                if (input) {
-                    input.addEventListener('input', function () {
-                        let value = this.value.replace(/,/g, '');
-                        this.value = formatNumberWithComma(value);
-                    });
-                }
-            };
-
-            // Re-setup when modals open
-            const observer = new MutationObserver(() => {
-                setupPriceInput('purchasePrice');
-                setupPriceInput('targetPrice');
-            });
-            observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-
-            // Form submissions
-            document.getElementById('portfolio-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const payload = {
-                    goldType: formData.get('goldType'),
-                    weight: parseFloat(formData.get('weight')),
-                    purchasePrice: parseInt(formData.get('purchasePrice').replace(/,/g, '')),
-                    purchaseDate: formData.get('purchaseDate'),
-                };
-                try {
-                    const response = await fetch(`${CONFIG.API_BASE}/api/portfolio/add`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'Content-Type': 'application/json',
-                            'User-ID': USER_ID || 'unknown'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    if (response.ok) {
-                        showToast('✅ دارایی اضافه شد');
-                        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-                        e.target.reset();
-                        await loadPortfolio();
-                    }
-                } catch (error) { showToast('❌ خطا'); }
-            });
-
-            document.getElementById('alert-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const payload = {
-                    goldType: formData.get('goldType'),
-                    alertType: formData.get('alertType'),
-                    targetPrice: parseInt(formData.get('targetPrice').replace(/,/g, ''))
-                };
-                try {
-                    const response = await fetch(`${CONFIG.API_BASE}/api/alerts/add`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `tg ${TELEGRAM_INIT_DATA}`,
-                            'Content-Type': 'application/json',
-                            'User-ID': USER_ID || 'unknown'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    if (response.ok) {
-                        showToast('✅ هشدار تنظیم شد');
-                        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-                        e.target.reset();
-                        await loadAlerts();
-                    }
-                } catch (error) { showToast('❌ خطا'); }
-            });
-
-            // Load initial data
-            setTimeout(() => {
-                loadInitialData();
-                setInterval(() => loadPrices(), CONFIG.POLLING_INTERVAL);
-            }, 500);
+            return new Intl.NumberFormat('fa-IR').format(num);
         }
     </script>
 </body>

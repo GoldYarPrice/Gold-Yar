@@ -666,11 +666,11 @@
             </div>
 
             <div class="login-logo">
-                <h1>🏆 طلا یار</h1>
+                <h1>طلا یار</h1>
                 <p>مدیریت حرفه‌ای سرمایه‌گذاری طلا</p>
             </div>
 
-            <div id="loginForm">
+            <div id="autoLoginLoading" style="text-align: center; padding: 40px;"><div class="spinner"></div><p style="margin-top: 20px; color: rgba(255, 255, 255, 0.7);">در حال ورود خودکار...</p></div><div id="loginForm" style="display: none;">
                 <!-- How to get ID instruction -->
                 <div
                     style="background: rgba(31, 41, 55, 0.5); padding: 16px; border-radius: 16px; border: 1px solid rgba(55, 65, 81, 0.5); text-align: center; margin-bottom: 20px; backdrop-filter: blur(4px);">
@@ -739,7 +739,7 @@
 
                 <!-- Portfolio Summary -->
                 <div class="card">
-                    <div class="card-title">📊 خلاصه دارایی</div>
+                    <div class="card-title">📊 خلاصه دارایی (تومان)</div>
                     <div class="stat-grid">
                         <div class="stat-item">
                             <div class="stat-label">سرمایه اولیه</div>
@@ -794,7 +794,7 @@
             <div id="portfolioTab" class="tab-content hidden">
                 <!-- Portfolio Summary Card -->
                 <div class="card">
-                    <div class="card-title">� سبد طلای شما</div>
+                    <div class="card-title">💰 سبد طلای شما (تومان)</div>
                     <div class="stat-grid">
                         <div class="stat-item">
                             <div class="stat-label">💰 سرمایه</div>
@@ -963,10 +963,62 @@
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
 
-        // Check if already logged in
+        // Auto-login with Telegram data
+        async function autoLogin() {
+            const autoLoginLoading = document.getElementById('autoLoginLoading');
+            const loginForm = document.getElementById('loginForm');
+
+            try {
+                const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+
+                if (tgUser && tgUser.id) {
+                    console.log('🔐 Auto-login attempt with Telegram user:', tgUser.id);
+
+                    const response = await fetch(`${API_BASE}/api/auto-login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: tgUser.id,
+                            firstName: tgUser.first_name || '',
+                            lastName: tgUser.last_name || '',
+                            username: tgUser.username || ''
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success && data.token) {
+                        console.log('✅ Auto-login successful');
+                        localStorage.setItem('authToken', data.token);
+                        if (autoLoginLoading) autoLoginLoading.style.display = 'none';
+                        loadUserData();
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Auto-login failed:', error);
+            }
+
+            // Show manual login form if auto-login failed
+            if (autoLoginLoading) autoLoginLoading.style.display = 'none';
+            if (loginForm) loginForm.style.display = 'block';
+            return false;
+        }
+
+        // Check if already logged in or try auto-login
         const token = localStorage.getItem('authToken');
         if (token) {
-            loadUserData();
+            const autoLoginLoading = document.getElementById('autoLoginLoading');
+            if (autoLoginLoading) autoLoginLoading.style.display = 'none';
+            // Try auto-login with Telegram data
+            autoLogin().then(success => {
+                if (!success) {
+                    // Show login page if auto-login failed
+                    console.log('📝 Manual login required');
+                }
+            });
         }
 
         // Copy /whatismyid command
@@ -1104,7 +1156,8 @@
                     document.getElementById('currentValue').textContent = formatPrice(currentValue);
 
                     const profitLossEl = document.getElementById('profitLoss');
-                    profitLossEl.textContent = formatPrice(profit);
+                    const profitSign = profit >= 0 ? '+' : '-';
+                    profitLossEl.textContent = formatPrice(Math.abs(profit)) + profitSign;
                     profitLossEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
 
                     const profitPercentSign = profitPercent >= 0 ? '+' : '';
@@ -1116,7 +1169,7 @@
                     document.getElementById('totalPortfolioValue').textContent = formatPrice(currentValue);
 
                     const totalProfitEl = document.getElementById('totalPortfolioProfit');
-                    totalProfitEl.textContent = formatPrice(profit);
+                    totalProfitEl.textContent = formatPrice(Math.abs(profit)) + (profit >= 0 ? '+' : '-');
                     totalProfitEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
 
                     // Load portfolio items
@@ -1246,7 +1299,7 @@
                 const profitPercent = parseFloat(item.profitPercent) || 0;
 
                 const profitClass = profit >= 0 ? 'profit' : 'loss';
-                const profitSign = profit >= 0 ? '+' : '';
+                const profitSign = profit >= 0 ? '+' : '-';
 
                 return `
                     <div class="portfolio-item" style="border-right: 3px solid ${profit >= 0 ? '#34c759' : '#ff3b30'};">
@@ -1255,15 +1308,16 @@
                                 <span style="background: rgba(212, 175, 55, 0.2); padding: 4px 12px; border-radius: 8px; font-size: 0.9em;">${weight.toFixed(2)} گرم</span>
                                 <span style="font-size: 0.85em; color: rgba(255, 255, 255, 0.7);">طلای 18 عیار</span>
                             </h4>
-                            <p style="margin-top: 8px;">💰 خرید: ${formatPrice(pricePerGram)} تومان/گرم</p>
+                            <p style="margin-top: 8px;">💰 قیمت خرید (هر گرم): ${formatPrice(pricePerGram)} تومان</p>
+                            <p style="margin-top: 4px;">💵 مبلغ کل خرید: ${formatPrice(totalPaid)} تومان</p>
                             <p style="font-size: 0.8em; color: rgba(255, 255, 255, 0.5); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <div class="portfolio-item-value" style="text-align: left;">
                                 <div class="current" style="font-size: 1.1em;">${formatPrice(itemCurrentValue)} تومان</div>
                                 <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                                    <span>${profitSign}${formatPrice(profit)} تومان</span>
-                                    <span style="font-size: 0.85em; opacity: 0.8; direction: ltr; unicode-bidi: embed;">(${profitSign}${profitPercent}%)</span>
+                                    <span style="font-size: 0.85em; opacity: 0.8; direction: ltr; unicode-bidi: embed;">(${profitSign}${Math.abs(profitPercent).toFixed(2)}%)</span>
+                                    <span style="direction: ltr; unicode-bidi: embed;">${profitSign}${formatPrice(Math.abs(profit))}</span>
                                 </div>
                             </div>
                             <button class="btn-delete" onclick="deletePortfolioItem(${item.id})" style="font-size: 0.8em; padding: 6px 12px;">🗑️ حذف</button>
@@ -1662,10 +1716,12 @@
             if (!gDate) return 'نامشخص';
 
             try {
-                const date = new Date(gDate);
+                // تبدیل فرمت "YYYY-MM-DD HH:MM:SS" به فرمت قابل پارس
+                const dateStr = gDate.toString().replace(' ', 'T');
+                const date = new Date(dateStr);
                 if (isNaN(date.getTime())) return 'نامشخص';
 
-                const gy = date.getFullYear();
+                let gy = date.getFullYear();
                 const gm = date.getMonth() + 1;
                 const gd = date.getDate();
 

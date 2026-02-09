@@ -46,8 +46,7 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: max(220px, calc(150px + env(safe-area-inset-bottom)));
-            /* افزایش بیشتر برای نمایش کامل محتوا + safe area */
+            padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
             min-height: 100vh;
             position: relative;
         }
@@ -869,22 +868,17 @@
                 <!-- Portfolio Summary -->
                 <div class="card">
                     <div class="card-title">📊 خلاصه دارایی (تومان)</div>
-                    <div class="stat-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">سرمایه اولیه</div>
-                            <div class="stat-value" id="totalInvestment">0</div>
-                        </div>
-                        <div class="stat-item">
+                    <div style="display: flex; gap: 12px; margin-top: 15px;">
+                        <div class="stat-item" style="flex: 1;">
                             <div class="stat-label">ارزش فعلی</div>
-                            <div class="stat-value" id="currentValue">0</div>
+                            <div class="stat-value" id="currentValue" style="font-size: 1.1em;">0</div>
                         </div>
-                        <div class="stat-item">
+                        <div class="stat-item" style="flex: 1;">
                             <div class="stat-label">سود/زیان</div>
-                            <div class="stat-value profit" id="profitLoss">0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">درصد تغییر</div>
-                            <div class="stat-value" id="profitPercent" style="direction: ltr;">0%</div>
+                            <div class="stat-value profit" id="profitLoss" style="font-size: 1.1em;">0</div>
+                            <div id="profitPercent"
+                                style="font-size: 0.8em; margin-top: 4px; direction: ltr; color: rgba(255,255,255,0.6);">
+                                0%</div>
                         </div>
                     </div>
                 </div>
@@ -927,23 +921,35 @@
                 <!-- Portfolio Summary Card -->
                 <div class="card">
                     <div class="card-title">💰 سبد طلای شما (تومان)</div>
-                    <div class="stat-grid">
-                        <div class="stat-item">
+
+                    <!-- کل طلا - اول -->
+                    <div class="stat-item" style="margin-top: 15px;">
+                        <div class="stat-label">⚖️ کل طلا</div>
+                        <div class="stat-value" id="totalGoldWeight">0 گرم</div>
+                    </div>
+
+                    <!-- سرمایه و ارزش فعلی - کنار هم -->
+                    <div style="display: flex; gap: 12px; margin-top: 12px;">
+                        <div class="stat-item" style="flex: 1;">
                             <div class="stat-label">💰 سرمایه</div>
                             <div class="stat-value" id="totalPortfolioInvestment">0</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">⚖️ کل طلا</div>
-                            <div class="stat-value" id="totalGoldWeight">0 گرم</div>
-                        </div>
-                        <div class="stat-item">
+                        <div class="stat-item" style="flex: 1;">
                             <div class="stat-label">💎 ارزش فعلی</div>
                             <div class="stat-value" id="totalPortfolioValue">0</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">📈 سود/زیان</div>
-                            <div class="stat-value profit" id="totalPortfolioProfit">0</div>
-                        </div>
+                    </div>
+
+                    <!-- سود/زیان -->
+                    <div class="stat-item" style="margin-top: 12px;">
+                        <div class="stat-label">📈 سود/زیان</div>
+                        <div class="stat-value profit" id="totalPortfolioProfit">0</div>
+                    </div>
+
+                    <!-- درصد تغییر -->
+                    <div class="stat-item" style="margin-top: 12px;">
+                        <div class="stat-label">📊 درصد تغییر</div>
+                        <div class="stat-value" id="totalPortfolioProfitPercent" style="direction: ltr;">0%</div>
                     </div>
                 </div>
 
@@ -1370,7 +1376,6 @@
                     const profitPercent = parseFloat(data.portfolio.profitPercent) || 0;
 
                     // Portfolio summary (Dashboard)
-                    document.getElementById('totalInvestment').textContent = formatPrice(totalInvestment);
                     document.getElementById('currentValue').textContent = formatPrice(currentValue);
 
                     const profitLossEl = document.getElementById('profitLoss');
@@ -1378,8 +1383,10 @@
                     profitLossEl.textContent = formatPrice(Math.abs(profit)) + profitSign;
                     profitLossEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
 
+                    const profitPercentEl = document.getElementById('profitPercent');
                     const profitPercentSign = profitPercent >= 0 ? '+' : '';
-                    document.getElementById('profitPercent').textContent = profitPercentSign + profitPercent.toFixed(2) + '%';
+                    profitPercentEl.textContent = profitPercentSign + profitPercent.toFixed(2) + '%';
+                    profitPercentEl.style.color = profit >= 0 ? '#34c759' : '#ff3b30';
 
                     // Portfolio Tab Summary - مطابق ربات
                     document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
@@ -1389,6 +1396,11 @@
                     const totalProfitEl = document.getElementById('totalPortfolioProfit');
                     totalProfitEl.textContent = formatPrice(Math.abs(profit)) + (profit >= 0 ? '+' : '-');
                     totalProfitEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+
+                    const totalProfitPercentEl = document.getElementById('totalPortfolioProfitPercent');
+                    const totalProfitPercentSign = profitPercent >= 0 ? '+' : '';
+                    totalProfitPercentEl.textContent = totalProfitPercentSign + profitPercent.toFixed(2) + '%';
+                    totalProfitPercentEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
 
                     // Load portfolio items
                     loadPortfolioItems(data.portfolio.items);
@@ -1529,7 +1541,7 @@
                     <div class="portfolio-item" style="border-right: 3px solid ${profit >= 0 ? '#34c759' : '#ff3b30'};">
                         <div class="portfolio-item-info">
                             <h4 style="display: flex; align-items: center; gap: 8px;">
-                                <span style="background: rgba(212, 175, 55, 0.2); padding: 3px 10px; border-radius: 8px; font-size: 0.75em;">${weight.toFixed(2)} گرم</span>
+                                <span style="background: rgba(212, 175, 55, 0.2); padding: 3px 10px; border-radius: 8px; font-size: clamp(0.55em, 2.8vw, 0.75em); white-space: nowrap;">${weight.toFixed(2)} گرم</span>
                                 <span style="font-size: 0.85em; color: rgba(255, 255, 255, 0.7);">طلای 18 عیار</span>
                             </h4>
                             <p style="margin-top: 8px;">💰 قیمت خرید (هر گرم): ${formatPrice(pricePerGram)} تومان</p>
@@ -1645,29 +1657,50 @@
             });
             event.target.closest('.nav-item').classList.add('active');
 
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-                content.classList.remove('tab-enter');
-            });
+            const doSwitch = () => {
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('tab-enter');
+                });
 
-            // Show target tab with animation
-            let targetTab = null;
-            if (tab === 'dashboard') {
-                targetTab = document.getElementById('dashboardTab');
-            } else if (tab === 'portfolio') {
-                targetTab = document.getElementById('portfolioTab');
-            } else if (tab === 'alerts') {
-                targetTab = document.getElementById('alertsTab');
-            }
+                // Show target tab with animation
+                let targetTab = null;
+                if (tab === 'dashboard') {
+                    targetTab = document.getElementById('dashboardTab');
+                } else if (tab === 'portfolio') {
+                    targetTab = document.getElementById('portfolioTab');
+                } else if (tab === 'alerts') {
+                    targetTab = document.getElementById('alertsTab');
+                }
 
-            if (targetTab) {
-                targetTab.classList.remove('hidden');
-                // Trigger animation
-                void targetTab.offsetWidth; // force reflow
-                targetTab.classList.add('tab-enter');
-                // Scroll to top
+                if (targetTab) {
+                    targetTab.classList.remove('hidden');
+                    void targetTab.offsetWidth;
+                    targetTab.classList.add('tab-enter');
+                }
+            };
+
+            // If already at top, switch instantly
+            if (window.scrollY <= 5) {
+                doSwitch();
+            } else {
+                // Smooth scroll to top while old tab is still visible, then swap
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                const onScrollEnd = () => {
+                    if (window.scrollY <= 5) {
+                        window.removeEventListener('scroll', onScrollEnd);
+                        clearTimeout(fallback);
+                        doSwitch();
+                    }
+                };
+                window.addEventListener('scroll', onScrollEnd);
+                // Fallback: if scroll doesn't fire (e.g. content too short), swap after 300ms
+                const fallback = setTimeout(() => {
+                    window.removeEventListener('scroll', onScrollEnd);
+                    window.scrollTo(0, 0);
+                    doSwitch();
+                }, 350);
             }
         }
 

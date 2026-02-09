@@ -1051,6 +1051,11 @@
         async function loadCurrentGoldPrice() {
             try {
                 const response = await fetch(`${API_BASE}/api/gold-price`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
                 const data = await response.json();
 
                 if (data.success && data.price) {
@@ -1068,16 +1073,51 @@
                         changeTextEl.textContent = `▼ ${Math.abs(data.changePercent).toFixed(2)}%`;
                     }
 
+                    // نمایش منبع قیمت برای دیباگ (اختیاری)
+                    console.log('💰 Price source:', data.source || 'unknown');
+
                     // Update portfolio values with current price
                     if (userData && userData.portfolio && userData.portfolio.items) {
                         recalculatePortfolioValues();
                     }
                 } else {
-                    document.getElementById('currentPrice').textContent = 'خطا در دریافت قیمت';
+                    throw new Error('Invalid API response');
                 }
             } catch (error) {
-                console.error('Error loading gold price:', error);
-                document.getElementById('currentPrice').textContent = 'خطا در دریافت قیمت';
+                console.error('❌ Failed to fetch gold price from API:', error);
+
+                // Fallback: محاسبه قیمت از داده‌های پورتفولیو
+                if (userData && userData.portfolio && userData.portfolio.items && userData.portfolio.items.length > 0) {
+                    console.log('📊 Using portfolio data as fallback');
+
+                    const totalValue = userData.portfolio.items.reduce((sum, item) => sum + item.current_value, 0);
+                    const totalWeight = userData.portfolio.items.reduce((sum, item) => sum + item.weight, 0);
+
+                    if (totalWeight > 0) {
+                        currentGoldPrice = Math.round(totalValue / totalWeight);
+                        document.getElementById('currentPrice').textContent = formatPrice(currentGoldPrice) + ' تومان';
+
+                        const changeEl = document.getElementById('priceChange');
+                        const changeTextEl = document.getElementById('priceChangeText');
+                        const changePercent = userData.portfolio.profitPercent || 0;
+
+                        if (changePercent >= 0) {
+                            changeEl.className = 'price-change up';
+                            changeTextEl.textContent = `▲ ${changePercent.toFixed(2)}%`;
+                        } else {
+                            changeEl.className = 'price-change down';
+                            changeTextEl.textContent = `▼ ${Math.abs(changePercent).toFixed(2)}%`;
+                        }
+
+                        // Update portfolio display
+                        recalculatePortfolioValues();
+                    } else {
+                        document.getElementById('currentPrice').textContent = 'قیمت در دسترس نیست';
+                    }
+                } else {
+                    document.getElementById('currentPrice').textContent = 'قیمت در دسترس نیست';
+                    document.getElementById('priceChangeText').textContent = '--';
+                }
             }
         }
 

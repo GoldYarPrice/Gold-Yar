@@ -27,6 +27,7 @@
         body {
             font-family: 'Vazirmatn', sans-serif;
             background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             height: auto;
             color: #fff;
@@ -621,6 +622,7 @@
         @media (max-width: 480px) {
             .container {
                 padding: 15px;
+                padding-bottom: max(220px, calc(150px + env(safe-area-inset-bottom)));
             }
 
             .login-card {
@@ -729,7 +731,7 @@
                     <div class="price-display">
                         <div class="price-label">قیمت هر گرم طلای 18 عیار</div>
                         <div class="price-value" id="currentPrice">در حال بارگذاری...</div>
-                        <div class="price-change up" id="priceChange">
+                        <div class="price-change up" id="priceChange" style="direction: ltr;">
                             <span id="priceChangeText">--</span>
                         </div>
                     </div>
@@ -753,7 +755,7 @@
                         </div>
                         <div class="stat-item">
                             <div class="stat-label">درصد تغییر</div>
-                            <div class="stat-value" id="profitPercent">0%</div>
+                            <div class="stat-value" id="profitPercent" style="direction: ltr;">0%</div>
                         </div>
                     </div>
                 </div>
@@ -1261,7 +1263,7 @@
                                 <div class="current" style="font-size: 1.1em;">${formatPrice(itemCurrentValue)} تومان</div>
                                 <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
                                     <span>${profitSign}${formatPrice(profit)} تومان</span>
-                                    <span style="font-size: 0.85em; opacity: 0.8;">(${profitSign}${profitPercent}%)</span>
+                                    <span style="font-size: 0.85em; opacity: 0.8; direction: ltr; unicode-bidi: embed;">(${profitSign}${profitPercent}%)</span>
                                 </div>
                             </div>
                             <button class="btn-delete" onclick="deletePortfolioItem(${item.id})" style="font-size: 0.8em; padding: 6px 12px;">🗑️ حذف</button>

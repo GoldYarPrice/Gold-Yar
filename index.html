@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="fa">
+<html lang="fa" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>طلا یار - Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,55 +18,57 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0d3b1f 0%, #1c6b3b 50%, #0d3b1f 100%);
-            color: #f5f3e8;
+            font-family: 'Vazirmatn', sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             min-height: 100vh;
-            padding: 20px;
+            color: #fff;
             overflow-x: hidden;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(28, 107, 59, 0.3);
-            backdrop-filter: blur(15px);
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        /* Login Page */
+        .login-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(212, 176, 59, 0.4);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
-        h1 {
+        .login-logo {
             text-align: center;
-            font-size: 2em;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #d4b03b, #f5e89d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
         }
 
-        .section {
-            display: none;
-            animation: fadeIn 0.3s ease-in;
+        .login-logo h1 {
+            font-size: 2.5em;
+            color: #d4af37;
+            margin-bottom: 10px;
         }
 
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .login-logo p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95em;
         }
 
         .input-group {
@@ -72,48 +78,48 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            font-size: 0.95em;
-            color: #e8e6d5;
+            color: #d4af37;
+            font-weight: 500;
         }
 
         .input-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid rgba(212, 176, 59, 0.4);
-            border-radius: 10px;
-            background: rgba(13, 59, 31, 0.5);
-            color: #f5f3e8;
+            padding: 15px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
             font-size: 1em;
+            font-family: 'Vazirmatn', sans-serif;
             transition: all 0.3s ease;
         }
 
         .input-group input:focus {
             outline: none;
-            border-color: #d4b03b;
-            background: rgba(13, 59, 31, 0.7);
+            border-color: #d4af37;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .btn {
             width: 100%;
-            padding: 14px 20px;
+            padding: 15px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1.1em;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 10px;
+            font-family: 'Vazirmatn', sans-serif;
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #d4b03b, #f5e89d);
-            color: #0d3b1f;
-            box-shadow: 0 5px 20px rgba(212, 176, 59, 0.5);
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #0f2027;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(212, 176, 59, 0.7);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
         }
 
         .btn-primary:disabled {
@@ -122,61 +128,439 @@
             transform: none;
         }
 
+        /* Main App */
+        .app-page {
+            display: none;
+        }
+
+        .app-page.active {
+            display: block;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-info h2 {
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .header-info p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+        }
+
+        .btn-logout {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 59, 48, 0.3);
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            color: #d4af37;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .stat-value.profit {
+            color: #34c759;
+        }
+
+        .stat-value.loss {
+            color: #ff3b30;
+        }
+
+        /* Gold Price Display */
+        .price-display {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(244, 208, 63, 0.1) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .price-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .price-value {
+            color: #d4af37;
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .price-change {
+            font-size: 0.95em;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .price-change.up {
+            background: rgba(52, 199, 89, 0.2);
+            color: #34c759;
+        }
+
+        .price-change.down {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+        }
+
+        /* Portfolio Items */
+        .portfolio-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .portfolio-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .portfolio-item-info {
+            flex: 1;
+        }
+
+        .portfolio-item-info h4 {
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .portfolio-item-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85em;
+            margin: 4px 0;
+        }
+
+        .portfolio-item-value {
+            text-align: left;
+        }
+
+        .portfolio-item-value .current {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .portfolio-item-value .profit {
+            color: #34c759;
+            font-size: 0.85em;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .portfolio-item-value .loss {
+            color: #ff3b30;
+            font-size: 0.85em;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .btn-delete {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 59, 48, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Alert Items */
+        .alert-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .alert-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .alert-type {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .alert-price {
+            color: #fff;
+            font-size: 1.1em;
+        }
+
+        .alert-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .alert-status.active {
+            background: rgba(52, 199, 89, 0.2);
+            color: #34c759;
+        }
+
+        .alert-status.inactive {
+            background: rgba(255, 149, 0, 0.2);
+            color: #ff9500;
+        }
+
+        /* Calculator */
+        .calculator {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .calculator-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .calculator-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .calculator-input input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .calculator-result {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(244, 208, 63, 0.1) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .calculator-result-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .calculator-result-value {
+            color: #d4af37;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            background: rgba(15, 32, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin: 0 5px;
+        }
+
+        .nav-item.active {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-icon {
+            font-size: 1.5em;
+            margin-bottom: 3px;
+        }
+
+        .nav-label {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nav-item.active .nav-label {
+            color: #d4af37;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #d4af37;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
         .btn-secondary {
-            background: rgba(212, 176, 59, 0.2);
-            color: #e8e6d5;
-            border: 2px solid rgba(212, 176, 59, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .btn-secondary:hover {
-            background: rgba(212, 176, 59, 0.3);
+            background: rgba(255, 255, 255, 0.15);
         }
 
-        .help-text {
-            font-size: 0.85em;
-            color: #c9c7b0;
-            margin-top: 10px;
-            line-height: 1.5;
-            background: rgba(13, 59, 31, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            border-right: 3px solid #d4b03b;
-        }
-
-        .error {
-            background: rgba(220, 53, 69, 0.2);
-            border: 2px solid rgba(220, 53, 69, 0.5);
-            color: #ffb3ba;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .success {
-            background: rgba(40, 167, 69, 0.2);
-            border: 2px solid rgba(40, 167, 69, 0.5);
-            color: #b3ffb3;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
+        /* Loading */
         .loading {
             text-align: center;
-            padding: 20px;
-            font-size: 1.2em;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .spinner {
-            border: 3px solid rgba(212, 176, 59, 0.3);
-            border-top: 3px solid #d4b03b;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-top: 3px solid #d4af37;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 0 auto 15px;
         }
 
         @keyframes spin {
@@ -189,87 +573,11 @@
             }
         }
 
-        .card {
-            background: rgba(13, 59, 31, 0.4);
-            border: 2px solid rgba(212, 176, 59, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .card-title {
-            font-size: 1.2em;
-            color: #f5e89d;
-            margin-bottom: 15px;
-            border-bottom: 2px solid rgba(212, 176, 59, 0.3);
-            padding-bottom: 10px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(212, 176, 59, 0.1);
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #c9c7b0;
-            font-size: 0.95em;
-        }
-
-        .info-value {
-            color: #f5e89d;
-            font-weight: bold;
-        }
-
-        .profit-positive {
-            color: #28a745;
-        }
-
-        .profit-negative {
-            color: #dc3545;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid rgba(212, 176, 59, 0.3);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 10px 10px 0 0;
-            color: #c9c7b0;
-        }
-
-        .tab.active {
-            background: rgba(212, 176, 59, 0.3);
-            color: #f5e89d;
-            font-weight: bold;
-        }
-
-        .alert-item,
-        .portfolio-item {
-            background: rgba(13, 59, 31, 0.3);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            border-right: 4px solid #d4b03b;
-        }
-
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            color: #c9c7b0;
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .empty-state-icon {
@@ -277,338 +585,712 @@
             margin-bottom: 15px;
             opacity: 0.5;
         }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .login-card {
+                padding: 30px 20px;
+            }
+
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price-value {
+                font-size: 1.5em;
+            }
+        }
+
+        /* Utilities */
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>🏆 طلا یار</h1>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <div class="absolute top-0 left-1/2"
+                style="transform: translateX(-50%); width: 160px; height: 2px; background: linear-gradient(to right, transparent, rgba(156, 163, 175, 0.3), transparent);">
+            </div>
 
-        <!-- صفحه لاگین -->
-        <div id="loginSection" class="section active">
-            <div class="card">
-                <div class="card-title">ورود به حساب کاربری</div>
+            <div class="login-logo">
+                <h1>🏆 طلا یار</h1>
+                <p>مدیریت حرفه‌ای سرمایه‌گذاری طلا</p>
+            </div>
 
-                <div id="loginError" class="error" style="display:none;"></div>
+            <div id="loginForm">
+                <!-- How to get ID instruction -->
+                <div
+                    style="background: rgba(31, 41, 55, 0.5); padding: 16px; border-radius: 16px; border: 1px solid rgba(55, 65, 81, 0.5); text-align: center; margin-bottom: 20px; backdrop-filter: blur(4px);">
+                    <p
+                        style="color: rgba(156, 163, 175, 0.9); font-size: 0.75em; margin-bottom: 12px; line-height: 1.6;">
+                        دستور زیر را در ربات وارد و ایدی عددی خود را دریافت کنید:</p>
+
+                    <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgb(75, 85, 99); border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s;"
+                        onmouseover="this.style.borderColor='rgba(34, 197, 94, 0.5)'"
+                        onmouseout="this.style.borderColor='rgb(75, 85, 99)'" onclick="copyCommand()">
+                        <code
+                            style="color: rgb(252, 165, 165); font-family: 'Courier New', monospace; letter-spacing: 1.5px; font-weight: 700;">/whatismyid</code>
+                        <span id="copyText"
+                            style="color: rgb(107, 114, 128); font-size: 0.75em; transition: color 0.3s;">کپی</span>
+                    </div>
+
+                    <a href="https://t.me/GoldYarRoBot" target="_blank" rel="noreferrer"
+                        style="color: rgb(96, 165, 250); font-size: 0.75em; margin-top: 12px; display: block; text-decoration: none; transition: color 0.3s;"
+                        onmouseover="this.style.color='rgb(147, 197, 253)'"
+                        onmouseout="this.style.color='rgb(96, 165, 250)'">ورود به ربات تلگرام →</a>
+                </div>
 
                 <div class="input-group">
-                    <label>شناسه عددی شما:</label>
-                    <input type="number" id="userIdInput" placeholder="مثال: 5573580713">
+                    <input type="tel" id="userIdInput" placeholder="شناسه عددی (User ID)"
+                        style="text-align: center; direction: ltr; letter-spacing: 2px; font-family: 'Courier New', monospace; font-size: 1.1em;">
                 </div>
+                <button class="btn btn-primary" onclick="requestCode()">دریافت کد تایید</button>
+            </div>
 
-                <button class="btn btn-primary" onclick="requestCode()" id="requestCodeBtn">
-                    دریافت کد تایید
-                </button>
-
-                <div id="codeSection" style="display:none;">
-                    <div class="input-group">
-                        <label>کد تایید:</label>
-                        <input type="text" id="codeInput" placeholder="کد 10 کاراکتری" maxlength="10">
-                    </div>
-                    <button class="btn btn-primary" onclick="verifyCode()" id="verifyBtn">
-                        تأیید و ورود
-                    </button>
+            <div id="verifyForm" style="display: none;">
+                <div class="input-group">
+                    <label for="codeInput">کد تایید 10 رقمی</label>
+                    <input type="text" id="codeInput" placeholder="کد ارسال شده به تلگرام را وارد کنید"
+                        style="text-align: center; direction: ltr; letter-spacing: 2px; font-family: 'Courier New', monospace;">
                 </div>
-
-                <div class="help-text">
-                    <strong>📱 شناسه خود را ندارید؟</strong><br>
-                    در ربات تلگرام دستور زیر را ارسال کنید:<br>
-                    <code
-                        style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 5px;">/whatismyid</code>
-                </div>
+                <button class="btn btn-primary" onclick="verifyCode()">تایید و ورود</button>
+                <button class="btn btn-secondary mt-20" onclick="backToLogin()">بازگشت</button>
             </div>
         </div>
+    </div>
 
-        <!-- صفحه اصلی -->
-        <div id="mainSection" class="section">
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('dashboard')">داشبورد</div>
-                <div class="tab" onclick="switchTab('portfolio')">دارایی‌ها</div>
-                <div class="tab" onclick="switchTab('alerts')">هشدارها</div>
+    <!-- Main App -->
+    <div id="appPage" class="app-page">
+        <div class="container">
+            <div class="header">
+                <div class="header-info">
+                    <h2 id="userName">کاربر</h2>
+                    <p id="userId"></p>
+                </div>
+                <button class="btn-logout" onclick="logout()">خروج</button>
             </div>
 
-            <!-- تب داشبورد -->
+            <!-- Dashboard Tab -->
             <div id="dashboardTab" class="tab-content">
+                <!-- Live Gold Price -->
                 <div class="card">
-                    <div class="card-title">اطلاعات کاربری</div>
-                    <div class="info-row">
-                        <span class="info-label">نام:</span>
-                        <span class="info-value" id="userName">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">شناسه:</span>
-                        <span class="info-value" id="userId">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">نوتیفیکیشن:</span>
-                        <span class="info-value" id="notifStatus">-</span>
+                    <div class="card-title">💰 قیمت لحظه‌ای طلا</div>
+                    <div class="price-display">
+                        <div class="price-label">قیمت هر گرم طلای 18 عیار</div>
+                        <div class="price-value" id="currentPrice">در حال بارگذاری...</div>
+                        <div class="price-change up" id="priceChange">
+                            <span id="priceChangeText">--</span>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Portfolio Summary -->
                 <div class="card">
-                    <div class="card-title">خلاصه دارایی</div>
-                    <div class="info-row">
-                        <span class="info-label">سرمایه:</span>
-                        <span class="info-value" id="totalInvestment">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">ارزش فعلی:</span>
-                        <span class="info-value" id="currentValue">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">سود/زیان:</span>
-                        <span class="info-value" id="profit">-</span>
+                    <div class="card-title">📊 خلاصه دارایی</div>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">سرمایه اولیه</div>
+                            <div class="stat-value" id="totalInvestment">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ارزش فعلی</div>
+                            <div class="stat-value" id="currentValue">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">سود/زیان</div>
+                            <div class="stat-value profit" id="profitLoss">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">درصد تغییر</div>
+                            <div class="stat-value" id="profitPercent">0%</div>
+                        </div>
                     </div>
                 </div>
 
-                <button class="btn btn-secondary" onclick="logout()">خروج از حساب</button>
+                <!-- Gold Calculator -->
+                <div class="card">
+                    <div class="card-title">🧮 محاسبه‌گر قیمت طلا</div>
+                    <div class="calculator">
+                        <div class="calculator-input">
+                            <input type="number" id="calcWeight" placeholder="وزن (گرم)" step="0.01"
+                                oninput="calculateGoldPrice()">
+                        </div>
+                        <div class="calculator-result">
+                            <div class="calculator-result-label">ارزش تقریبی</div>
+                            <div class="calculator-result-value" id="calcResult">0 تومان</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="card">
+                    <div class="card-title">⚙️ تنظیمات</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                        <div>
+                            <div style="color: #fff; margin-bottom: 5px;">زمان اعلان قیمت</div>
+                            <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;" id="notificationTime">00:40
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="width: auto; padding: 10px 20px;"
+                            onclick="openChangeTimeModal()">تغییر ساعت</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- تب دارایی‌ها -->
-            <div id="portfolioTab" class="tab-content" style="display:none;">
-                <div id="portfolioList"></div>
+            <!-- Portfolio Tab -->
+            <div id="portfolioTab" class="tab-content hidden">
+                <!-- Portfolio Summary Card -->
+                <div class="card">
+                    <div class="card-title">📊 خلاصه کل دارایی</div>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">مجموع وزن طلا</div>
+                            <div class="stat-value" id="totalGoldWeight">0 گرم</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ارزش کل</div>
+                            <div class="stat-value" id="totalPortfolioValue">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">سرمایه اولیه</div>
+                            <div class="stat-value" id="totalPortfolioInvestment">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">سود/زیان کل</div>
+                            <div class="stat-value profit" id="totalPortfolioProfit">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Items -->
+                <div class="card">
+                    <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>💼 لیست دارایی‌ها</span>
+                        <button class="btn btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.9em;"
+                            onclick="openAddPortfolioModal()">+ افزودن</button>
+                    </div>
+                    <div id="portfolioList"></div>
+                </div>
             </div>
 
-            <!-- تب هشدارها -->
-            <div id="alertsTab" class="tab-content" style="display:none;">
-                <div id="alertsList"></div>
+            <!-- Alerts Tab -->
+            <div id="alertsTab" class="tab-content hidden">
+                <div class="card">
+                    <div class="card-title">🔔 هشدارهای قیمت</div>
+                    <div id="alertsList"></div>
+                </div>
             </div>
         </div>
 
-        <!-- لودینگ -->
-        <div id="loadingSection" class="section">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>در حال بارگذاری...</p>
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">خانه</div>
             </div>
+            <div class="nav-item" onclick="switchTab('portfolio')">
+                <div class="nav-icon">💼</div>
+                <div class="nav-label">دارایی</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('alerts')">
+                <div class="nav-icon">🔔</div>
+                <div class="nav-label">هشدارها</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Portfolio Modal -->
+    <div id="addPortfolioModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">افزودن به دارایی</div>
+                <button class="btn-close" onclick="closeAddPortfolioModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>وزن (گرم)</label>
+                    <input type="number" id="newWeight" placeholder="مثال: 5.5" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>قیمت خرید هر گرم (تومان)</label>
+                    <input type="number" id="newPrice" placeholder="مثال: 5000000">
+                </div>
+                <div class="input-group">
+                    <label>تاریخ خرید</label>
+                    <input type="text" id="newDate" placeholder="مثال: 1403/11/20">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="addPortfolioItem()">افزودن</button>
+        </div>
+    </div>
+
+    <!-- Change Time Modal -->
+    <div id="changeTimeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">تغییر ساعت اعلان</div>
+                <button class="btn-close" onclick="closeChangeTimeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>ساعت (24 ساعته)</label>
+                    <input type="time" id="newNotificationTime">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="changeNotificationTime()">ذخیره</button>
         </div>
     </div>
 
     <script>
         const API_BASE = 'https://page-teleg.goldyarprice.workers.dev';
-        let authToken = localStorage.getItem('goldyar_token');
+        let userData = null;
+        let currentGoldPrice = 0;
 
-        // Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        // Initialize
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
 
-        // بررسی ورود خودکار
-        window.onload = function() {
-            if (authToken) {
-                loadUserData();
-            } else {
-                showSection('loginSection');
-            }
-        };
-
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
+        // Check if already logged in
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            loadUserData();
         }
 
-        function showError(message, elementId = 'loginError') {
-            const errorEl = document.getElementById(elementId);
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-            setTimeout(() => {
-                errorEl.style.display = 'none';
-            }, 5000);
+        // Copy /whatismyid command
+        function copyCommand() {
+            const command = '/whatismyid';
+            navigator.clipboard.writeText(command).then(() => {
+                const copyTextEl = document.getElementById('copyText');
+                copyTextEl.textContent = 'کپی شد ✓';
+                copyTextEl.style.color = 'rgb(34, 197, 94)';
+
+                setTimeout(() => {
+                    copyTextEl.textContent = 'کپی';
+                    copyTextEl.style.color = 'rgb(107, 114, 128)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
         }
 
+        // Request verification code
         async function requestCode() {
             const userId = document.getElementById('userIdInput').value.trim();
-            
+
             if (!userId) {
-                showError('لطفاً شناسه عددی خود را وارد کنید');
+                alert('لطفا شناسه عددی خود را وارد کنید');
                 return;
             }
-
-            const btn = document.getElementById('requestCodeBtn');
-            btn.disabled = true;
-            btn.textContent = 'در حال ارسال...';
 
             try {
                 const response = await fetch(`${API_BASE}/api/request-code`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ userId: parseInt(userId) })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    document.getElementById('codeSection').style.display = 'block';
-                    btn.textContent = 'کد ارسال شد ✓';
-                    setTimeout(() => {
-                        btn.disabled = false;
-                        btn.textContent = 'ارسال مجدد کد';
-                    }, 30000);
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('verifyForm').style.display = 'block';
+                    alert('کد تایید به تلگرام شما ارسال شد');
                 } else {
-                    showError(data.error || 'خطا در ارسال کد');
-                    btn.disabled = false;
-                    btn.textContent = 'دریافت کد تایید';
+                    alert(data.message || 'خطا در ارسال کد');
                 }
             } catch (error) {
-                showError('خطا در برقراری ارتباط با سرور');
-                btn.disabled = false;
-                btn.textContent = 'دریافت کد تایید';
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
             }
         }
 
+        // Verify code and login
         async function verifyCode() {
             const userId = document.getElementById('userIdInput').value.trim();
             const code = document.getElementById('codeInput').value.trim();
 
             if (!code) {
-                showError('لطفاً کد تایید را وارد کنید');
+                alert('لطفا کد تایید را وارد کنید');
                 return;
             }
-
-            const btn = document.getElementById('verifyBtn');
-            btn.disabled = true;
-            btn.textContent = 'در حال تأیید...';
 
             try {
                 const response = await fetch(`${API_BASE}/api/verify-code`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
                         userId: parseInt(userId),
-                        code: code.toUpperCase()
+                        code: code
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    authToken = data.token;
-                    localStorage.setItem('goldyar_token', authToken);
+                    localStorage.setItem('authToken', data.token);
                     loadUserData();
                 } else {
-                    showError(data.error || 'کد تایید نامعتبر است');
-                    btn.disabled = false;
-                    btn.textContent = 'تأیید و ورود';
+                    alert(data.message || 'کد تایید نامعتبر است');
                 }
             } catch (error) {
-                showError('خطا در برقراری ارتباط با سرور');
-                btn.disabled = false;
-                btn.textContent = 'تأیید و ورود';
+                console.error('Error:', error);
+                alert('خطا در تایید کد');
             }
         }
 
+        // Load user data
         async function loadUserData() {
-            showSection('loadingSection');
+            const token = localStorage.getItem('authToken');
 
             try {
                 const response = await fetch(`${API_BASE}/api/user`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    displayUserData(data);
-                    showSection('mainSection');
+                    userData = data;
+
+                    // Update UI
+                    document.getElementById('userName').textContent = data.user.first_name || 'کاربر';
+                    document.getElementById('userId').textContent = `شناسه: ${data.user.user_id}`;
+                    document.getElementById('notificationTime').textContent = data.user.notification_time || '00:40';
+
+                    // Calculate total gold weight
+                    let totalWeight = 0;
+                    if (data.portfolio.items && data.portfolio.items.length > 0) {
+                        totalWeight = data.portfolio.items.reduce((sum, item) => sum + item.weight, 0);
+                    }
+
+                    // Portfolio summary (Dashboard)
+                    document.getElementById('totalInvestment').textContent = formatPrice(data.portfolio.totalInvestment);
+                    document.getElementById('currentValue').textContent = formatPrice(data.portfolio.currentValue);
+
+                    const profitLossEl = document.getElementById('profitLoss');
+                    profitLossEl.textContent = formatPrice(data.portfolio.profit);
+                    profitLossEl.className = 'stat-value ' + (data.portfolio.profit >= 0 ? 'profit' : 'loss');
+
+                    document.getElementById('profitPercent').textContent = data.portfolio.profitPercent.toFixed(2) + '%';
+
+                    // Portfolio Tab Summary
+                    document.getElementById('totalGoldWeight').textContent = totalWeight.toFixed(2) + ' گرم';
+                    document.getElementById('totalPortfolioValue').textContent = formatPrice(data.portfolio.currentValue);
+                    document.getElementById('totalPortfolioInvestment').textContent = formatPrice(data.portfolio.totalInvestment);
+
+                    const totalProfitEl = document.getElementById('totalPortfolioProfit');
+                    totalProfitEl.textContent = formatPrice(data.portfolio.profit);
+                    totalProfitEl.className = 'stat-value ' + (data.portfolio.profit >= 0 ? 'profit' : 'loss');
+
+                    // Load portfolio items
+                    loadPortfolioItems(data.portfolio.items);
+
+                    // Load alerts
+                    loadAlerts(data.alerts);
+
+                    // Show app page
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('appPage').classList.add('active');
+
+                    // Load current gold price
+                    loadCurrentGoldPrice();
                 } else {
-                    localStorage.removeItem('goldyar_token');
-                    authToken = null;
-                    showSection('loginSection');
-                    showError('نشست منقضی شده. لطفاً مجدداً وارد شوید');
+                    localStorage.removeItem('authToken');
+                    alert('نشست منقضی شده است. لطفا مجددا وارد شوید');
                 }
             } catch (error) {
-                showSection('loginSection');
-                showError('خطا در بارگذاری اطلاعات');
+                console.error('Error:', error);
+                alert('خطا در دریافت اطلاعات');
             }
         }
 
-        function displayUserData(data) {
-            // اطلاعات کاربری
-            document.getElementById('userName').textContent = data.user.first_name || 'کاربر';
-            document.getElementById('userId').textContent = data.user.user_id;
-            document.getElementById('notifStatus').textContent = 
-                data.user.notification_enabled ? `فعال (${data.user.notification_time})` : 'غیرفعال';
+        // Load current gold price
+        async function loadCurrentGoldPrice() {
+            try {
+                const response = await fetch(`${API_BASE}/api/gold-price`);
+                const data = await response.json();
 
-            // دارایی
-            document.getElementById('totalInvestment').textContent = 
-                formatNumber(data.portfolio.totalInvestment) + ' تومان';
-            document.getElementById('currentValue').textContent = 
-                formatNumber(data.portfolio.currentValue) + ' تومان';
-            
-            const profitEl = document.getElementById('profit');
-            const profit = data.portfolio.profit;
-            const profitPercent = data.portfolio.profitPercent;
-            
-            if (profit > 0) {
-                profitEl.className = 'info-value profit-positive';
-                profitEl.textContent = `+${formatNumber(profit)} تومان (${profitPercent.toFixed(2)}%+)`;
-            } else if (profit < 0) {
-                profitEl.className = 'info-value profit-negative';
-                profitEl.textContent = `${formatNumber(profit)} تومان (${profitPercent.toFixed(2)}%-)`;
-            } else {
-                profitEl.className = 'info-value';
-                profitEl.textContent = 'بدون تغییر';
+                if (data.success && data.price) {
+                    currentGoldPrice = data.price;
+                    document.getElementById('currentPrice').textContent = formatPrice(currentGoldPrice) + ' تومان';
+
+                    const changeEl = document.getElementById('priceChange');
+                    const changeTextEl = document.getElementById('priceChangeText');
+
+                    if (data.changePercent >= 0) {
+                        changeEl.className = 'price-change up';
+                        changeTextEl.textContent = `▲ ${data.changePercent.toFixed(2)}%`;
+                    } else {
+                        changeEl.className = 'price-change down';
+                        changeTextEl.textContent = `▼ ${Math.abs(data.changePercent).toFixed(2)}%`;
+                    }
+
+                    // Update portfolio values with current price
+                    if (userData && userData.portfolio && userData.portfolio.items) {
+                        recalculatePortfolioValues();
+                    }
+                } else {
+                    document.getElementById('currentPrice').textContent = 'خطا در دریافت قیمت';
+                }
+            } catch (error) {
+                console.error('Error loading gold price:', error);
+                document.getElementById('currentPrice').textContent = 'خطا در دریافت قیمت';
+            }
+        }
+
+        // Recalculate portfolio values with current gold price
+        function recalculatePortfolioValues() {
+            if (!userData || !userData.portfolio || !userData.portfolio.items || !currentGoldPrice) return;
+
+            let totalWeight = 0;
+            let totalInvestment = 0;
+            let totalCurrentValue = 0;
+
+            userData.portfolio.items.forEach(item => {
+                totalWeight += item.weight;
+                totalInvestment += item.purchase_value;
+                const currentValue = item.weight * currentGoldPrice;
+                totalCurrentValue += currentValue;
+            });
+
+            const profit = totalCurrentValue - totalInvestment;
+            const profitPercent = totalInvestment > 0 ? (profit / totalInvestment) * 100 : 0;
+
+            // Update dashboard
+            document.getElementById('totalInvestment').textContent = formatPrice(totalInvestment);
+            document.getElementById('currentValue').textContent = formatPrice(totalCurrentValue);
+            const profitLossEl = document.getElementById('profitLoss');
+            profitLossEl.textContent = formatPrice(profit);
+            profitLossEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+            document.getElementById('profitPercent').textContent = profitPercent.toFixed(2) + '%';
+
+            // Update portfolio summary
+            document.getElementById('totalGoldWeight').textContent = totalWeight.toFixed(2) + ' گرم';
+            document.getElementById('totalPortfolioValue').textContent = formatPrice(totalCurrentValue);
+            document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
+            const totalProfitEl = document.getElementById('totalPortfolioProfit');
+            totalProfitEl.textContent = formatPrice(profit);
+            totalProfitEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+
+            // Update portfolio items display
+            loadPortfolioItems(userData.portfolio.items);
+        }
+
+        // Load portfolio items
+        function loadPortfolioItems(items) {
+            const container = document.getElementById('portfolioList');
+
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>هنوز دارایی ثبت نشده است</p></div>';
+                return;
             }
 
-            // لیست دارایی‌ها
-            const portfolioList = document.getElementById('portfolioList');
-            if (data.portfolio.items.length === 0) {
-                portfolioList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📦</div>
-                        <p>هنوز دارایی‌ای ثبت نشده است</p>
-                    </div>
-                `;
-            } else {
-                portfolioList.innerHTML = data.portfolio.items.map(item => `
-                    <div class="portfolio-item">
-                        <strong>${item.weight} گرم طلای ${item.gold_type}</strong><br>
-                        قیمت خرید: ${formatNumber(item.purchase_price)} تومان<br>
-                        تاریخ: ${item.purchase_date}
-                    </div>
-                `).join('');
-            }
+            container.innerHTML = items.map((item, index) => {
+                const currentValue = currentGoldPrice ? item.weight * currentGoldPrice : item.current_value;
+                const profit = currentValue - item.purchase_value;
+                const profitClass = profit >= 0 ? 'profit' : 'loss';
+                const profitSign = profit >= 0 ? '+' : '';
+                const profitPercent = item.purchase_value > 0 ? ((profit / item.purchase_value) * 100).toFixed(2) : '0.00';
 
-            // لیست هشدارها
-            const alertsList = document.getElementById('alertsList');
-            if (data.alerts.length === 0) {
-                alertsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔔</div>
-                        <p>هنوز هشداری ثبت نشده است</p>
-                    </div>
-                `;
-            } else {
-                alertsList.innerHTML = data.alerts.map(alert => {
-                    const typeText = alert.alert_type === 'above' ? 'بالاتر از' : 'پایین‌تر از';
-                    return `
-                        <div class="alert-item">
-                            <strong>طلای ${alert.gold_type} عیار</strong><br>
-                            ${typeText} ${formatNumber(alert.target_price)} تومان
+                return `
+                    <div class="portfolio-item" style="border-right: 3px solid ${profit >= 0 ? '#34c759' : '#ff3b30'};">
+                        <div class="portfolio-item-info">
+                            <h4 style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: rgba(212, 175, 55, 0.2); padding: 4px 12px; border-radius: 8px; font-size: 0.9em;">${item.weight} گرم</span>
+                                <span style="font-size: 0.85em; color: rgba(255, 255, 255, 0.7);">طلای 18 عیار</span>
+                            </h4>
+                            <p style="margin-top: 8px;">💰 خرید: ${formatPrice(item.price_per_gram)} تومان/گرم</p>
+                            <p style="font-size: 0.8em; color: rgba(255, 255, 255, 0.5); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
                         </div>
-                    `;
-                }).join('');
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                            <div class="portfolio-item-value" style="text-align: left;">
+                                <div class="current" style="font-size: 1.1em;">${formatPrice(currentValue)} تومان</div>
+                                <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                                    <span>${profitSign}${formatPrice(profit)}</span>
+                                    <span style="font-size: 0.85em; opacity: 0.8;">(${profitSign}${profitPercent}%)</span>
+                                </div>
+                            </div>
+                            <button class="btn-delete" onclick="deletePortfolioItem(${item.id})" style="font-size: 0.8em; padding: 6px 12px;">🗑️ حذف</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load alerts
+        function loadAlerts(alerts) {
+            const container = document.getElementById('alertsList');
+
+            if (!alerts || alerts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔕</div><p>هشداری تنظیم نشده است</p></div>';
+                return;
+            }
+
+            container.innerHTML = alerts.map(alert => {
+                const statusClass = alert.is_triggered ? 'inactive' : 'active';
+                const statusText = alert.is_triggered ? 'فعال شده' : 'فعال';
+                const typeText = alert.alert_type === 'above' ? 'بالاتر از' : 'پایین‌تر از';
+
+                return `
+                    <div class="alert-item">
+                        <div class="alert-item-header">
+                            <div>
+                                <div class="alert-type">${typeText}</div>
+                                <div class="alert-price">${formatPrice(alert.target_price)} تومان</div>
+                            </div>
+                            <div class="alert-status ${statusClass}">${statusText}</div>
+                        </div>
+                        <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;">
+                            ایجاد شده: ${alert.created_at}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Calculate gold price
+        function calculateGoldPrice() {
+            const weight = parseFloat(document.getElementById('calcWeight').value) || 0;
+            const price = weight * currentGoldPrice;
+            document.getElementById('calcResult').textContent = formatPrice(price) + ' تومان';
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            if (tab === 'dashboard') {
+                document.getElementById('dashboardTab').classList.remove('hidden');
+            } else if (tab === 'portfolio') {
+                document.getElementById('portfolioTab').classList.remove('hidden');
+            } else if (tab === 'alerts') {
+                document.getElementById('alertsTab').classList.remove('hidden');
             }
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.getElementById(tabName + 'Tab').style.display = 'block';
+        // Modal functions
+        function openAddPortfolioModal() {
+            document.getElementById('addPortfolioModal').classList.add('active');
         }
 
+        function closeAddPortfolioModal() {
+            document.getElementById('addPortfolioModal').classList.remove('active');
+            document.getElementById('newWeight').value = '';
+            document.getElementById('newPrice').value = '';
+            document.getElementById('newDate').value = '';
+        }
+
+        function openChangeTimeModal() {
+            const currentTime = document.getElementById('notificationTime').textContent;
+            document.getElementById('newNotificationTime').value = currentTime;
+            document.getElementById('changeTimeModal').classList.add('active');
+        }
+
+        function closeChangeTimeModal() {
+            document.getElementById('changeTimeModal').classList.remove('active');
+        }
+
+        // Add portfolio item
+        async function addPortfolioItem() {
+            const weight = parseFloat(document.getElementById('newWeight').value);
+            const price = parseFloat(document.getElementById('newPrice').value);
+            const date = document.getElementById('newDate').value;
+
+            if (!weight || !price || !date) {
+                alert('لطفا تمام فیلدها را پر کنید');
+                return;
+            }
+
+            // TODO: Implement API endpoint
+            alert('این قابلیت به زودی اضافه می‌شود');
+            closeAddPortfolioModal();
+        }
+
+        // Delete portfolio item
+        async function deletePortfolioItem(id) {
+            if (!confirm('آیا از حذف این مورد مطمئن هستید؟')) {
+                return;
+            }
+
+            // TODO: Implement API endpoint
+            alert('این قابلیت به زودی اضافه می‌شود');
+        }
+
+        // Change notification time
+        async function changeNotificationTime() {
+            const newTime = document.getElementById('newNotificationTime').value;
+
+            if (!newTime) {
+                alert('لطفا ساعت را انتخاب کنید');
+                return;
+            }
+
+            // TODO: Implement API endpoint
+            alert('این قابلیت به زودی اضافه می‌شود');
+            closeChangeTimeModal();
+        }
+
+        // Logout
         function logout() {
-            if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
-                localStorage.removeItem('goldyar_token');
-                authToken = null;
-                location.reload();
+            if (confirm('آیا می‌خواهید از حساب خارج شوید؟')) {
+                localStorage.removeItem('authToken');
+                userData = null;
+
+                document.getElementById('appPage').classList.remove('active');
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('verifyForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+
+                document.getElementById('userIdInput').value = '';
+                document.getElementById('codeInput').value = '';
             }
         }
 
-        function formatNumber(num) {
-            return new Intl.NumberFormat('fa-IR').format(num);
+        // Back to login
+        function backToLogin() {
+            document.getElementById('verifyForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('codeInput').value = '';
+        }
+
+        // Format price
+        function formatPrice(price) {
+            return Math.round(price).toLocaleString('fa-IR');
         }
     </script>
 </body>

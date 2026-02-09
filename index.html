@@ -120,7 +120,7 @@
         }
 
         .input-group input::placeholder {
-            color: rgba(212, 175, 55, 0.6);
+            color: rgba(212, 175, 55, 0.5);
             font-weight: 600;
             opacity: 1;
         }
@@ -876,11 +876,11 @@
                     <div class="card-title">📊 خلاصه دارایی (تومان)</div>
                     <div style="display: flex; gap: 12px; margin-top: 15px;">
                         <div class="stat-item" style="flex: 1;">
-                            <div class="stat-label">ارزش فعلی</div>
+                            <div class="stat-label">💎 ارزش فعلی</div>
                             <div class="stat-value" id="currentValue" style="font-size: 1.1em;">0</div>
                         </div>
                         <div class="stat-item" style="flex: 1;">
-                            <div class="stat-label">سود/زیان</div>
+                            <div class="stat-label">📈 سود/زیان</div>
                             <div class="stat-value profit" id="profitLoss" style="font-size: 1.1em;">0</div>
                             <div id="profitPercent"
                                 style="font-size: 0.8em; margin-top: 4px; direction: ltr; color: rgba(255,255,255,0.6);">
@@ -934,15 +934,15 @@
                         <div class="stat-value" id="totalGoldWeight">0 گرم</div>
                     </div>
 
-                    <!-- سرمایه و ارزش فعلی - کنار هم -->
+                    <!-- ارزش فعلی و سرمایه - کنار هم -->
                     <div style="display: flex; gap: 12px; margin-top: 12px;">
-                        <div class="stat-item" style="flex: 1;">
-                            <div class="stat-label">💰 سرمایه</div>
-                            <div class="stat-value" id="totalPortfolioInvestment">0</div>
-                        </div>
                         <div class="stat-item" style="flex: 1;">
                             <div class="stat-label">💎 ارزش فعلی</div>
                             <div class="stat-value" id="totalPortfolioValue">0</div>
+                        </div>
+                        <div class="stat-item" style="flex: 1;">
+                            <div class="stat-label">💰 سرمایه</div>
+                            <div class="stat-value" id="totalPortfolioInvestment">0</div>
                         </div>
                     </div>
 
@@ -1403,7 +1403,7 @@
                     const totalProfitPercentEl = document.getElementById('totalPortfolioProfitPercent');
                     const totalProfitPercentSign = profitPercent >= 0 ? '+' : '';
                     totalProfitPercentEl.textContent = totalProfitPercentSign + profitPercent.toFixed(2) + '%';
-                    totalProfitPercentEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+                    totalProfitPercentEl.style.color = profit >= 0 ? '#34c759' : '#ff3b30';
 
                     // Load portfolio items
                     loadPortfolioItems(data.portfolio.items);
@@ -1654,13 +1654,19 @@
 
         // Switch tabs
         function switchTab(tab) {
+            // Scroll to top first (instant)
+            if (window.scrollY > 0) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
             // Update nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             event.target.closest('.nav-item').classList.add('active');
 
-            const doSwitch = () => {
+            // Small delay to let scroll start, then switch content
+            setTimeout(() => {
                 // Hide all tabs
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.add('hidden');
@@ -1679,55 +1685,11 @@
 
                 if (targetTab) {
                     targetTab.classList.remove('hidden');
-                    void targetTab.offsetWidth;
-                    targetTab.classList.add('tab-enter');
+                    requestAnimationFrame(() => {
+                        targetTab.classList.add('tab-enter');
+                    });
                 }
-            };
-
-            // If already at top, switch instantly
-            if (window.scrollY <= 5) {
-                doSwitch();
-            } else {
-                // Smooth scroll to top while old tab is still visible, then swap
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                // Use requestAnimationFrame for smoother detection
-                let lastScrollY = window.scrollY;
-                let stableFrames = 0;
-
-                const checkScroll = () => {
-                    const currentScrollY = window.scrollY;
-
-                    // If at top, switch immediately
-                    if (currentScrollY <= 5) {
-                        doSwitch();
-                        return;
-                    }
-
-                    // If scroll has stopped moving (stable for 2 frames), switch
-                    if (Math.abs(currentScrollY - lastScrollY) < 1) {
-                        stableFrames++;
-                        if (stableFrames >= 2) {
-                            window.scrollTo(0, 0);
-                            doSwitch();
-                            return;
-                        }
-                    } else {
-                        stableFrames = 0;
-                    }
-
-                    lastScrollY = currentScrollY;
-                    requestAnimationFrame(checkScroll);
-                };
-
-                requestAnimationFrame(checkScroll);
-
-                // Safety fallback after 500ms
-                setTimeout(() => {
-                    window.scrollTo(0, 0);
-                    doSwitch();
-                }, 500);
-            }
+            }, 100);
         }
 
         // Modal functions

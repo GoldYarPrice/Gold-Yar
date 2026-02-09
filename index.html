@@ -35,7 +35,8 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: 80px;
+            padding-bottom: 120px;
+            /* افزایش برای نمایش کامل محتوا */
         }
 
         /* Login Page */
@@ -761,7 +762,7 @@
 
                 <!-- Settings -->
                 <div class="card">
-                    <div class="card-title">⚙️ تنظیمات</div>
+                    <div class="card-title">⚙️ تنظیم اعلان</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
                         <div>
                             <div style="color: #fff; margin-bottom: 5px;">زمان اعلان قیمت</div>
@@ -813,7 +814,11 @@
             <!-- Alerts Tab -->
             <div id="alertsTab" class="tab-content hidden">
                 <div class="card">
-                    <div class="card-title">🔔 هشدارهای قیمت</div>
+                    <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>🔔 هشدارهای قیمت</span>
+                        <button class="btn btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.9em;"
+                            onclick="openAddAlertModal()">+ افزودن</button>
+                    </div>
                     <div id="alertsList"></div>
                 </div>
             </div>
@@ -848,16 +853,69 @@
                     <label>وزن (گرم)</label>
                     <input type="number" id="newWeight" placeholder="مثال: 5.5" step="0.01">
                 </div>
+
+                <!-- انتخاب نوع ورودی قیمت -->
                 <div class="input-group">
-                    <label>قیمت خرید هر گرم (تومان)</label>
-                    <input type="number" id="newPrice" placeholder="مثال: 5000000">
+                    <label>نوع ورودی قیمت</label>
+                    <select id="priceInputType" onchange="togglePriceInput()"
+                        style="width: 100%; padding: 12px; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Vazirmatn', sans-serif;">
+                        <option value="per_gram">قیمت هر گرم</option>
+                        <option value="total">قیمت کل خرید</option>
+                    </select>
                 </div>
+
+                <div class="input-group" id="pricePerGramGroup">
+                    <label>قیمت خرید هر گرم (تومان)</label>
+                    <input type="number" id="newPricePerGram" placeholder="مثال: 5000000">
+                </div>
+
+                <div class="input-group" id="totalPriceGroup" style="display: none;">
+                    <label>قیمت کل خرید (تومان)</label>
+                    <input type="number" id="newTotalPrice" placeholder="مثال: 27500000">
+                </div>
+
                 <div class="input-group">
                     <label>تاریخ خرید</label>
                     <input type="text" id="newDate" placeholder="مثال: 1403/11/20">
                 </div>
             </div>
             <button class="btn btn-primary" onclick="addPortfolioItem()">افزودن</button>
+        </div>
+    </div>
+
+    <!-- Add Alert Modal -->
+    <div id="addAlertModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">افزودن هشدار قیمت</div>
+                <button class="btn-close" onclick="closeAddAlertModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>نوع طلا</label>
+                    <select id="alertGoldType"
+                        style="width: 100%; padding: 12px; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Vazirmatn', sans-serif;">
+                        <option value="18_750">طلای 18 عیار (750)</option>
+                        <option value="18_740">طلای 18 عیار (740)</option>
+                        <option value="24">طلای 24 عیار</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>نوع هشدار</label>
+                    <select id="alertType"
+                        style="width: 100%; padding: 12px; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Vazirmatn', sans-serif;">
+                        <option value="above">بالاتر از</option>
+                        <option value="below">پایین‌تر از</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>قیمت هدف (تومان)</label>
+                    <input type="number" id="alertTargetPrice" placeholder="مثال: 5200000">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="addAlert()">ثبت هشدار</button>
         </div>
     </div>
 
@@ -995,6 +1053,17 @@
                 if (data.success) {
                     userData = data;
 
+                    // لاگ دیباگ برای بررسی مقادیر دریافتی
+                    console.log('📦 User data received:', {
+                        portfolio: {
+                            totalInvestment: data.portfolio.totalInvestment,
+                            currentValue: data.portfolio.currentValue,
+                            profit: data.portfolio.profit,
+                            profitPercent: data.portfolio.profitPercent,
+                            itemsCount: data.portfolio.items ? data.portfolio.items.length : 0
+                        }
+                    });
+
                     // Update UI
                     document.getElementById('userName').textContent = data.user.first_name || 'کاربر';
                     document.getElementById('userId').textContent = `شناسه: ${data.user.user_id}`;
@@ -1003,27 +1072,33 @@
                     // Calculate total gold weight
                     let totalWeight = 0;
                     if (data.portfolio.items && data.portfolio.items.length > 0) {
-                        totalWeight = data.portfolio.items.reduce((sum, item) => sum + item.weight, 0);
+                        totalWeight = data.portfolio.items.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0);
                     }
 
+                    // اطمینان از معتبر بودن مقادیر دریافتی
+                    const totalInvestment = parseFloat(data.portfolio.totalInvestment) || 0;
+                    const currentValue = parseFloat(data.portfolio.currentValue) || 0;
+                    const profit = parseFloat(data.portfolio.profit) || 0;
+                    const profitPercent = parseFloat(data.portfolio.profitPercent) || 0;
+
                     // Portfolio summary (Dashboard)
-                    document.getElementById('totalInvestment').textContent = formatPrice(data.portfolio.totalInvestment);
-                    document.getElementById('currentValue').textContent = formatPrice(data.portfolio.currentValue);
+                    document.getElementById('totalInvestment').textContent = formatPrice(totalInvestment);
+                    document.getElementById('currentValue').textContent = formatPrice(currentValue);
 
                     const profitLossEl = document.getElementById('profitLoss');
-                    profitLossEl.textContent = formatPrice(data.portfolio.profit);
-                    profitLossEl.className = 'stat-value ' + (data.portfolio.profit >= 0 ? 'profit' : 'loss');
+                    profitLossEl.textContent = formatPrice(profit);
+                    profitLossEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
 
-                    document.getElementById('profitPercent').textContent = data.portfolio.profitPercent.toFixed(2) + '%';
+                    document.getElementById('profitPercent').textContent = profitPercent.toFixed(2) + '%';
 
                     // Portfolio Tab Summary
                     document.getElementById('totalGoldWeight').textContent = totalWeight.toFixed(2) + ' گرم';
-                    document.getElementById('totalPortfolioValue').textContent = formatPrice(data.portfolio.currentValue);
-                    document.getElementById('totalPortfolioInvestment').textContent = formatPrice(data.portfolio.totalInvestment);
+                    document.getElementById('totalPortfolioValue').textContent = formatPrice(currentValue);
+                    document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
 
                     const totalProfitEl = document.getElementById('totalPortfolioProfit');
-                    totalProfitEl.textContent = formatPrice(data.portfolio.profit);
-                    totalProfitEl.className = 'stat-value ' + (data.portfolio.profit >= 0 ? 'profit' : 'loss');
+                    totalProfitEl.textContent = formatPrice(profit);
+                    totalProfitEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
 
                     // Load portfolio items
                     loadPortfolioItems(data.portfolio.items);
@@ -1130,30 +1205,41 @@
             let totalCurrentValue = 0;
 
             userData.portfolio.items.forEach(item => {
-                totalWeight += item.weight;
-                totalInvestment += item.purchase_value;
-                const currentValue = item.weight * currentGoldPrice;
+                // اطمینان از اینکه مقادیر معتبر هستند
+                const weight = parseFloat(item.weight) || 0;
+                const purchaseValue = parseFloat(item.purchase_value) || 0;
+
+                totalWeight += weight;
+                totalInvestment += purchaseValue;
+                const currentValue = weight * currentGoldPrice;
                 totalCurrentValue += currentValue;
             });
 
             const profit = totalCurrentValue - totalInvestment;
             const profitPercent = totalInvestment > 0 ? (profit / totalInvestment) * 100 : 0;
 
+            // اطمینان از اینکه مقادیر محاسبه شده معتبر هستند
+            const safeProfit = isFinite(profit) ? profit : 0;
+            const safeProfitPercent = isFinite(profitPercent) ? profitPercent : 0;
+            const safeTotalInvestment = isFinite(totalInvestment) ? totalInvestment : 0;
+            const safeTotalCurrentValue = isFinite(totalCurrentValue) ? totalCurrentValue : 0;
+            const safeTotalWeight = isFinite(totalWeight) ? totalWeight : 0;
+
             // Update dashboard
-            document.getElementById('totalInvestment').textContent = formatPrice(totalInvestment);
-            document.getElementById('currentValue').textContent = formatPrice(totalCurrentValue);
+            document.getElementById('totalInvestment').textContent = formatPrice(safeTotalInvestment);
+            document.getElementById('currentValue').textContent = formatPrice(safeTotalCurrentValue);
             const profitLossEl = document.getElementById('profitLoss');
-            profitLossEl.textContent = formatPrice(profit);
-            profitLossEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
-            document.getElementById('profitPercent').textContent = profitPercent.toFixed(2) + '%';
+            profitLossEl.textContent = formatPrice(safeProfit);
+            profitLossEl.className = 'stat-value ' + (safeProfit >= 0 ? 'profit' : 'loss');
+            document.getElementById('profitPercent').textContent = safeProfitPercent.toFixed(2) + '%';
 
             // Update portfolio summary
-            document.getElementById('totalGoldWeight').textContent = totalWeight.toFixed(2) + ' گرم';
-            document.getElementById('totalPortfolioValue').textContent = formatPrice(totalCurrentValue);
-            document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
+            document.getElementById('totalGoldWeight').textContent = safeTotalWeight.toFixed(2) + ' گرم';
+            document.getElementById('totalPortfolioValue').textContent = formatPrice(safeTotalCurrentValue);
+            document.getElementById('totalPortfolioInvestment').textContent = formatPrice(safeTotalInvestment);
             const totalProfitEl = document.getElementById('totalPortfolioProfit');
-            totalProfitEl.textContent = formatPrice(profit);
-            totalProfitEl.className = 'stat-value ' + (profit >= 0 ? 'profit' : 'loss');
+            totalProfitEl.textContent = formatPrice(safeProfit);
+            totalProfitEl.className = 'stat-value ' + (safeProfit >= 0 ? 'profit' : 'loss');
 
             // Update portfolio items display
             loadPortfolioItems(userData.portfolio.items);
@@ -1169,25 +1255,30 @@
             }
 
             container.innerHTML = items.map((item, index) => {
-                const currentValue = currentGoldPrice ? item.weight * currentGoldPrice : item.current_value;
-                const profit = currentValue - item.purchase_value;
+                // اطمینان از معتبر بودن مقادیر
+                const weight = parseFloat(item.weight) || 0;
+                const pricePerGram = parseFloat(item.price_per_gram) || 0;
+                const purchaseValue = parseFloat(item.purchase_value) || 0;
+                const itemCurrentValue = currentGoldPrice ? weight * currentGoldPrice : (parseFloat(item.current_value) || 0);
+
+                const profit = itemCurrentValue - purchaseValue;
                 const profitClass = profit >= 0 ? 'profit' : 'loss';
                 const profitSign = profit >= 0 ? '+' : '';
-                const profitPercent = item.purchase_value > 0 ? ((profit / item.purchase_value) * 100).toFixed(2) : '0.00';
+                const profitPercent = purchaseValue > 0 ? ((profit / purchaseValue) * 100).toFixed(2) : '0.00';
 
                 return `
                     <div class="portfolio-item" style="border-right: 3px solid ${profit >= 0 ? '#34c759' : '#ff3b30'};">
                         <div class="portfolio-item-info">
                             <h4 style="display: flex; align-items: center; gap: 8px;">
-                                <span style="background: rgba(212, 175, 55, 0.2); padding: 4px 12px; border-radius: 8px; font-size: 0.9em;">${item.weight} گرم</span>
+                                <span style="background: rgba(212, 175, 55, 0.2); padding: 4px 12px; border-radius: 8px; font-size: 0.9em;">${weight.toFixed(2)} گرم</span>
                                 <span style="font-size: 0.85em; color: rgba(255, 255, 255, 0.7);">طلای 18 عیار</span>
                             </h4>
-                            <p style="margin-top: 8px;">💰 خرید: ${formatPrice(item.price_per_gram)} تومان/گرم</p>
+                            <p style="margin-top: 8px;">💰 خرید: ${formatPrice(pricePerGram)} تومان/گرم</p>
                             <p style="font-size: 0.8em; color: rgba(255, 255, 255, 0.5); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <div class="portfolio-item-value" style="text-align: left;">
-                                <div class="current" style="font-size: 1.1em;">${formatPrice(currentValue)} تومان</div>
+                                <div class="current" style="font-size: 1.1em;">${formatPrice(itemCurrentValue)} تومان</div>
                                 <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
                                     <span>${profitSign}${formatPrice(profit)}</span>
                                     <span style="font-size: 0.85em; opacity: 0.8;">(${profitSign}${profitPercent}%)</span>
@@ -1214,14 +1305,25 @@
                 const statusText = alert.is_triggered ? 'فعال شده' : 'فعال';
                 const typeText = alert.alert_type === 'above' ? 'بالاتر از' : 'پایین‌تر از';
 
+                // تعیین نام طلا
+                let goldName = 'طلای 18 عیار (750)';
+                if (alert.gold_type === '24') {
+                    goldName = 'طلای 24 عیار';
+                } else if (alert.purity === '740') {
+                    goldName = 'طلای 18 عیار (740)';
+                }
+
                 return `
                     <div class="alert-item">
                         <div class="alert-item-header">
                             <div>
-                                <div class="alert-type">${typeText}</div>
+                                <div class="alert-type">${goldName} - ${typeText}</div>
                                 <div class="alert-price">${formatPrice(alert.target_price)} تومان</div>
                             </div>
-                            <div class="alert-status ${statusClass}">${statusText}</div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <div class="alert-status ${statusClass}">${statusText}</div>
+                                <button class="btn-delete" onclick="deleteAlert(${alert.id})" style="padding: 4px 8px; font-size: 0.75em;">حذف</button>
+                            </div>
                         </div>
                         <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;">
                             ایجاد شده: ${alert.created_at}
@@ -1229,6 +1331,21 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // Toggle price input type
+        function togglePriceInput() {
+            const type = document.getElementById('priceInputType').value;
+            const perGramGroup = document.getElementById('pricePerGramGroup');
+            const totalGroup = document.getElementById('totalPriceGroup');
+
+            if (type === 'per_gram') {
+                perGramGroup.style.display = 'block';
+                totalGroup.style.display = 'none';
+            } else {
+                perGramGroup.style.display = 'none';
+                totalGroup.style.display = 'block';
+            }
         }
 
         // Calculate gold price
@@ -1268,8 +1385,22 @@
         function closeAddPortfolioModal() {
             document.getElementById('addPortfolioModal').classList.remove('active');
             document.getElementById('newWeight').value = '';
-            document.getElementById('newPrice').value = '';
+            document.getElementById('newPricePerGram').value = '';
+            document.getElementById('newTotalPrice').value = '';
             document.getElementById('newDate').value = '';
+            document.getElementById('priceInputType').value = 'per_gram';
+            togglePriceInput();
+        }
+
+        function openAddAlertModal() {
+            document.getElementById('addAlertModal').classList.add('active');
+        }
+
+        function closeAddAlertModal() {
+            document.getElementById('addAlertModal').classList.remove('active');
+            document.getElementById('alertGoldType').value = '18_750';
+            document.getElementById('alertType').value = 'above';
+            document.getElementById('alertTargetPrice').value = '';
         }
 
         function openChangeTimeModal() {
@@ -1285,17 +1416,53 @@
         // Add portfolio item
         async function addPortfolioItem() {
             const weight = parseFloat(document.getElementById('newWeight').value);
-            const price = parseFloat(document.getElementById('newPrice').value);
             const date = document.getElementById('newDate').value;
+            const priceType = document.getElementById('priceInputType').value;
 
-            if (!weight || !price || !date) {
+            let pricePerGram = 0;
+            if (priceType === 'per_gram') {
+                pricePerGram = parseFloat(document.getElementById('newPricePerGram').value);
+            } else {
+                const totalPrice = parseFloat(document.getElementById('newTotalPrice').value);
+                if (weight > 0) {
+                    pricePerGram = Math.round(totalPrice / weight);
+                }
+            }
+
+            if (!weight || !pricePerGram || !date) {
                 alert('لطفا تمام فیلدها را پر کنید');
                 return;
             }
 
-            // TODO: Implement API endpoint
-            alert('این قابلیت به زودی اضافه می‌شود');
-            closeAddPortfolioModal();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE}/api/portfolio/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        weight: weight,
+                        pricePerGram: pricePerGram,
+                        purchaseDate: date
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('دارایی با موفقیت اضافه شد');
+                    closeAddPortfolioModal();
+                    // رفرش داده‌ها
+                    loadUserData();
+                } else {
+                    alert(data.error || 'خطا در افزودن دارایی');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            }
         }
 
         // Delete portfolio item
@@ -1304,8 +1471,111 @@
                 return;
             }
 
-            // TODO: Implement API endpoint
-            alert('این قابلیت به زودی اضافه می‌شود');
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE}/api/portfolio/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('دارایی با موفقیت حذف شد');
+                    // رفرش داده‌ها
+                    loadUserData();
+                } else {
+                    alert(data.error || 'خطا در حذف دارایی');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            }
+        }
+
+        // Add alert
+        async function addAlert() {
+            const goldType = document.getElementById('alertGoldType').value;
+            const alertType = document.getElementById('alertType').value;
+            const targetPrice = parseFloat(document.getElementById('alertTargetPrice').value);
+
+            if (!targetPrice) {
+                alert('لطفا قیمت هدف را وارد کنید');
+                return;
+            }
+
+            // تبدیل goldType به فرمت مورد نیاز
+            let goldTypeCode = '18';
+            let purity = '750';
+            if (goldType === '18_740') {
+                purity = '740';
+            } else if (goldType === '24') {
+                goldTypeCode = '24';
+                purity = null;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE}/api/alerts/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        goldType: goldTypeCode,
+                        purity: purity,
+                        alertType: alertType,
+                        targetPrice: targetPrice
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('هشدار با موفقیت ثبت شد');
+                    closeAddAlertModal();
+                    // رفرش داده‌ها
+                    loadUserData();
+                } else {
+                    alert(data.error || 'خطا در ثبت هشدار');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            }
+        }
+
+        // Delete alert
+        async function deleteAlert(id) {
+            if (!confirm('آیا از حذف این هشدار مطمئن هستید؟')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE}/api/alerts/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('هشدار با موفقیت حذف شد');
+                    // رفرش داده‌ها
+                    loadUserData();
+                } else {
+                    alert(data.error || 'خطا در حذف هشدار');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            }
         }
 
         // Change notification time
@@ -1317,9 +1587,32 @@
                 return;
             }
 
-            // TODO: Implement API endpoint
-            alert('این قابلیت به زودی اضافه می‌شود');
-            closeChangeTimeModal();
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_BASE}/api/user/notification-time`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        notificationTime: newTime
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('ساعت اعلان با موفقیت تغییر کرد');
+                    document.getElementById('notificationTime').textContent = newTime;
+                    closeChangeTimeModal();
+                } else {
+                    alert(data.error || 'خطا در تغییر ساعت');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            }
         }
 
         // Logout
@@ -1347,6 +1640,10 @@
 
         // Format price
         function formatPrice(price) {
+            // بررسی مقادیر نامعتبر
+            if (price === null || price === undefined || isNaN(price) || !isFinite(price)) {
+                return '0';
+            }
             return Math.round(price).toLocaleString('fa-IR');
         }
     </script>

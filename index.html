@@ -18,12 +18,21 @@
             box-sizing: border-box;
         }
 
+        html {
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
             font-family: 'Vazirmatn', sans-serif;
             background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             min-height: 100vh;
+            height: auto;
             color: #fff;
             overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -36,8 +45,9 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: max(150px, calc(100px + env(safe-area-inset-bottom)));
-            /* افزایش برای نمایش کامل محتوا + safe area */
+            padding-bottom: max(180px, calc(120px + env(safe-area-inset-bottom)));
+            /* افزایش بیشتر برای نمایش کامل محتوا + safe area */
+            min-height: 100vh;
         }
 
         /* Login Page */
@@ -1606,13 +1616,15 @@
             document.getElementById('codeInput').value = '';
         }
 
-        // Format price
+        // Format price با جداسازی کاما (هر 3 رقم)
         function formatPrice(price) {
             // بررسی مقادیر نامعتبر
             if (price === null || price === undefined || isNaN(price) || !isFinite(price)) {
                 return '0';
             }
-            return Math.round(price).toLocaleString('fa-IR');
+            // تبدیل به عدد صحیح و جداسازی با کاما
+            const rounded = Math.round(price);
+            return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
     </script>
 </body>

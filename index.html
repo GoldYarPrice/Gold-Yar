@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>طلا یار - Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,8 +36,8 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: 120px;
-            /* افزایش برای نمایش کامل محتوا */
+            padding-bottom: max(150px, calc(100px + env(safe-area-inset-bottom)));
+            /* افزایش برای نمایش کامل محتوا + safe area */
         }
 
         /* Login Page */
@@ -455,6 +456,7 @@
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 10px 0;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
             display: flex;
             justify-content: space-around;
             z-index: 1000;
@@ -1196,52 +1198,13 @@
             }
         }
 
-        // Recalculate portfolio values with current gold price
+        // Recalculate portfolio values - استفاده از داده‌های محاسبه شده API
         function recalculatePortfolioValues() {
-            if (!userData || !userData.portfolio || !userData.portfolio.items || !currentGoldPrice) return;
+            // از آنجایی که API تمام محاسبات را انجام می‌دهد،
+            // فقط نیاز است داده‌ها را دوباره بارگذاری کنیم
+            if (!userData || !userData.portfolio) return;
 
-            let totalWeight = 0;
-            let totalInvestment = 0;
-            let totalCurrentValue = 0;
-
-            userData.portfolio.items.forEach(item => {
-                // اطمینان از اینکه مقادیر معتبر هستند
-                const weight = parseFloat(item.weight) || 0;
-                const purchaseValue = parseFloat(item.purchase_value) || 0;
-
-                totalWeight += weight;
-                totalInvestment += purchaseValue;
-                const currentValue = weight * currentGoldPrice;
-                totalCurrentValue += currentValue;
-            });
-
-            const profit = totalCurrentValue - totalInvestment;
-            const profitPercent = totalInvestment > 0 ? (profit / totalInvestment) * 100 : 0;
-
-            // اطمینان از اینکه مقادیر محاسبه شده معتبر هستند
-            const safeProfit = isFinite(profit) ? profit : 0;
-            const safeProfitPercent = isFinite(profitPercent) ? profitPercent : 0;
-            const safeTotalInvestment = isFinite(totalInvestment) ? totalInvestment : 0;
-            const safeTotalCurrentValue = isFinite(totalCurrentValue) ? totalCurrentValue : 0;
-            const safeTotalWeight = isFinite(totalWeight) ? totalWeight : 0;
-
-            // Update dashboard
-            document.getElementById('totalInvestment').textContent = formatPrice(safeTotalInvestment);
-            document.getElementById('currentValue').textContent = formatPrice(safeTotalCurrentValue);
-            const profitLossEl = document.getElementById('profitLoss');
-            profitLossEl.textContent = formatPrice(safeProfit);
-            profitLossEl.className = 'stat-value ' + (safeProfit >= 0 ? 'profit' : 'loss');
-            document.getElementById('profitPercent').textContent = safeProfitPercent.toFixed(2) + '%';
-
-            // Update portfolio summary - مطابق ربات
-            document.getElementById('totalPortfolioInvestment').textContent = formatPrice(safeTotalInvestment);
-            document.getElementById('totalGoldWeight').textContent = safeTotalWeight.toFixed(2) + ' گرم';
-            document.getElementById('totalPortfolioValue').textContent = formatPrice(safeTotalCurrentValue);
-            const totalProfitEl = document.getElementById('totalPortfolioProfit');
-            totalProfitEl.textContent = formatPrice(safeProfit);
-            totalProfitEl.className = 'stat-value ' + (safeProfit >= 0 ? 'profit' : 'loss');
-
-            // Update portfolio items display
+            // Update portfolio items display با داده‌های محاسبه شده از API
             loadPortfolioItems(userData.portfolio.items);
         }
 
@@ -1255,16 +1218,18 @@
             }
 
             container.innerHTML = items.map((item, index) => {
-                // اطمینان از معتبر بودن مقادیر
+                // استفاده از فیلدهای دیتابیس که از API می‌آیند
                 const weight = parseFloat(item.weight) || 0;
-                const pricePerGram = parseFloat(item.price_per_gram) || 0;
-                const purchaseValue = parseFloat(item.purchase_value) || 0;
-                const itemCurrentValue = currentGoldPrice ? weight * currentGoldPrice : (parseFloat(item.current_value) || 0);
+                const pricePerGram = parseFloat(item.purchase_price) || 0; // فیلد صحیح از دیتابیس
+                const totalPaid = parseFloat(item.total_paid) || 0; // فیلد صحیح از دیتابیس
 
-                const profit = itemCurrentValue - purchaseValue;
+                // استفاده از مقادیر محاسبه شده از API
+                const itemCurrentValue = parseFloat(item.currentValue) || 0;
+                const profit = parseFloat(item.profit) || 0;
+                const profitPercent = parseFloat(item.profitPercent) || 0;
+
                 const profitClass = profit >= 0 ? 'profit' : 'loss';
                 const profitSign = profit >= 0 ? '+' : '';
-                const profitPercent = purchaseValue > 0 ? ((profit / purchaseValue) * 100).toFixed(2) : '0.00';
 
                 return `
                     <div class="portfolio-item" style="border-right: 3px solid ${profit >= 0 ? '#34c759' : '#ff3b30'};">
@@ -1313,6 +1278,9 @@
                     goldName = 'طلای 18 عیار (740)';
                 }
 
+                // فرمت تاریخ - اگر null باشد "تازه ایجاد شده" نشان بده
+                const createdDate = alert.created_at ? alert.created_at : 'تازه ایجاد شده';
+
                 return `
                     <div class="alert-item">
                         <div class="alert-item-header">
@@ -1326,7 +1294,7 @@
                             </div>
                         </div>
                         <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;">
-                            ایجاد شده: ${alert.created_at}
+                            📅 ${createdDate}
                         </div>
                     </div>
                 `;

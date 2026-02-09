@@ -46,7 +46,7 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
             min-height: 100vh;
             position: relative;
         }
@@ -940,16 +940,13 @@
                         </div>
                     </div>
 
-                    <!-- سود/زیان -->
+                    <!-- سود/زیان و درصد تغییر -->
                     <div class="stat-item" style="margin-top: 12px;">
                         <div class="stat-label">📈 سود/زیان</div>
                         <div class="stat-value profit" id="totalPortfolioProfit">0</div>
-                    </div>
-
-                    <!-- درصد تغییر -->
-                    <div class="stat-item" style="margin-top: 12px;">
-                        <div class="stat-label">📊 درصد تغییر</div>
-                        <div class="stat-value" id="totalPortfolioProfitPercent" style="direction: ltr;">0%</div>
+                        <div id="totalPortfolioProfitPercent"
+                            style="font-size: 0.8em; margin-top: 4px; direction: ltr; color: rgba(255,255,255,0.6);">0%
+                        </div>
                     </div>
                 </div>
 
@@ -1541,16 +1538,16 @@
                     <div class="portfolio-item" style="border-right: 3px solid ${profit >= 0 ? '#34c759' : '#ff3b30'};">
                         <div class="portfolio-item-info">
                             <h4 style="display: flex; align-items: center; gap: 8px;">
-                                <span style="background: rgba(212, 175, 55, 0.2); padding: 3px 10px; border-radius: 8px; font-size: clamp(0.55em, 2.8vw, 0.75em); white-space: nowrap;">${weight.toFixed(2)} گرم</span>
+                                <span style="background: rgba(212, 175, 55, 0.2); padding: 3px 10px; border-radius: 8px; font-size: clamp(0.75em, 3.5vw, 0.95em); white-space: nowrap;">${weight.toFixed(2)} گرم</span>
                                 <span style="font-size: 0.85em; color: rgba(255, 255, 255, 0.7);">طلای 18 عیار</span>
                             </h4>
                             <p style="margin-top: 8px;">💰 قیمت خرید (هر گرم): ${formatPrice(pricePerGram)} تومان</p>
-                            <p style="margin-top: 4px;">💵 مبلغ کل خرید: ${formatPrice(totalPaid)} تومان</p>
+                            <p style="margin-top: 4px;">� ارزش فعلی: ${formatPrice(itemCurrentValue)} تومان</p>
                             <p style="font-size: 0.8em; color: rgba(255, 255, 255, 0.5); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <div class="portfolio-item-value" style="text-align: left;">
-                                <div class="current" style="font-size: 1.1em;">${formatPrice(itemCurrentValue)} تومان</div>
+                                <div class="current" style="font-size: 1.1em;">${formatPrice(totalPaid)} تومان</div>
                                 <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
                                     <span style="font-size: 0.85em; opacity: 0.8; direction: ltr; unicode-bidi: embed;">(${profitSign}${Math.abs(profitPercent).toFixed(2)}%)</span>
                                     <span style="direction: ltr; unicode-bidi: embed;">${profitSign}${formatPrice(Math.abs(profit))}</span>
@@ -1687,20 +1684,43 @@
             } else {
                 // Smooth scroll to top while old tab is still visible, then swap
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                const onScrollEnd = () => {
-                    if (window.scrollY <= 5) {
-                        window.removeEventListener('scroll', onScrollEnd);
-                        clearTimeout(fallback);
+
+                // Use requestAnimationFrame for smoother detection
+                let lastScrollY = window.scrollY;
+                let stableFrames = 0;
+
+                const checkScroll = () => {
+                    const currentScrollY = window.scrollY;
+
+                    // If at top, switch immediately
+                    if (currentScrollY <= 5) {
                         doSwitch();
+                        return;
                     }
+
+                    // If scroll has stopped moving (stable for 2 frames), switch
+                    if (Math.abs(currentScrollY - lastScrollY) < 1) {
+                        stableFrames++;
+                        if (stableFrames >= 2) {
+                            window.scrollTo(0, 0);
+                            doSwitch();
+                            return;
+                        }
+                    } else {
+                        stableFrames = 0;
+                    }
+
+                    lastScrollY = currentScrollY;
+                    requestAnimationFrame(checkScroll);
                 };
-                window.addEventListener('scroll', onScrollEnd);
-                // Fallback: if scroll doesn't fire (e.g. content too short), swap after 300ms
-                const fallback = setTimeout(() => {
-                    window.removeEventListener('scroll', onScrollEnd);
+
+                requestAnimationFrame(checkScroll);
+
+                // Safety fallback after 500ms
+                setTimeout(() => {
                     window.scrollTo(0, 0);
                     doSwitch();
-                }, 350);
+                }, 500);
             }
         }
 

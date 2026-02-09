@@ -779,22 +779,22 @@
             <div id="portfolioTab" class="tab-content hidden">
                 <!-- Portfolio Summary Card -->
                 <div class="card">
-                    <div class="card-title">📊 خلاصه کل دارایی</div>
+                    <div class="card-title">� سبد طلای شما</div>
                     <div class="stat-grid">
                         <div class="stat-item">
-                            <div class="stat-label">مجموع وزن طلا</div>
-                            <div class="stat-value" id="totalGoldWeight">0 گرم</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">ارزش کل</div>
-                            <div class="stat-value" id="totalPortfolioValue">0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">سرمایه اولیه</div>
+                            <div class="stat-label">💰 سرمایه</div>
                             <div class="stat-value" id="totalPortfolioInvestment">0</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">سود/زیان کل</div>
+                            <div class="stat-label">⚖️ کل طلا</div>
+                            <div class="stat-value" id="totalGoldWeight">0 گرم</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">💎 ارزش فعلی</div>
+                            <div class="stat-value" id="totalPortfolioValue">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">📈 سود/زیان</div>
                             <div class="stat-value profit" id="totalPortfolioProfit">0</div>
                         </div>
                     </div>
@@ -1091,10 +1091,10 @@
 
                     document.getElementById('profitPercent').textContent = profitPercent.toFixed(2) + '%';
 
-                    // Portfolio Tab Summary
+                    // Portfolio Tab Summary - مطابق ربات
+                    document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
                     document.getElementById('totalGoldWeight').textContent = totalWeight.toFixed(2) + ' گرم';
                     document.getElementById('totalPortfolioValue').textContent = formatPrice(currentValue);
-                    document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
 
                     const totalProfitEl = document.getElementById('totalPortfolioProfit');
                     totalProfitEl.textContent = formatPrice(profit);
@@ -1233,10 +1233,10 @@
             profitLossEl.className = 'stat-value ' + (safeProfit >= 0 ? 'profit' : 'loss');
             document.getElementById('profitPercent').textContent = safeProfitPercent.toFixed(2) + '%';
 
-            // Update portfolio summary
+            // Update portfolio summary - مطابق ربات
+            document.getElementById('totalPortfolioInvestment').textContent = formatPrice(safeTotalInvestment);
             document.getElementById('totalGoldWeight').textContent = safeTotalWeight.toFixed(2) + ' گرم';
             document.getElementById('totalPortfolioValue').textContent = formatPrice(safeTotalCurrentValue);
-            document.getElementById('totalPortfolioInvestment').textContent = formatPrice(safeTotalInvestment);
             const totalProfitEl = document.getElementById('totalPortfolioProfit');
             totalProfitEl.textContent = formatPrice(safeProfit);
             totalProfitEl.className = 'stat-value ' + (safeProfit >= 0 ? 'profit' : 'loss');

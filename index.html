@@ -9,8 +9,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="fonts.css">
     <style>
         :root {
             /* Dark Mode Colors (Default) */
@@ -744,8 +746,8 @@
         /* Bottom Navigation */
         /* Theme Switcher */
         .theme-switcher {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -766,8 +768,8 @@
         }
 
         .theme-switcher svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             transition: all 0.3s ease;
             position: absolute;
         }
@@ -780,6 +782,7 @@
         .theme-switcher .moon-icon {
             opacity: 1;
             transform: rotate(0deg) scale(1);
+            color: var(--text-secondary);
         }
 
         body.light-mode .theme-switcher .sun-icon {
@@ -815,6 +818,7 @@
             align-items: center;
             padding: 12px 20px 8px;
             border-bottom: 1px solid var(--card-border);
+            position: relative;
         }
 
         .datetime {
@@ -833,6 +837,9 @@
             color: var(--gold-primary);
             font-family: 'Nunito', sans-serif;
             direction: ltr;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .nav-buttons-container {
@@ -878,8 +885,12 @@
         }
 
         .nav-button.active {
-            color: var(--gold-primary);
+            color: #ffffff;
             font-weight: 600;
+        }
+
+        body.light-mode .nav-button.active {
+            color: #1a1a1a;
         }
 
         .nav-button:hover {
@@ -1633,6 +1644,9 @@
 
         async function refreshData() {
             try {
+                // Skip loading overlay during pull-to-refresh (spinner already visible)
+                window._skipDataLoading = true;
+
                 // Reload user data
                 await loadUserData();
 
@@ -1643,6 +1657,8 @@
                 console.log('✅ Data refreshed successfully');
             } catch (error) {
                 console.error('❌ Failed to refresh data:', error);
+            } finally {
+                window._skipDataLoading = false;
             }
         }
 
@@ -1854,6 +1870,8 @@
 
         // Show/hide data loading
         function showDataLoading() {
+            // Skip if pull-to-refresh is active
+            if (window._skipDataLoading) return;
             // Only show if not already visible
             if (document.getElementById('dataLoadingOverlay')) return;
             const overlay = document.createElement('div');

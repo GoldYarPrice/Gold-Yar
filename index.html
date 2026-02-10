@@ -859,11 +859,12 @@
             background: var(--card-bg);
             border: 1px solid var(--gold-primary);
             border-radius: 22px;
-            transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: none;
             height: calc(100% - 4px);
             top: 2px;
             z-index: 0;
-            left: 2px;
+            left: calc(33.33% + 2px);
+            width: calc(33.33% - 1.33px);
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
         }
 
@@ -1576,6 +1577,14 @@
             // Position slider directly at active button index
             const leftPosition = padding + (activeIndex * buttonWidth);
             slider.style.left = `${leftPosition}px`;
+
+            // Enable transition after first positioning (instant on load, animated after)
+            if (!slider._transitionEnabled) {
+                requestAnimationFrame(() => {
+                    slider.style.transition = 'left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                    slider._transitionEnabled = true;
+                });
+            }
         }
 
         // Slider will be initialized when appPage becomes active (see loadUserData)
@@ -1669,6 +1678,64 @@
         // Initialize theme and pull to refresh
         initTheme();
         initPullToRefresh();
+
+        // ═══════════════════════════════════════════════════════════════
+        // 👆 Swipe Navigation between tabs
+        // ═══════════════════════════════════════════════════════════════
+        (function initSwipeNavigation() {
+            // Visual order (RTL): دارایی (right) → خانه (center) → هشدارها (left)
+            const tabOrder = ['portfolio', 'dashboard', 'alerts'];
+            let swipeStartX = 0;
+            let swipeStartY = 0;
+            let isSwiping = false;
+            const swipeThreshold = 60;
+
+            function getCurrentTab() {
+                const activeBtn = document.querySelector('.nav-button.active');
+                return activeBtn ? activeBtn.dataset.target : 'dashboard';
+            }
+
+            const container = document.querySelector('.container');
+            if (!container) return;
+
+            container.addEventListener('touchstart', (e) => {
+                // Don't interfere with modals or inputs
+                if (e.target.closest('.modal') || e.target.closest('input') || e.target.closest('textarea')) return;
+                swipeStartX = e.touches[0].clientX;
+                swipeStartY = e.touches[0].clientY;
+                isSwiping = true;
+            }, { passive: true });
+
+            container.addEventListener('touchend', (e) => {
+                if (!isSwiping) return;
+                isSwiping = false;
+
+                const swipeEndX = e.changedTouches[0].clientX;
+                const swipeEndY = e.changedTouches[0].clientY;
+                const diffX = swipeEndX - swipeStartX;
+                const diffY = swipeEndY - swipeStartY;
+
+                // Only horizontal swipe (ignore vertical scrolling)
+                if (Math.abs(diffX) < swipeThreshold || Math.abs(diffY) > Math.abs(diffX)) return;
+
+                const currentTab = getCurrentTab();
+                const currentIndex = tabOrder.indexOf(currentTab);
+                if (currentIndex === -1) return;
+
+                let newIndex;
+                if (diffX > 0) {
+                    // Swipe right → go to tab on the right (lower index in RTL visual)
+                    newIndex = currentIndex - 1;
+                } else {
+                    // Swipe left → go to tab on the left (higher index in RTL visual)
+                    newIndex = currentIndex + 1;
+                }
+
+                if (newIndex >= 0 && newIndex < tabOrder.length) {
+                    switchTab(tabOrder[newIndex]);
+                }
+            }, { passive: true });
+        })();
 
         // Auto-login with Telegram data
         async function autoLogin() {

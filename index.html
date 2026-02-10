@@ -9,10 +9,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/iranyekan" rel="stylesheet">
     <link rel="stylesheet" href="fonts.css">
+    <link href="https://fonts.cdnfonts.com/css/b-titr" rel="stylesheet">
     <style>
         :root {
             /* Dark Mode Colors (Default) */
@@ -85,7 +85,8 @@
         }
 
         body {
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Nunito', 'IRANYekanX', sans-serif;
+            font-weight: 600;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
             background-attachment: fixed;
             min-height: 100vh;
@@ -167,6 +168,14 @@
 
         .pull-to-refresh.refreshing .spinner-blade {
             animation: spinner-fade 1s infinite linear;
+        }
+
+        .container.pulling {
+            transition: none;
+        }
+
+        .container.pull-release {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .spinner-blade {
@@ -297,11 +306,14 @@
             font-size: 2.5em;
             color: var(--gold-primary);
             margin-bottom: 10px;
+            font-family: 'B Titr', 'IRANYekanX', sans-serif;
         }
 
         .login-logo p {
             color: var(--text-secondary);
             font-size: 0.95em;
+            font-family: 'IRANYekanX', sans-serif;
+            font-weight: 600;
         }
 
         .input-group {
@@ -323,7 +335,7 @@
             background: var(--input-bg);
             color: var(--text-primary);
             font-size: 1em;
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Nunito', 'IRANYekanX', sans-serif;
             transition: all 0.3s ease;
         }
 
@@ -346,7 +358,7 @@
             border-radius: 10px;
             background: var(--input-bg);
             color: var(--text-primary);
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Nunito', 'IRANYekanX', sans-serif;
             transition: all 0.3s ease;
         }
 
@@ -365,7 +377,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Nunito', 'IRANYekanX', sans-serif;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
@@ -555,6 +567,8 @@
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: var(--text-primary);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
         }
 
         .price-change.up {
@@ -619,7 +633,7 @@
             color: var(--profit-color);
             font-size: 0.85em;
             margin-top: 4px;
-            font-weight: 600;
+            font-weight: 800;
             font-family: 'Nunito', sans-serif;
         }
 
@@ -627,7 +641,7 @@
             color: var(--loss-color);
             font-size: 0.85em;
             margin-top: 4px;
-            font-weight: 600;
+            font-weight: 800;
             font-family: 'Nunito', sans-serif;
         }
 
@@ -714,7 +728,7 @@
             border-radius: 10px;
             background: var(--input-bg);
             color: var(--text-primary);
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Nunito', 'IRANYekanX', sans-serif;
         }
 
         .calculator-input input:focus {
@@ -749,7 +763,7 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: var(--card-bg);
+            background: transparent;
             border: 1px solid var(--card-border);
             color: var(--gold-primary);
             cursor: pointer;
@@ -764,7 +778,10 @@
 
         .theme-switcher:hover {
             transform: scale(1.1);
-            background: var(--gold-secondary);
+        }
+
+        .theme-switcher:active {
+            transform: scale(0.95);
         }
 
         .theme-switcher svg {
@@ -829,14 +846,16 @@
             color: var(--text-secondary);
             direction: ltr;
             text-align: left;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
         }
 
         .nav-title {
             font-size: 1.15em;
             font-weight: 700;
             color: var(--gold-primary);
-            font-family: 'Nunito', sans-serif;
-            direction: ltr;
+            font-family: 'B Titr', 'IRANYekanX', sans-serif;
+            direction: rtl;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -879,7 +898,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border-radius: 12px;
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Nunito', 'IRANYekanX', sans-serif;
             position: relative;
             z-index: 1;
             -webkit-tap-highlight-color: transparent;
@@ -1157,7 +1176,9 @@
 
             <div id="autoLoginLoading" style="text-align: center; padding: 40px;">
                 <div class="spinner"></div>
-                <p style="margin-top: 20px; color: rgba(255, 255, 255, 0.7);">در حال ورود خودکار...</p>
+                <p
+                    style="margin-top: 20px; color: rgba(255, 255, 255, 0.7); font-family: 'IRANYekanX', sans-serif; font-weight: 600;">
+                    در حال ورود خودکار...</p>
                 <button id="autoLoginCancel" onclick="cancelAutoLogin()" class="btn btn-secondary"
                     style="display: none; margin-top: 20px; width: auto; padding: 10px 30px;">ورود دستی</button>
             </div>
@@ -1258,7 +1279,8 @@
                         <div class="stat-item" style="flex: 1;">
                             <div class="stat-label">📈 سود/زیان</div>
                             <div class="stat-value profit" id="profitLoss" style="font-size: 1.1em;">0</div>
-                            <div id="profitPercent" style="font-size: 0.8em; margin-top: 4px; direction: ltr;">
+                            <div id="profitPercent"
+                                style="font-size: 0.8em; margin-top: 4px; direction: ltr; font-family: 'Nunito', sans-serif; font-weight: 800;">
                                 0%</div>
                         </div>
                     </div>
@@ -1326,7 +1348,8 @@
                         <div class="stat-label">📈 سود/زیان</div>
                         <div class="stat-value profit" id="totalPortfolioProfit">0</div>
                         <div id="totalPortfolioProfitPercent"
-                            style="font-size: 0.8em; margin-top: 4px; direction: ltr;">0%
+                            style="font-size: 0.8em; margin-top: 4px; direction: ltr; font-family: 'Nunito', sans-serif; font-weight: 800;">
+                            0%
                         </div>
                     </div>
                 </div>
@@ -1523,15 +1546,18 @@
         function updateDateTime() {
             const now = new Date();
 
-            // Persian date
-            const persianDate = new Intl.DateTimeFormat('fa-IR', {
+            // Persian date with English digits
+            const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+            const toEnDigits = str => str.replace(/[۰-۹]/g, d => persianDigits.indexOf(d));
+
+            const persianDate = toEnDigits(new Intl.DateTimeFormat('fa-IR', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit'
-            }).format(now);
+            }).format(now));
 
-            // Time
-            const time = now.toLocaleTimeString('fa-IR', {
+            // Time with English digits
+            const time = now.toLocaleTimeString('en-GB', {
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: false
@@ -1594,60 +1620,83 @@
         // ═══════════════════════════════════════════════════════════════
 
         let pullStartY = 0;
+        let pullDistance = 0;
         let isPulling = false;
         let isRefreshing = false;
-        const pullThreshold = 80;
+        const pullThreshold = 90;
+        const REFRESH_AREA_HEIGHT = 70;
+        let rafId = null;
 
         function initPullToRefresh() {
             const container = document.querySelector('.container');
             const indicator = document.getElementById('pullToRefreshIndicator');
+            const blades = indicator.querySelectorAll('.spinner-blade');
 
             container.addEventListener('touchstart', (e) => {
                 if (window.scrollY === 0 && !isRefreshing) {
                     pullStartY = e.touches[0].clientY;
                     isPulling = true;
+                    container.classList.add('pulling');
+                    container.classList.remove('pull-release');
                 }
-            });
+            }, { passive: true });
 
             container.addEventListener('touchmove', (e) => {
                 if (!isPulling || isRefreshing) return;
 
                 const touchY = e.touches[0].clientY;
-                const pullDistance = touchY - pullStartY;
+                pullDistance = touchY - pullStartY;
 
                 if (pullDistance > 0 && window.scrollY === 0) {
                     e.preventDefault();
 
-                    if (pullDistance > pullThreshold / 2) {
+                    if (rafId) cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(() => {
+                        const translateY = Math.pow(pullDistance, 0.85);
+                        container.style.transform = `translateY(${translateY}px)`;
+
                         indicator.classList.add('visible');
-                    }
+                        const pullRatio = Math.min(1, pullDistance / pullThreshold);
+                        const bladesToShow = Math.floor(pullRatio * 8);
+                        blades.forEach((blade, i) => {
+                            blade.style.opacity = i < bladesToShow ? 1 : 0;
+                        });
+                    });
                 }
-            });
+            }, { passive: false });
 
-            container.addEventListener('touchend', async () => {
+            container.addEventListener('touchend', async (e) => {
                 if (!isPulling || isRefreshing) return;
+                isPulling = false;
+                if (rafId) cancelAnimationFrame(rafId);
 
-                const touchY = event.changedTouches[0].clientY;
-                const pullDistance = touchY - pullStartY;
+                container.classList.remove('pulling');
+                container.classList.add('pull-release');
 
-                if (pullDistance > pullThreshold) {
-                    // Start refresh
+                if (pullDistance >= pullThreshold) {
+                    // Start refresh - hold content down
                     isRefreshing = true;
+                    container.style.transform = `translateY(${REFRESH_AREA_HEIGHT}px)`;
                     indicator.classList.add('refreshing');
+                    blades.forEach(blade => blade.style.opacity = 1);
 
                     await refreshData();
 
-                    // End refresh
+                    // End refresh - slide back
                     setTimeout(() => {
-                        indicator.classList.remove('refreshing');
-                        indicator.classList.remove('visible');
+                        container.style.transform = 'translateY(0)';
+                        indicator.classList.remove('refreshing', 'visible');
+                        blades.forEach(blade => blade.style.opacity = 0);
                         isRefreshing = false;
                     }, 500);
                 } else {
+                    // Not enough pull - reset
+                    container.style.transform = 'translateY(0)';
                     indicator.classList.remove('visible');
+                    blades.forEach(blade => blade.style.opacity = 0);
                 }
 
-                isPulling = false;
+                pullDistance = 0;
             });
         }
 
@@ -1944,7 +1993,7 @@
             const overlay = document.createElement('div');
             overlay.id = 'dataLoadingOverlay';
             overlay.className = 'data-loading-overlay';
-            overlay.innerHTML = '<div class="loading-ring"></div><p style="margin-top: 20px; color: rgba(255,255,255,0.7); font-family: Vazirmatn, sans-serif;">در حال بارگذاری...</p>';
+            overlay.innerHTML = '<div class="loading-ring"></div><p style="margin-top: 15px; color: var(--gold-primary); font-family: \'B Titr\', sans-serif; font-size: 1.3em;">طلا یار</p><p style="margin-top: 10px; color: rgba(255,255,255,0.7); font-family: IRANYekanX, sans-serif; font-weight: 600;">در حال بارگذاری...</p>';
             document.body.appendChild(overlay);
         }
 
@@ -2058,10 +2107,13 @@
                     document.getElementById('loginPage').style.display = 'none';
                     document.getElementById('appPage').classList.add('active');
 
-                    // Initialize slider on dashboard after page becomes visible
-                    requestAnimationFrame(() => {
-                        updateNavSlider('dashboard');
-                    });
+                    // Initialize slider on dashboard only on first load
+                    if (!window._sliderInitialized) {
+                        requestAnimationFrame(() => {
+                            updateNavSlider('dashboard');
+                        });
+                        window._sliderInitialized = true;
+                    }
 
                     // Hide loading overlay
                     hideDataLoading();
@@ -2206,14 +2258,14 @@
                             </h4>
                             <p style="margin-top: 8px;">💵 قیمت خرید (هر گرم): ${formatPrice(pricePerGram)} تومان</p>
                             <p style="margin-top: 4px;">🛒 مبلغ کل خرید: ${formatPrice(totalPaid)} تومان</p>
-                            <p style="font-size: 0.8em; color: var(--text-tertiary); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
+                            <p style="font-size: 0.8em; color: var(--text-tertiary); margin-top: 4px; font-family: 'Nunito', sans-serif;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <div class="portfolio-item-value" style="text-align: left;">
                                 <div class="current" style="font-size: 1.1em;">${formatPrice(itemCurrentValue)} تومان</div>
                                 <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                                    <span style="font-size: 0.85em; direction: ltr; unicode-bidi: embed;">(${profitSign}${Math.abs(profitPercent).toFixed(2)}%)</span>
-                                    <span style="direction: ltr; unicode-bidi: embed;">${profitSign}${formatPrice(Math.abs(profit))}</span>
+                                    <span style="font-size: 0.85em; direction: ltr; unicode-bidi: embed; font-family: 'Nunito', sans-serif; font-weight: 800;">(${profitSign}${Math.abs(profitPercent).toFixed(2)}%)</span>
+                                    <span style="direction: ltr; unicode-bidi: embed; font-family: 'Nunito', sans-serif; font-weight: 800;">${profitSign}${formatPrice(Math.abs(profit))}</span>
                                 </div>
                             </div>
                             <button class="btn-delete" onclick="deletePortfolioItem(${item.id})" style="font-size: 0.8em; padding: 6px 12px;">🗑️ حذف</button>

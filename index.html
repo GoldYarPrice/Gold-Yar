@@ -151,7 +151,7 @@
         /* Pull to Refresh */
         .pull-to-refresh {
             position: fixed;
-            top: 30px;
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 28px;
@@ -159,7 +159,7 @@
             opacity: 0;
             transition: opacity 0.2s ease-out;
             z-index: 5;
-            will-change: opacity;
+            will-change: opacity, top;
         }
 
         .pull-to-refresh.visible {
@@ -1657,6 +1657,8 @@
                         const translateY = Math.pow(pullDistance, 0.85);
                         container.style.transform = `translateY(${translateY}px)`;
 
+                        // Center spinner in the gap
+                        indicator.style.top = `${translateY / 2 - 14}px`;
                         indicator.classList.add('visible');
                         const pullRatio = Math.min(1, pullDistance / pullThreshold);
                         const bladesToShow = Math.floor(pullRatio * 8);
@@ -1679,6 +1681,7 @@
                     // Start refresh - hold content down
                     isRefreshing = true;
                     container.style.transform = `translateY(${REFRESH_AREA_HEIGHT}px)`;
+                    indicator.style.top = `${REFRESH_AREA_HEIGHT / 2 - 14}px`;
                     indicator.classList.add('refreshing');
                     blades.forEach(blade => blade.style.opacity = 1);
 
@@ -1688,6 +1691,7 @@
                     setTimeout(() => {
                         container.style.transform = 'translateY(0)';
                         indicator.classList.remove('refreshing', 'visible');
+                        indicator.style.top = '0';
                         blades.forEach(blade => blade.style.opacity = 0);
                         isRefreshing = false;
                     }, 500);
@@ -1695,6 +1699,7 @@
                     // Not enough pull - reset
                     container.style.transform = 'translateY(0)';
                     indicator.classList.remove('visible');
+                    indicator.style.top = '0';
                     blades.forEach(blade => blade.style.opacity = 0);
                 }
 
@@ -1706,6 +1711,10 @@
             try {
                 // Skip loading overlay during pull-to-refresh (spinner already visible)
                 window._skipDataLoading = true;
+
+                // Navigate to dashboard (main page) on refresh
+                switchTab('dashboard');
+                window.scrollTo({ top: 0, behavior: 'instant' });
 
                 // Run both in parallel - if one fails, the other still completes
                 const results = await Promise.allSettled([

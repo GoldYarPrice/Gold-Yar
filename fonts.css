@@ -1,0 +1,76 @@
+/* Local Font Fallback - Vazirmatn & Nunito */
+/* اگر فونت‌ها از Google Fonts لود نشد، از CDN دیگری استفاده می‌شود */
+
+/* Vazirmatn - Persian/Arabic Font */
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Light.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Bold.woff2') format('woff2');
+}
+
+/* Nunito - Numbers/Latin Font */
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/npm/@fontsource/nunito@5.0.0/files/nunito-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/npm/@fontsource/nunito@5.0.0/files/nunito-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/npm/@fontsource/nunito@5.0.0/files/nunito-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/npm/@fontsource/nunito@5.0.0/files/nunito-latin-800-normal.woff2') format('woff2');
+}

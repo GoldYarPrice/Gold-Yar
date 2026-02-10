@@ -1228,6 +1228,18 @@
 
     <!-- Main App -->
     <div id="appPage" class="app-page">
+        <!-- Pull to Refresh Indicator (outside container so transform doesn't affect fixed positioning) -->
+        <div class="pull-to-refresh" id="pullToRefreshIndicator">
+            <div class="spinner-blade"></div>
+            <div class="spinner-blade"></div>
+            <div class="spinner-blade"></div>
+            <div class="spinner-blade"></div>
+            <div class="spinner-blade"></div>
+            <div class="spinner-blade"></div>
+            <div class="spinner-blade"></div>
+            <div class="spinner-blade"></div>
+        </div>
+
         <div class="container">
             <div class="header">
                 <div class="header-info">
@@ -1240,18 +1252,6 @@
                 <div class="header-actions">
                     <button class="btn-logout" onclick="logout()">خروج</button>
                 </div>
-            </div>
-
-            <!-- Pull to Refresh Indicator -->
-            <div class="pull-to-refresh" id="pullToRefreshIndicator">
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
             </div>
 
             <!-- Dashboard Tab -->

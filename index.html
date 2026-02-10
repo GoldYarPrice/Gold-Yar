@@ -151,7 +151,7 @@
         /* Pull to Refresh */
         .pull-to-refresh {
             position: fixed;
-            top: 110px;
+            top: 30px;
             left: 50%;
             transform: translateX(-50%);
             width: 28px;
@@ -857,8 +857,10 @@
             font-family: 'B Titr', 'IRANYekanX', sans-serif;
             direction: rtl;
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
+            right: 0;
+            text-align: center;
+            pointer-events: none;
         }
 
         .nav-buttons-container {
@@ -1165,8 +1167,8 @@
     <!-- Login Page -->
     <div id="loginPage" class="login-page">
         <div class="login-card">
-            <div class="absolute top-0 left-1/2"
-                style="transform: translateX(-50%); width: 160px; height: 2px; background: linear-gradient(to right, transparent, rgba(156, 163, 175, 0.3), transparent);">
+            <div
+                style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 160px; height: 2px; background: linear-gradient(to right, transparent, rgba(156, 163, 175, 0.3), transparent);">
             </div>
 
             <div class="login-logo">
@@ -1705,14 +1707,19 @@
                 // Skip loading overlay during pull-to-refresh (spinner already visible)
                 window._skipDataLoading = true;
 
-                // Reload user data
-                await loadUserData();
+                // Run both in parallel - if one fails, the other still completes
+                const results = await Promise.allSettled([
+                    loadCurrentGoldPrice(),
+                    loadUserData()
+                ]);
 
-                // Reload gold price
-                await loadCurrentGoldPrice();
+                results.forEach((result, i) => {
+                    if (result.status === 'rejected') {
+                        console.error(`❌ Refresh task ${i} failed:`, result.reason);
+                    }
+                });
 
-                // Show success feedback
-                console.log('✅ Data refreshed successfully');
+                console.log('✅ Data refreshed');
             } catch (error) {
                 console.error('❌ Failed to refresh data:', error);
             } finally {
@@ -2011,10 +2018,11 @@
             showDataLoading();
 
             try {
-                const response = await fetch(`${API_BASE}/api/user`, {
+                const response = await fetch(`${API_BASE}/api/user?t=${Date.now()}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
+                    },
+                    cache: 'no-store'
                 });
 
                 const data = await response.json();
@@ -2136,7 +2144,9 @@
         // Load current gold price
         async function loadCurrentGoldPrice() {
             try {
-                const response = await fetch(`${API_BASE}/api/gold-price`);
+                const response = await fetch(`${API_BASE}/api/gold-price?t=${Date.now()}`, {
+                    cache: 'no-store'
+                });
 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
@@ -2304,7 +2314,8 @@
                     <div class="alert-item">
                         <div class="alert-item-header">
                             <div>
-                                <div class="alert-type">${goldName} - ${typeText}</div>
+                                <div class="alert-type">${goldName}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85em; margin: 4px 0;">${typeText}</div>
                                 <div class="alert-price">${formatPrice(alert.target_price)} تومان</div>
                             </div>
                             <div style="display: flex; gap: 8px; align-items: center;">

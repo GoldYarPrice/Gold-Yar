@@ -12,6 +12,64 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
+        :root {
+            /* Dark Mode Colors (Default) */
+            --bg-gradient-start: #0f2027;
+            --bg-gradient-mid: #203a43;
+            --bg-gradient-end: #2c5364;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: rgba(212, 175, 55, 0.3);
+            --gold-primary: #d4af37;
+            --gold-secondary: rgba(212, 175, 55, 0.2);
+            --profit-color: #34c759;
+            --loss-color: #ff3b30;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --item-bg: rgba(255, 255, 255, 0.05);
+            --alert-item-bg: rgba(255, 255, 255, 0.05);
+            --nav-bg: rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode {
+            /* Light Mode Colors */
+            --bg-gradient-start: #f5f7fa;
+            --bg-gradient-mid: #e8ecf1;
+            --bg-gradient-end: #dce3ec;
+            --text-primary: #1a1a1a;
+            --text-secondary: rgba(0, 0, 0, 0.7);
+            --text-tertiary: rgba(0, 0, 0, 0.5);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-border: rgba(212, 175, 55, 0.5);
+            --gold-primary: #b8941e;
+            --gold-secondary: rgba(212, 175, 55, 0.25);
+            --profit-color: #28a745;
+            --loss-color: #dc3545;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --item-bg: rgba(0, 0, 0, 0.04);
+            --alert-item-bg: rgba(0, 0, 0, 0.03);
+            --nav-bg: rgba(0, 0, 0, 0.06);
+        }
+
+        body.light-mode .stat-value,
+        body.light-mode .price-value,
+        body.light-mode .calculator-result-value {
+            color: var(--text-primary) !important;
+        }
+
+        body.light-mode .stat-value.profit {
+            color: var(--profit-color) !important;
+        }
+
+        body.light-mode .stat-value.loss {
+            color: var(--loss-color) !important;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -26,11 +84,11 @@
 
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
             background-attachment: fixed;
             min-height: 100vh;
             height: auto;
-            color: #fff;
+            color: var(--text-primary);
             overflow-x: hidden;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -40,13 +98,167 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            transition: background 0.3s ease;
+        }
+
+        /* Skeleton Loading Styles */
+        .skeleton {
+            background: linear-gradient(90deg, var(--card-bg) 25%, var(--card-border) 50%, var(--card-bg) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s ease-in-out infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-title {
+            height: 24px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-price {
+            height: 40px;
+            width: 80%;
+            margin: 10px auto;
+        }
+
+        .skeleton-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+        }
+
+        /* Pull to Refresh */
+        .pull-to-refresh {
+            position: fixed;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 28px;
+            opacity: 0;
+            transition: opacity 0.2s ease-out;
+            z-index: 5;
+            will-change: opacity;
+        }
+
+        .pull-to-refresh.visible {
+            opacity: 1;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade {
+            animation: spinner-fade 1s infinite linear;
+        }
+
+        .spinner-blade {
+            position: absolute;
+            left: 44.5%;
+            top: 0;
+            width: 11%;
+            height: 30%;
+            background-color: var(--text-secondary);
+            border-radius: 50px;
+            transform-origin: 50% 100%;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .spinner-blade:nth-child(1) {
+            transform: rotate(0deg) translateY(-65%);
+        }
+
+        .spinner-blade:nth-child(2) {
+            transform: rotate(45deg) translateY(-65%);
+        }
+
+        .spinner-blade:nth-child(3) {
+            transform: rotate(90deg) translateY(-65%);
+        }
+
+        .spinner-blade:nth-child(4) {
+            transform: rotate(135deg) translateY(-65%);
+        }
+
+        .spinner-blade:nth-child(5) {
+            transform: rotate(180deg) translateY(-65%);
+        }
+
+        .spinner-blade:nth-child(6) {
+            transform: rotate(225deg) translateY(-65%);
+        }
+
+        .spinner-blade:nth-child(7) {
+            transform: rotate(270deg) translateY(-65%);
+        }
+
+        .spinner-blade:nth-child(8) {
+            transform: rotate(315deg) translateY(-65%);
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(1) {
+            animation-delay: -0.875s;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(2) {
+            animation-delay: -0.750s;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(3) {
+            animation-delay: -0.625s;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(4) {
+            animation-delay: -0.500s;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(5) {
+            animation-delay: -0.375s;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(6) {
+            animation-delay: -0.250s;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(7) {
+            animation-delay: -0.125s;
+        }
+
+        .pull-to-refresh.refreshing .spinner-blade:nth-child(8) {
+            animation-delay: 0s;
+        }
+
+        @keyframes spinner-fade {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.1;
+            }
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
             min-height: 100vh;
             position: relative;
         }
@@ -62,14 +274,14 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px 30px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px var(--shadow);
+            border: 1px solid var(--card-border);
             position: relative;
             overflow: hidden;
         }
@@ -81,12 +293,12 @@
 
         .login-logo h1 {
             font-size: 2.5em;
-            color: #d4af37;
+            color: var(--gold-primary);
             margin-bottom: 10px;
         }
 
         .login-logo p {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
             font-size: 0.95em;
         }
 
@@ -97,17 +309,17 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            color: #d4af37;
+            color: var(--gold-primary);
             font-weight: 500;
         }
 
         .input-group input {
             width: 100%;
             padding: 15px;
-            border: 2px solid rgba(212, 175, 55, 0.3);
+            border: 2px solid var(--input-border);
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
+            background: var(--input-bg);
+            color: var(--text-primary);
             font-size: 1em;
             font-family: 'Vazirmatn', sans-serif;
             transition: all 0.3s ease;
@@ -115,14 +327,31 @@
 
         .input-group input:focus {
             outline: none;
-            border-color: #d4af37;
-            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--gold-primary);
+            background: var(--card-bg);
         }
 
         .input-group input::placeholder {
             color: rgba(212, 175, 55, 0.5);
             font-weight: 600;
             opacity: 1;
+        }
+
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: 'Vazirmatn', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            background: var(--card-bg);
         }
 
         .btn {
@@ -165,7 +394,7 @@
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 20px;
@@ -173,20 +402,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--card-border);
         }
 
         .header-info {
             display: flex;
             align-items: center;
             gap: 12px;
+            flex: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .user-avatar {
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            border: 2px solid #d4af37;
+            border: 2px solid var(--gold-primary);
             object-fit: cover;
             flex-shrink: 0;
         }
@@ -195,8 +431,8 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            border: 2px solid #d4af37;
-            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid var(--gold-primary);
+            background: var(--gold-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -205,12 +441,12 @@
         }
 
         .header-info h2 {
-            color: #d4af37;
+            color: var(--gold-primary);
             margin-bottom: 5px;
         }
 
         .header-info p {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
             font-size: 0.9em;
         }
 
@@ -233,16 +469,16 @@
 
         /* Cards */
         .card {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--card-border);
         }
 
         .card-title {
-            color: #d4af37;
+            color: var(--gold-primary);
             font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 15px;
@@ -259,52 +495,54 @@
         }
 
         .stat-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--item-bg);
             padding: 15px;
             border-radius: 12px;
             text-align: center;
         }
 
         .stat-label {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
             font-size: 0.85em;
             margin-bottom: 5px;
         }
 
         .stat-value {
-            color: #fff;
+            color: var(--text-primary);
             font-size: 1.3em;
-            font-weight: 600;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
         }
 
         .stat-value.profit {
-            color: #34c759;
+            color: var(--profit-color);
         }
 
         .stat-value.loss {
-            color: #ff3b30;
+            color: var(--loss-color);
         }
 
         /* Gold Price Display */
         .price-display {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(244, 208, 63, 0.1) 100%);
-            border: 2px solid rgba(212, 175, 55, 0.3);
+            background: linear-gradient(135deg, var(--gold-secondary) 0%, rgba(244, 208, 63, 0.1) 100%);
+            border: 2px solid var(--input-border);
             border-radius: 16px;
             padding: 20px;
             text-align: center;
         }
 
         .price-label {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
             font-size: 0.9em;
             margin-bottom: 10px;
         }
 
         .price-value {
-            color: #d4af37;
+            color: var(--text-primary);
             font-size: 2em;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 10px;
+            font-family: 'Nunito', sans-serif;
         }
 
         .price-change {
@@ -314,7 +552,7 @@
             display: inline-block;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #ffffff;
+            color: var(--text-primary);
         }
 
         .price-change.up {
@@ -331,7 +569,7 @@
 
         /* Portfolio Items */
         .portfolio-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--item-bg);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 12px;
@@ -339,13 +577,13 @@
             justify-content: space-between;
             align-items: flex-start;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--card-border);
         }
 
         .portfolio-item:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--input-bg);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px var(--shadow);
         }
 
         .portfolio-item-info {
@@ -353,13 +591,13 @@
         }
 
         .portfolio-item-info h4 {
-            color: #fff;
+            color: var(--text-primary);
             margin-bottom: 8px;
             font-size: 1em;
         }
 
         .portfolio-item-info p {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
             font-size: 0.85em;
             margin: 4px 0;
         }
@@ -369,23 +607,26 @@
         }
 
         .portfolio-item-value .current {
-            color: #d4af37;
-            font-weight: 600;
+            color: var(--gold-primary);
+            font-weight: 800;
             font-size: 1em;
+            font-family: 'Nunito', sans-serif;
         }
 
         .portfolio-item-value .profit {
-            color: #34c759;
+            color: var(--profit-color);
             font-size: 0.85em;
             margin-top: 4px;
-            font-weight: 500;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
         }
 
         .portfolio-item-value .loss {
-            color: #ff3b30;
+            color: var(--loss-color);
             font-size: 0.85em;
             margin-top: 4px;
-            font-weight: 500;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
         }
 
         .btn-delete {
@@ -409,7 +650,8 @@
 
         /* Alert Items */
         .alert-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--alert-item-bg);
+            border: 1px solid var(--card-border);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 10px;
@@ -428,8 +670,10 @@
         }
 
         .alert-price {
-            color: #fff;
+            color: var(--text-primary);
             font-size: 1.1em;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
         }
 
         .alert-status {
@@ -450,7 +694,7 @@
 
         /* Calculator */
         .calculator {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--item-bg);
             border-radius: 12px;
             padding: 20px;
         }
@@ -464,16 +708,16 @@
         .calculator-input input {
             flex: 1;
             padding: 12px;
-            border: 2px solid rgba(212, 175, 55, 0.3);
+            border: 2px solid var(--input-border);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
+            background: var(--input-bg);
+            color: var(--text-primary);
             font-family: 'Vazirmatn', sans-serif;
         }
 
         .calculator-input input:focus {
             outline: none;
-            border-color: #d4af37;
+            border-color: var(--gold-primary);
         }
 
         .calculator-result {
@@ -485,15 +729,67 @@
         }
 
         .calculator-result-label {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
             font-size: 0.9em;
             margin-bottom: 10px;
         }
 
         .calculator-result-value {
-            color: #d4af37;
+            color: var(--gold-primary);
             font-size: 1.8em;
-            font-weight: 700;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* Bottom Navigation */
+        /* Theme Switcher */
+        .theme-switcher {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--gold-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        .theme-switcher:hover {
+            transform: scale(1.1);
+            background: var(--gold-secondary);
+        }
+
+        .theme-switcher svg {
+            width: 20px;
+            height: 20px;
+            transition: all 0.3s ease;
+            position: absolute;
+        }
+
+        .theme-switcher .sun-icon {
+            opacity: 0;
+            transform: rotate(-90deg) scale(0);
+        }
+
+        .theme-switcher .moon-icon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        body.light-mode .theme-switcher .sun-icon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        body.light-mode .theme-switcher .moon-icon {
+            opacity: 0;
+            transform: rotate(90deg) scale(0);
         }
 
         /* Bottom Navigation */
@@ -502,49 +798,92 @@
             bottom: 0;
             right: 0;
             left: 0;
-            background: rgba(15, 32, 39, 0.75);
+            background: var(--card-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid var(--card-border);
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            padding: 10px 0;
-            padding-bottom: max(10px, env(safe-area-inset-bottom));
-            display: flex;
-            justify-content: space-around;
+            padding-bottom: max(15px, env(safe-area-inset-bottom));
             z-index: 1000;
-            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 -2px 20px var(--shadow);
         }
 
-        .nav-item {
+        .nav-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px 8px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .datetime {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            direction: ltr;
+            text-align: left;
+        }
+
+        .nav-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: var(--gold-primary);
+            font-family: 'Nunito', sans-serif;
+            direction: ltr;
+        }
+
+        .nav-buttons-container {
+            position: relative;
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 0;
+            padding: 2px;
+            margin: 8px 4px 0;
+            background-color: var(--nav-bg);
+            border-radius: 24px;
+            height: 48px;
+        }
+
+        .nav-slider {
+            position: absolute;
+            background: var(--card-bg);
+            border: 1px solid var(--gold-primary);
+            border-radius: 22px;
+            transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            height: calc(100% - 4px);
+            top: 2px;
+            z-index: 0;
+            left: 2px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-button {
             flex: 1;
-            text-align: center;
-            padding: 8px;
+            padding: 10px 5px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            border-radius: 10px;
-            margin: 0 5px;
+            border-radius: 12px;
+            font-family: 'Vazirmatn', sans-serif;
+            position: relative;
+            z-index: 1;
             -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
         }
 
-        .nav-item.active {
-            background: rgba(212, 175, 55, 0.2);
+        .nav-button.active {
+            color: var(--gold-primary);
+            font-weight: 600;
         }
 
-        .nav-icon {
-            font-size: 1.5em;
-            margin-bottom: 3px;
-        }
-
-        .nav-label {
-            font-size: 0.75em;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .nav-item.active .nav-label {
-            color: #d4af37;
+        .nav-button:hover {
+            color: var(--text-primary);
         }
 
         /* Modal */
@@ -593,7 +932,7 @@
         .btn-close {
             background: rgba(255, 255, 255, 0.1);
             border: none;
-            color: #fff;
+            color: var(--text-primary);
             width: 30px;
             height: 30px;
             border-radius: 50%;
@@ -612,7 +951,7 @@
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            color: var(--text-primary);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -624,7 +963,7 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
         }
 
         .spinner {
@@ -651,7 +990,7 @@
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
         }
 
         .empty-state-icon {
@@ -718,7 +1057,7 @@
             border-radius: 50%;
             border: none;
             background: rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
             font-size: 1em;
             cursor: pointer;
             display: none;
@@ -863,17 +1202,33 @@
                         <p id="userId"></p>
                     </div>
                 </div>
-                <button class="btn-logout" onclick="logout()">خروج</button>
+                <div class="header-actions">
+                    <button class="btn-logout" onclick="logout()">خروج</button>
+                </div>
+            </div>
+
+            <!-- Pull to Refresh Indicator -->
+            <div class="pull-to-refresh" id="pullToRefreshIndicator">
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
             </div>
 
             <!-- Dashboard Tab -->
             <div id="dashboardTab" class="tab-content">
                 <!-- Live Gold Price -->
-                <div class="card">
+                <div class="card" id="priceCard">
                     <div class="card-title">💰 قیمت لحظه‌ای طلا</div>
                     <div class="price-display">
                         <div class="price-label">قیمت هر گرم طلای 18 عیار</div>
-                        <div class="price-value" id="currentPrice">در حال بارگذاری...</div>
+                        <div class="price-value" id="currentPrice">
+                            <div class="skeleton skeleton-price"></div>
+                        </div>
                         <div class="price-change up" id="priceChange" style="direction: ltr;">
                             <span id="priceChangeText">--</span>
                         </div>
@@ -891,8 +1246,7 @@
                         <div class="stat-item" style="flex: 1;">
                             <div class="stat-label">📈 سود/زیان</div>
                             <div class="stat-value profit" id="profitLoss" style="font-size: 1.1em;">0</div>
-                            <div id="profitPercent"
-                                style="font-size: 0.8em; margin-top: 4px; direction: ltr; color: rgba(255,255,255,0.6);">
+                            <div id="profitPercent" style="font-size: 0.8em; margin-top: 4px; direction: ltr;">
                                 0%</div>
                         </div>
                     </div>
@@ -921,8 +1275,8 @@
                     <div class="card-title">⚙️ تنظیم اعلان</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
                         <div>
-                            <div style="color: #fff; margin-bottom: 5px;">زمان اعلان قیمت</div>
-                            <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;" id="notificationTime">00:40
+                            <div style="color: var(--text-primary); margin-bottom: 5px;">زمان اعلان قیمت</div>
+                            <div style="color: var(--text-tertiary); font-size: 0.85em;" id="notificationTime">00:40
                             </div>
                         </div>
                         <button class="btn btn-primary" style="width: auto; padding: 10px 20px;"
@@ -960,7 +1314,7 @@
                         <div class="stat-label">📈 سود/زیان</div>
                         <div class="stat-value profit" id="totalPortfolioProfit">0</div>
                         <div id="totalPortfolioProfitPercent"
-                            style="font-size: 0.8em; margin-top: 4px; direction: ltr; color: rgba(255,255,255,0.6);">0%
+                            style="font-size: 0.8em; margin-top: 4px; direction: ltr;">0%
                         </div>
                     </div>
                 </div>
@@ -990,18 +1344,40 @@
         </div>
 
         <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('dashboard')">
-                <div class="nav-icon">🏠</div>
-                <div class="nav-label">خانه</div>
+        <div class="bottom-nav" id="bottom-nav">
+            <div class="nav-top-row">
+                <div class="datetime">
+                    <span id="live-date">1404/11/21</span>
+                    <span id="live-time">19:39</span>
+                </div>
+                <div class="nav-title">طلا یار</div>
+                <button class="theme-switcher" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
             </div>
-            <div class="nav-item" onclick="switchTab('portfolio')">
-                <div class="nav-icon">💼</div>
-                <div class="nav-label">دارایی</div>
-            </div>
-            <div class="nav-item" onclick="switchTab('alerts')">
-                <div class="nav-icon">🔔</div>
-                <div class="nav-label">هشدارها</div>
+            <div class="nav-buttons-container" id="bottom-nav-buttons">
+                <div class="nav-slider" id="navSlider"></div>
+                <button class="nav-button" data-target="alerts" onclick="switchTab('alerts')">🔔 هشدارها</button>
+                <button class="nav-button active" data-target="dashboard" onclick="switchTab('dashboard')">🏠
+                    خانه</button>
+                <button class="nav-button" data-target="portfolio" onclick="switchTab('portfolio')">💼 دارایی</button>
             </div>
         </div>
     </div>
@@ -1022,8 +1398,7 @@
                 <!-- انتخاب نوع ورودی قیمت -->
                 <div class="input-group">
                     <label>نوع ورودی قیمت</label>
-                    <select id="priceInputType" onchange="togglePriceInput()"
-                        style="width: 100%; padding: 12px; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Vazirmatn', sans-serif;">
+                    <select id="priceInputType" onchange="togglePriceInput()">
                         <option value="per_gram">قیمت هر گرم</option>
                         <option value="total">قیمت کل خرید</option>
                     </select>
@@ -1060,8 +1435,7 @@
             <div class="modal-body">
                 <div class="input-group">
                     <label>نوع طلا</label>
-                    <select id="alertGoldType"
-                        style="width: 100%; padding: 12px; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Vazirmatn', sans-serif;">
+                    <select id="alertGoldType">
                         <option value="18_750">طلای 18 عیار (750)</option>
                         <option value="18_740">طلای 18 عیار (740)</option>
                         <option value="24">طلای 24 عیار</option>
@@ -1070,8 +1444,7 @@
 
                 <div class="input-group">
                     <label>نوع هشدار</label>
-                    <select id="alertType"
-                        style="width: 100%; padding: 12px; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Vazirmatn', sans-serif;">
+                    <select id="alertType">
                         <option value="above">بالاتر از</option>
                         <option value="below">پایین‌تر از</option>
                     </select>
@@ -1109,9 +1482,177 @@
         let userData = null;
         let currentGoldPrice = 0;
 
+        // ═══════════════════════════════════════════════════════════════
+        // 🎨 Theme Management
+        // ═══════════════════════════════════════════════════════════════
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('light-mode');
+
+            if (body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🕐 Live Date & Time
+        // ═══════════════════════════════════════════════════════════════
+
+        function updateDateTime() {
+            const now = new Date();
+
+            // Persian date
+            const persianDate = new Intl.DateTimeFormat('fa-IR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(now);
+
+            // Time
+            const time = now.toLocaleTimeString('fa-IR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+
+            document.getElementById('live-date').textContent = persianDate;
+            document.getElementById('live-time').textContent = time;
+        }
+
+        // Update every second
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🎯 Navigation Slider
+        // ═══════════════════════════════════════════════════════════════
+
+        function updateNavSlider(targetTab) {
+            const buttons = document.querySelectorAll('#bottom-nav-buttons .nav-button');
+            const slider = document.getElementById('navSlider');
+            const container = document.getElementById('bottom-nav-buttons');
+
+            if (!slider || !container || buttons.length === 0) return;
+
+            let activeIndex = 0;
+
+            buttons.forEach((btn, index) => {
+                if (btn.dataset.target === targetTab) {
+                    activeIndex = index;
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Calculate slider width and position
+            const containerWidth = container.offsetWidth;
+            const padding = 2; // padding from container
+            const buttonWidth = (containerWidth - (padding * 2)) / buttons.length;
+
+            slider.style.width = `${buttonWidth}px`;
+
+            // Position slider directly at active button index
+            const leftPosition = padding + (activeIndex * buttonWidth);
+            slider.style.left = `${leftPosition}px`;
+        }
+
+        // Slider will be initialized when appPage becomes active (see loadUserData)
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🔄 Pull to Refresh
+        // ═══════════════════════════════════════════════════════════════
+
+        let pullStartY = 0;
+        let isPulling = false;
+        let isRefreshing = false;
+        const pullThreshold = 80;
+
+        function initPullToRefresh() {
+            const container = document.querySelector('.container');
+            const indicator = document.getElementById('pullToRefreshIndicator');
+
+            container.addEventListener('touchstart', (e) => {
+                if (window.scrollY === 0 && !isRefreshing) {
+                    pullStartY = e.touches[0].clientY;
+                    isPulling = true;
+                }
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (!isPulling || isRefreshing) return;
+
+                const touchY = e.touches[0].clientY;
+                const pullDistance = touchY - pullStartY;
+
+                if (pullDistance > 0 && window.scrollY === 0) {
+                    e.preventDefault();
+
+                    if (pullDistance > pullThreshold / 2) {
+                        indicator.classList.add('visible');
+                    }
+                }
+            });
+
+            container.addEventListener('touchend', async () => {
+                if (!isPulling || isRefreshing) return;
+
+                const touchY = event.changedTouches[0].clientY;
+                const pullDistance = touchY - pullStartY;
+
+                if (pullDistance > pullThreshold) {
+                    // Start refresh
+                    isRefreshing = true;
+                    indicator.classList.add('refreshing');
+
+                    await refreshData();
+
+                    // End refresh
+                    setTimeout(() => {
+                        indicator.classList.remove('refreshing');
+                        indicator.classList.remove('visible');
+                        isRefreshing = false;
+                    }, 500);
+                } else {
+                    indicator.classList.remove('visible');
+                }
+
+                isPulling = false;
+            });
+        }
+
+        async function refreshData() {
+            try {
+                // Reload user data
+                await loadUserData();
+
+                // Reload gold price
+                await loadCurrentGoldPrice();
+
+                // Show success feedback
+                console.log('✅ Data refreshed successfully');
+            } catch (error) {
+                console.error('❌ Failed to refresh data:', error);
+            }
+        }
+
         // Initialize
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
+
+        // Initialize theme and pull to refresh
+        initTheme();
+        initPullToRefresh();
 
         // Auto-login with Telegram data
         async function autoLogin() {
@@ -1402,7 +1943,7 @@
                     const profitPercentEl = document.getElementById('profitPercent');
                     const profitPercentSign = profitPercent >= 0 ? '+' : '';
                     profitPercentEl.textContent = profitPercentSign + profitPercent.toFixed(2) + '%';
-                    profitPercentEl.style.color = 'rgba(255, 255, 255, 0.6)';
+                    profitPercentEl.style.color = 'var(--text-secondary)';
 
                     // Portfolio Tab Summary - مطابق ربات
                     document.getElementById('totalPortfolioInvestment').textContent = formatPrice(totalInvestment);
@@ -1420,7 +1961,7 @@
                     const totalProfitPercentEl = document.getElementById('totalPortfolioProfitPercent');
                     const totalProfitPercentSign = profitPercent >= 0 ? '+' : '';
                     totalProfitPercentEl.textContent = totalProfitPercentSign + profitPercent.toFixed(2) + '%';
-                    totalProfitPercentEl.style.color = 'rgba(255, 255, 255, 0.6)';
+                    totalProfitPercentEl.style.color = 'var(--text-secondary)';
 
                     // Load portfolio items
                     loadPortfolioItems(data.portfolio.items);
@@ -1431,6 +1972,11 @@
                     // Show app page
                     document.getElementById('loginPage').style.display = 'none';
                     document.getElementById('appPage').classList.add('active');
+
+                    // Initialize slider on dashboard after page becomes visible
+                    requestAnimationFrame(() => {
+                        updateNavSlider('dashboard');
+                    });
 
                     // Hide loading overlay
                     hideDataLoading();
@@ -1463,7 +2009,8 @@
 
                 if (data.success && data.price) {
                     currentGoldPrice = data.price;
-                    document.getElementById('currentPrice').textContent = formatPrice(currentGoldPrice) + ' تومان';
+                    const priceEl = document.getElementById('currentPrice');
+                    priceEl.innerHTML = formatPrice(currentGoldPrice) + ' تومان';
 
                     const changeEl = document.getElementById('priceChange');
                     const changeTextEl = document.getElementById('priceChangeText');
@@ -1501,7 +2048,8 @@
 
                     if (totalWeight > 0) {
                         currentGoldPrice = Math.round(totalValue / totalWeight);
-                        document.getElementById('currentPrice').textContent = formatPrice(currentGoldPrice) + ' تومان';
+                        const priceEl = document.getElementById('currentPrice');
+                        priceEl.innerHTML = formatPrice(currentGoldPrice) + ' تومان';
 
                         const changeEl = document.getElementById('priceChange');
                         const changeTextEl = document.getElementById('priceChangeText');
@@ -1568,18 +2116,18 @@
                     <div class="portfolio-item" style="border-right: 3px solid ${borderColor};">
                         <div class="portfolio-item-info">
                             <h4 style="display: flex; align-items: center; gap: 8px;">
-                                <span style="background: rgba(212, 175, 55, 0.2); padding: 3px 10px; border-radius: 8px; font-size: clamp(0.85em, 3.8vw, 1.05em); white-space: nowrap;">${weight.toFixed(2)} گرم</span>
-                                <span style="font-size: 0.85em; color: rgba(255, 255, 255, 0.7);">طلای 18 عیار</span>
+                                <span style="background: var(--gold-secondary); padding: 3px 10px; border-radius: 8px; font-size: clamp(0.85em, 3.8vw, 1.05em); white-space: nowrap;">${weight.toFixed(2)} گرم</span>
+                                <span style="font-size: 0.85em; color: var(--text-secondary);">طلای 18 عیار</span>
                             </h4>
                             <p style="margin-top: 8px;">💵 قیمت خرید (هر گرم): ${formatPrice(pricePerGram)} تومان</p>
                             <p style="margin-top: 4px;">🛒 مبلغ کل خرید: ${formatPrice(totalPaid)} تومان</p>
-                            <p style="font-size: 0.8em; color: rgba(255, 255, 255, 0.5); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
+                            <p style="font-size: 0.8em; color: var(--text-tertiary); margin-top: 4px;">📅 ${item.purchase_date || 'تاریخ نامشخص'}</p>
                         </div>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <div class="portfolio-item-value" style="text-align: left;">
                                 <div class="current" style="font-size: 1.1em;">${formatPrice(itemCurrentValue)} تومان</div>
                                 <div class="${profitClass}" style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                                    <span style="font-size: 0.85em; opacity: 0.8; direction: ltr; unicode-bidi: embed;">(${profitSign}${Math.abs(profitPercent).toFixed(2)}%)</span>
+                                    <span style="font-size: 0.85em; direction: ltr; unicode-bidi: embed;">(${profitSign}${Math.abs(profitPercent).toFixed(2)}%)</span>
                                     <span style="direction: ltr; unicode-bidi: embed;">${profitSign}${formatPrice(Math.abs(profit))}</span>
                                 </div>
                             </div>
@@ -1627,7 +2175,7 @@
                                 <button class="btn-delete" onclick="deleteAlert(${alert.id})" style="padding: 4px 8px; font-size: 0.75em;">حذف</button>
                             </div>
                         </div>
-                        <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;">
+                        <div style="color: var(--text-secondary); font-size: 0.85em;">
                             📅 ${createdDate}
                         </div>
                     </div>
@@ -1678,16 +2226,13 @@
 
         // Switch tabs
         function switchTab(tab) {
+            // Update navigation slider
+            updateNavSlider(tab);
+
             // Scroll to top first (instant)
             if (window.scrollY > 0) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-
-            // Update nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.nav-item').classList.add('active');
 
             // Small delay to let scroll start, then switch content
             setTimeout(() => {
